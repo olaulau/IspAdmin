@@ -4,6 +4,14 @@ require_once 'functions.inc.php';
 
 $websites = IspGetActiveWebsites ();
 
+$data = [];
+foreach ($websites as $domain) {
+	$data[] = [
+		'domain' => $domain,
+		'sslExpires' => sslExpires ($domain),
+	];
+}
+
 ?>
 <html>
 	<head>
@@ -18,10 +26,10 @@ $websites = IspGetActiveWebsites ();
 			</thead>
 			<tbody>
 			<?php
-			foreach ($websites as $website) {
+			foreach ($data as $row) {
 			?>
 				<tr>
-					<td><?= $website ?></td> <td><?= '' ?></td>
+					<td><?= $row['domain'] ?></td> <td><?= $row['sslExpires'] ?></td>
 				</tr>
 			<?php
 			}
