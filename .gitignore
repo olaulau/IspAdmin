@@ -2,4 +2,4 @@
 /.project
 /.settings
 
-/rest_config.php
+/config.inc.php
