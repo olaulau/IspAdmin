@@ -5,11 +5,25 @@ require_once 'functions.inc.php';
 $websites = IspGetActiveWebsites ();
 
 $data = [];
-foreach ($websites as $domain) {
-	$data[] = [
+foreach ($websites as $i => $domain) {
+	$data[$i] = [
 		'domain' => $domain,
-		'sslExpires' => sslExpires ($domain),
 	];
+}
+
+
+// fork processes to query sslExpires simultaneously
+foreach ($websites as $i => $domain) {
+	$pipe[$i] = popen('php ./sslExpires.php ' . $domain, 'r');
+}
+
+// wait for them to finish
+foreach ($websites as $i => $domain) {
+	$data[$i] = [
+		'domain' => $domain,
+		'sslExpires' => fgets ($pipe[$i]),
+	];
+	pclose($pipe[$i]);
 }
 
 ?>
