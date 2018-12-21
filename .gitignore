@@ -1,5 +1,6 @@
 /.buildpath
 /.project
-/.settings
+/.settings/
 
 /config.inc.php
+/vendor/
