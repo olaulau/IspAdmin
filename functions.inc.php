@@ -70,3 +70,25 @@ function sslExpires ($domain) {
 	if (!preg_match("/Not After : (.*)/", $res, $matches)) return false;
 	return $matches[1];
 }
+
+
+function datestring_parse($date) {
+	$d = new DateTime($date);
+	$tz = new DateTimeZone('Europe/Paris');
+	$d->setTimezone($tz);
+	
+	return $d;
+}
+function datetime_format($d) {
+	return $d->format("d/m/Y H:i:s");
+}
+
+
+function sort2dArray (&$table, $column, $reverse=false) {
+	usort($table, function($a, $b) use ($column, $reverse) {
+		if($reverse)
+			return $a[$column] <=> $b[$column];
+		else
+			return $b[$column] <=> $a[$column];
+	});
+}

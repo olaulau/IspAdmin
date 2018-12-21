@@ -21,10 +21,13 @@ foreach ($websites as $i => $domain) {
 foreach ($websites as $i => $domain) {
 	$data[$i] = [
 		'domain' => $domain,
-		'sslExpires' => fgets ($pipe[$i]),
+		'sslExpires' => datestring_parse (fgets ($pipe[$i])),
 	];
 	pclose($pipe[$i]);
 }
+
+// sort table by sslExpires
+sort2dArray ($data, 'sslExpires', true);
 
 ?>
 <html>
@@ -43,7 +46,7 @@ foreach ($websites as $i => $domain) {
 			foreach ($data as $row) {
 			?>
 				<tr>
-					<td><?= $row['domain'] ?></td> <td><?= $row['sslExpires'] ?></td>
+					<td><?= $row['domain'] ?></td> <td><?= datetime_format ($row['sslExpires']) ?></td>
 				</tr>
 			<?php
 			}
