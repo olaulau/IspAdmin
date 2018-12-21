@@ -47,19 +47,16 @@ function IspGetActiveWebsites () {
 		if(!$result) die("error");
 		// 	vd(json_decode($result, true));	exit;
 		$domain_record = json_decode($result, true)['response'];
-// 		echo count($domain_record) . "<br>\n";
 		$res = [];
 		foreach ($domain_record as $domain) {
 			$res[] = $domain['domain'];
-// 			echo $domain['domain']."<br>\n";
-			// 		vd($domain);
 		}
 		
 		// logout
 		$result = restCall('logout', array('session_id' => $session_id));
 		if(!$result) print "Could not get logout result\n";
 		
-		return $res;
+		return $domain_record;
 	}
 }
 
@@ -76,7 +73,6 @@ function datestring_parse($date) {
 	$d = new DateTime($date);
 	$tz = new DateTimeZone('Europe/Paris');
 	$d->setTimezone($tz);
-	
 	return $d;
 }
 function datetime_format($d) {

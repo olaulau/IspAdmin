@@ -4,30 +4,20 @@ require_once 'functions.inc.php';
 
 $websites = IspGetActiveWebsites ();
 
-$data = [];
-foreach ($websites as $i => $domain) {
-	$data[$i] = [
-		'domain' => $domain,
-	];
-}
-
-
 // fork processes to query sslExpires simultaneously
-foreach ($websites as $i => $domain) {
-	$pipe[$i] = popen('php ./sslExpires.php ' . $domain, 'r');
+foreach ($websites as $website) {
+	$pipe[$website['domain']] = popen('php ./sslExpires.php ' . $website['domain'], 'r');
 }
 
 // wait for them to finish
-foreach ($websites as $i => $domain) {
-	$data[$i] = [
-		'domain' => $domain,
-		'sslExpires' => datestring_parse (fgets ($pipe[$i])),
-	];
-	pclose($pipe[$i]);
+foreach ($websites as &$website) {
+	$website['sslExpires'] = datestring_parse (fgets ($pipe[$website['domain']]));
+	pclose($pipe[$website['domain']]);
 }
+unset($website);
 
 // sort table by sslExpires
-sort2dArray ($data, 'sslExpires', true);
+sort2dArray ($websites, 'sslExpires', true);
 
 ?>
 <html>
@@ -38,15 +28,17 @@ sort2dArray ($data, 'sslExpires', true);
 		<table>
 			<thead>
 				<tr>
-					<th>Domain</th> <th>SSL</th>
+					<th>Domain</th>
+					<th>SSL</th>
 				</tr>
 			</thead>
 			<tbody>
 			<?php
-			foreach ($data as $row) {
+			foreach ($websites as $website) {
 			?>
 				<tr>
-					<td><?= $row['domain'] ?></td> <td><?= datetime_format ($row['sslExpires']) ?></td>
+					<td><?= $website['domain'] ?></td>
+					<td><?= datetime_format ($website['sslExpires']) ?></td>
 				</tr>
 			<?php
 			}
