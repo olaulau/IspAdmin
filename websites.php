@@ -1,12 +1,12 @@
 <?php
-require_once 'config.inc.php';
-require_once 'functions.inc.php';
+require_once 'php/config.inc.php';
+require_once 'php/functions.inc.php';
 
 $websites = IspGetActiveWebsites ();
 
 // fork processes to query sslExpires simultaneously
 foreach ($websites as $website) {
-	$pipe[$website['domain']] = popen('php ./sslExpires.php ' . $website['domain'], 'r');
+	$pipe[$website['domain']] = popen('php php/sslExpires.php ' . $website['domain'], 'r');
 }
 
 // wait for them to finish
@@ -27,15 +27,14 @@ sort2dArray ($websites, 'sslExpires', true);
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="favicon.ico">
 
-    <title>Sticky Footer Navbar Template for Bootstrap</title>
+    <title>Websites</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="sticky-footer-navbar.css" rel="stylesheet">
+    <link href="css/sticky-footer-navbar.css" rel="stylesheet">
   </head>
 
   <body>
@@ -101,7 +100,6 @@ sort2dArray ($websites, 'sslExpires', true);
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="vendor/components/jquery/jquery.min.js"></script>
-    <script src="../../assets/js/vendor/popper.min.js"></script>
     <script src="vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
   </body>
 </html>
