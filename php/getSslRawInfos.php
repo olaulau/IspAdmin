@@ -1,5 +1,6 @@
 <?php
 require_once 'php/config.inc.php';
 require_once 'php/functions.inc.php';
+require_once 'php/SslInfos.class.php';
 
-echo sslExpires ($argv[1]);
+SslInfos::execOpenssl($argv[1]);

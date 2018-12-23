@@ -9,21 +9,33 @@ class SslInfos {
 	private $error;
 	private $issuer;
 	
-	function __construct ($domain) {
+	function __construct ($domain, $rawInfos) {
 		$this->domain = $domain;
-		$cmd = "echo | openssl s_client -showcerts -servername $domain -connect $domain:443 2>> /tmp/test.txt | openssl x509 -inform pem -noout -text >> /tmp/test.txt && cat /tmp/test.txt && rm /tmp/test.txt";
-		$handle = popen ($cmd, "r");
-		$this->rawInfos = stream_get_contents($handle);
-		
-		if (preg_match("/Not After : (.*)/", $this->rawInfos, $matches))
-			$this->sslExpires = $matches[1];
-		
-		if (preg_match("/verify error:num=(.*):(.*)/", $this->rawInfos, $matches))
-			$this->error = $matches[2];
-		
-		if (preg_match("/Issuer: (C = ([^,]*)){0,1}(, ){0,1}(O = ([^,]*)){0,1}(, ){0,1}(CN = ([^,\n]*)){0,1}\n/", $this->rawInfos, $matches))
-		    $this->issuer = $matches[8];
+		$this->rawInfos = $rawInfos;
+		$this->extractInfos ();
 	}
+	
+	public static function execOpenssl ($domain) {
+	    $tmp = tempnam("/tmp/ssl/", "ssl");
+		$cmd = "echo | openssl s_client -showcerts -servername $domain -connect $domain:443 2>> $tmp | openssl x509 -inform pem -noout -text >> $tmp && cat $tmp" . " && rm $tmp";
+		$handle = popen ($cmd, "r");
+		echo stream_get_contents($handle);
+	}
+	
+	
+	public function extractInfos () {
+	    if (preg_match("/Not After : (.*)/", $this->rawInfos, $matches)) {
+			$this->sslExpires = new DateTime ($matches[1]);
+			$this->sslExpires->setTimezone(new DateTimeZone('Europe/Paris'));
+	    }
+	    if (preg_match("/verify error:num=(.*):(.*)/", $this->rawInfos, $matches)) {
+			$this->error = $matches[2];
+	    }
+	    if (preg_match("/Issuer: (C = ([^,]*)){0,1}(, ){0,1}(O = ([^,]*)){0,1}(, ){0,1}(CN = ([^,\n]*)){0,1}\n/", $this->rawInfos, $matches)) {
+		    $this->issuer = $matches[8];
+	    }
+	}
+	
 	
 	public function getSslExpires () {
 		return $this->sslExpires;
@@ -36,10 +48,46 @@ class SslInfos {
 	public function getIssuer () {
 	    return $this->issuer;
 	}
+	
+	
+	public function getRemainingValidityDays () {
+	    $now = new DateTime();
+	    $diff = $now->diff($this->getSslExpires());
+	    $res = $diff->days;
+	    if ($diff->invert === 1) {
+	        $res = -$res;
+	    }
+	    return $res;
+	}
+	
+	
+	public function labelType () {
+	    if (!empty($this->error)) {
+	        return 'danger';
+	    }
+	    elseif ($this->getRemainingValidityDays() <= 0) {
+	        return 'danger';
+	    }
+	    elseif ($this->getRemainingValidityDays() < 30) {
+	        return 'warning';
+	    }
+	    else {
+	        return 'success';
+	    }
+	}
+	
+	public function labelString () {
+	    if (!empty($this->error)) {
+	        return $this->error;
+	    }
+	    elseif ($this->getRemainingValidityDays() <= 0) {
+	        return 'certificate expired';
+	    }
+	    elseif ($this->getRemainingValidityDays() < 30) {
+	        return 'certificate not renewed : ' . $this->getRemainingValidityDays() . ' days left';
+	    }
+	    else {
+	        return 'OK';
+	    }
+	}
 }
-
-$domain = "";
-$s = new SslInfos($domain);
-echo $s->getSslExpires();
-echo $s->getError();
-echo $s->getIssuer();

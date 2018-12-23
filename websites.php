@@ -1,23 +1,29 @@
 <?php
 require_once 'php/config.inc.php';
 require_once 'php/functions.inc.php';
+require_once 'php/SslInfos.class.php';
 
 $websites = IspGetActiveWebsites ();
 
 // fork processes to query sslExpires simultaneously
+$pipe = [];
 foreach ($websites as $website) {
-	$pipe[$website['domain']] = popen('php php/sslExpires.php ' . $website['domain'], 'r');
+	$pipe[$website['domain']] = popen('php php/getSslRawInfos.php ' . $website['domain'], 'r');
 }
 
-// wait for them to finish
+// get output and wait for them to finish
 foreach ($websites as &$website) {
-	$website['sslExpires'] = datestring_parse (fgets ($pipe[$website['domain']]));
+    $sslRawInfos = '';
+    while (($sslRawInfo = fgets($pipe[$website['domain']])) !== false) {
+        $sslRawInfos.= $sslRawInfo;
+    }
+    $website['sslInfos'] = new SslInfos($website['domain'], $sslRawInfos);
 	pclose($pipe[$website['domain']]);
 }
 unset($website);
 
 // sort table by sslExpires
-sort2dArray ($websites, 'sslExpires', true);
+// sort2dArray ($websites, 'sslExpires', true); //TODO sort by status ?
 
 ?>
 <!doctype html>
@@ -81,7 +87,7 @@ sort2dArray ($websites, 'sslExpires', true);
 			?>
 				<tr>
 					<td><?= $website['domain'] ?></td>
-					<td><?= datetime_format ($website['sslExpires']) ?></td>
+					<td class="table-<?= $website['sslInfos']->labelType() ?>"><?= $website['sslInfos']->labelString() ?></td>
 				</tr>
 			<?php
 			}
