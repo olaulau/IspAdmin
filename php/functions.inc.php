@@ -38,7 +38,7 @@ function restCall ($method, $data) {
 }
 
 
-function IspGetActiveWebsites () {
+function IspGetWebsites () {
 	global $conf;
 	$result = restCall('login', array('username' => $conf['ispconfig']['rest']['user'], 'password' => $conf['ispconfig']['rest']['password'], 'client_login' => false));
 	if($result) {
@@ -47,7 +47,7 @@ function IspGetActiveWebsites () {
 		$session_id = $data['response'];
 		
 		// get all actives web sites
-		$result = restCall('sites_web_domain_get', array('session_id' => $session_id, 'primary_id' => ['active' => 'y']));
+		$result = restCall('sites_web_domain_get', array('session_id' => $session_id, 'primary_id' => []));
 		if(!$result) die("error");
 		// 	vd(json_decode($result, true));	exit;
 		$domain_record = json_decode($result, true)['response'];

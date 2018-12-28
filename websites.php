@@ -3,7 +3,7 @@ require_once 'php/config.inc.php';
 require_once 'php/functions.inc.php';
 require_once 'php/SslInfos.class.php';
 
-$websites = IspGetActiveWebsites ();
+$websites = IspGetWebsites ();
 
 // fork processes to query sslExpires simultaneously
 $pipe = [];
@@ -74,20 +74,26 @@ unset($website);
 
     <!-- Begin page content -->
     <main role="main" class="container">
-		<table class="table">
-			<thead>
+		<table class="table table-sm table-bordered ">
+			<thead class="thead-dark">
 				<tr>
 					<th>Domain</th>
+					<th>DNS</th>
 					<th>SSL</th>
+					<th>HTTP</th>
+					<th>PHP</th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody class="table-hover">
 			<?php
 			foreach ($websites as $website) {
 			?>
 				<tr>
-					<td><?= $website['domain'] ?></td>
+					<td class="<?= $website['active']==='n' ? 'table-danger' : '' ?>"><?= $website['domain'] ?></td>
+					<td> &nbsp; </td>
 					<td class="table-<?= $website['sslInfos']->labelType() ?>"><?= $website['sslInfos']->labelString() ?></td>
+					<td> &nbsp; </td>
+					<td> &nbsp; </td>
 				</tr>
 			<?php
 			}
