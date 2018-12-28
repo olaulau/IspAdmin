@@ -3,7 +3,10 @@ require_once 'php/config.inc.php';
 require_once 'php/functions.inc.php';
 require_once 'php/SslInfos.class.php';
 
-$websites = IspGetWebsites ();
+$session_id = IspLogin ();
+$servers = IspGetServersConfig($session_id);
+$websites = IspGetWebsites ($session_id);
+IspLogout ($session_id);
 
 // fork processes to query sslExpires simultaneously
 $pipe = [];
@@ -21,6 +24,37 @@ foreach ($websites as &$website) {
 	pclose($pipe[$website['domain']]);
 }
 unset($website);
+
+
+// get php infos
+foreach ($websites as &$website) {
+	if ($website['type'] == 'alias') {
+		$website['php_label_string'] = 'alias ';
+		$website['php_label_type'] = '';
+	}
+	else { // normal website type is 'vhost'
+		$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*:[^:]*:[^:]*:[^:]*$/";
+		if (!empty ($website['fastcgi_php_version']) && preg_match($regex, $website['fastcgi_php_version'], $matches)) {
+			$website['php_label_string'] = $matches[1];
+		}
+		else {
+			$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
+			$website['php_label_string'] = $servers[$website['server_id']]["web"]["php_default_name"];
+			if (preg_match($regex, $website['php_label_string'], $matches)) {
+				$website['php_label_string'] = $matches[1];
+			}
+		}
+		if ($website['php_label_string'] < '7.0') {
+			$website['php_label_type'] = 'danger';
+		}
+		elseif ($website['php_label_string'] < '7.2') {
+			$website['php_label_type'] = 'warning';
+		}
+		else {
+			$website['php_label_type'] = 'success';
+		}
+	}
+}
 
 // sort table by sslExpires
 // sort2dArray ($websites, 'sslExpires', true); //TODO sort by status ?
@@ -89,11 +123,11 @@ unset($website);
 			foreach ($websites as $website) {
 			?>
 				<tr>
-					<td class="<?= $website['active']==='n' ? 'table-danger' : '' ?>"><?= $website['domain'] ?></td>
+					<td class="<?= $website['active']==='n' ? 'table-danger' : '' ?>"> <a href="https://<?= $website['domain'] ?>/"><?= $website['domain'] ?></a> </td>
 					<td> &nbsp; </td>
 					<td class="table-<?= $website['sslInfos']->labelType() ?>"><?= $website['sslInfos']->labelString() ?></td>
 					<td> &nbsp; </td>
-					<td> &nbsp; </td>
+					<td class="<?= !empty($website['php_label_type']) ? 'table-'.$website['php_label_type'] : '' ?>"> <?= $website['php_label_string'] ?> </td>
 				</tr>
 			<?php
 			}

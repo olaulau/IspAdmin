@@ -23,11 +23,6 @@ function restCall ($method, $data) {
 	curl_setopt($curl, CURLOPT_POST, 1);
 	curl_setopt($curl, CURLOPT_POSTFIELDS, $json);
 	
-	// needed for self-signed cert
-	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-	// end of needed for self-signed cert
-	
 	curl_setopt($curl, CURLOPT_URL, $conf['ispconfig']['rest']['url'] . '?' . $method);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 	
@@ -38,30 +33,36 @@ function restCall ($method, $data) {
 }
 
 
-function IspGetWebsites () {
+function IspLogin () {
 	global $conf;
 	$result = restCall('login', array('username' => $conf['ispconfig']['rest']['user'], 'password' => $conf['ispconfig']['rest']['password'], 'client_login' => false));
 	if($result) {
 		$data = json_decode($result, true);
 		if(!$data) return false;
-		$session_id = $data['response'];
-		
-		// get all actives web sites
-		$result = restCall('sites_web_domain_get', array('session_id' => $session_id, 'primary_id' => []));
-		if(!$result) die("error");
-		// 	vd(json_decode($result, true));	exit;
-		$domain_record = json_decode($result, true)['response'];
-		$res = [];
-		foreach ($domain_record as $domain) {
-			$res[] = $domain['domain'];
-		}
-		
-		// logout
-		$result = restCall('logout', array('session_id' => $session_id));
-		if(!$result) print "Could not get logout result\n";
-		
-		return $domain_record;
+		return $data['response'];
 	}
+	else {
+		return false;
+	}
+}
+
+
+function IspGetWebsites ($session_id) {
+	$result = restCall('sites_web_domain_get', array('session_id' => $session_id, 'primary_id' => []));
+	if(!$result) die("error");
+	$domain_record = json_decode($result, true)['response'];
+	$res = [];
+	foreach ($domain_record as $domain) {
+		$res[] = $domain['domain'];
+	}
+	return $domain_record;
+}
+
+
+function IspLogout ($session_id) {
+	// logout
+	$result = restCall('logout', array('session_id' => $session_id));
+	if(!$result) print "Could not get logout result\n";
 }
 
 
@@ -91,4 +92,12 @@ function sort2dArray (&$table, $column, $reverse=false) {
 		else
 			return $b[$column] <=> $a[$column];
 	});
+}
+
+
+function IspGetServersConfig($session_id) {
+	$result = restCall('server_get', array('session_id' => $session_id, 'server_id' => []));
+	if(!$result) die("error");
+	$res = json_decode($result, true)['response'];
+	return $res;
 }
