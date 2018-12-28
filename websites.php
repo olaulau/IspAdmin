@@ -20,7 +20,7 @@ foreach ($websites as &$website) {
     while (($sslRawInfo = fgets($pipe[$website['domain']])) !== false) {
         $sslRawInfos.= $sslRawInfo;
     }
-    $website['sslInfos'] = new SslInfos($website['domain'], $sslRawInfos);
+    $website['sslInfos'] = new SslInfos($website, $sslRawInfos);
 	pclose($pipe[$website['domain']]);
 }
 unset($website);
@@ -28,31 +28,25 @@ unset($website);
 
 // get php infos
 foreach ($websites as &$website) {
-	if ($website['type'] == 'alias') {
-		$website['php_label_string'] = 'alias ';
-		$website['php_label_type'] = '';
+	$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*:[^:]*:[^:]*:[^:]*$/";
+	if (!empty ($website['fastcgi_php_version']) && preg_match($regex, $website['fastcgi_php_version'], $matches)) {
+		$website['php_label_string'] = $matches[1];
 	}
-	else { // normal website type is 'vhost'
-		$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*:[^:]*:[^:]*:[^:]*$/";
-		if (!empty ($website['fastcgi_php_version']) && preg_match($regex, $website['fastcgi_php_version'], $matches)) {
+	else {
+		$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
+		$website['php_label_string'] = $servers[$website['server_id']]["web"]["php_default_name"];
+		if (preg_match($regex, $website['php_label_string'], $matches)) {
 			$website['php_label_string'] = $matches[1];
 		}
-		else {
-			$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
-			$website['php_label_string'] = $servers[$website['server_id']]["web"]["php_default_name"];
-			if (preg_match($regex, $website['php_label_string'], $matches)) {
-				$website['php_label_string'] = $matches[1];
-			}
-		}
-		if ($website['php_label_string'] < '7.0') {
-			$website['php_label_type'] = 'danger';
-		}
-		elseif ($website['php_label_string'] < '7.2') {
-			$website['php_label_type'] = 'warning';
-		}
-		else {
-			$website['php_label_type'] = 'success';
-		}
+	}
+	if ($website['php_label_string'] < '7.0') {
+		$website['php_label_type'] = 'danger';
+	}
+	elseif ($website['php_label_string'] < '7.2') {
+		$website['php_label_type'] = 'warning';
+	}
+	else {
+		$website['php_label_type'] = 'success';
 	}
 }
 unset($website);

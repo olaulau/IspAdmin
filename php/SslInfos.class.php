@@ -11,9 +11,17 @@ class SslInfos {
 	private $labelType;
 	private $labelString;
 	
-	function __construct ($domain, $rawInfos) {
-		$this->domain = $domain;
-		if (empty($rawInfos)) {
+	function __construct ($website, $rawInfos) {
+		$this->domain = $website['domain'];
+		if ($website['ssl'] == 'n') {
+			$this->labelType = 'danger';
+			$this->labelString = 'ssl disabled';
+		}
+		elseif ($website['ssl_letsencrypt'] == 'n') {
+			$this->labelType = 'warning';
+			$this->labelString = "let's encrypt disabled";
+		}
+		elseif (empty($rawInfos)) {
 			$this->labelType = 'danger';
 			$this->labelString = 'error getting infos';
 		}

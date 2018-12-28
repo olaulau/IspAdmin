@@ -48,7 +48,7 @@ function IspLogin () {
 
 
 function IspGetWebsites ($session_id) {
-	$result = restCall('sites_web_domain_get', array('session_id' => $session_id, 'primary_id' => []));
+	$result = restCall('sites_web_domain_get', array('session_id' => $session_id, 'primary_id' => ['type' => 'vhost'])); //TODO handle type=alias
 	if(!$result) die("error");
 	$domain_record = json_decode($result, true)['response'];
 	$res = [];
