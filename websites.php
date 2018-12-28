@@ -55,9 +55,10 @@ foreach ($websites as &$website) {
 		}
 	}
 }
+unset($website);
 
-// sort table by sslExpires
-// sort2dArray ($websites, 'sslExpires', true); //TODO sort by status ?
+// sort table
+sort2dArray ($websites, 'domain'); //TODO sort by status ?
 
 ?>
 <!doctype html>

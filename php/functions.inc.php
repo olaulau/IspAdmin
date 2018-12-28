@@ -88,9 +88,9 @@ function datetime_format($d) {
 function sort2dArray (&$table, $column, $reverse=false) {
 	usort($table, function($a, $b) use ($column, $reverse) {
 		if($reverse)
-			return $a[$column] <=> $b[$column];
-		else
 			return $b[$column] <=> $a[$column];
+		else
+			return $a[$column] <=> $b[$column];
 	});
 }
 
