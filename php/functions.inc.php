@@ -7,6 +7,10 @@ function vd ($var) {
 	var_dump($var);
 	echo "</pre>";
 }
+function vdd ($var) {
+	vd ($var);
+	die;
+}
 
 
 function restCall ($method, $data) {
