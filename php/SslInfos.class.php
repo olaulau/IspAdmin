@@ -49,7 +49,7 @@ class SslInfos {
 			$this->error = $matches[2];
 	    }
 	    
-	    if (preg_match("/Issuer: (C = ([^,]*)){0,1}(, ){0,1}(O = ([^,]*)){0,1}(, ){0,1}(CN = ([^,\n]*)){0,1}\n/", $this->rawInfos, $matches)) {
+	    if (preg_match("/Issuer: (C[\s]?=[\s]?([^,\n]*))?(, )?(O[\s]?=[\s]?([^,\n]*))?(, )?(CN[\s]?=[\s]?([^,\n]*))?\n/m", $this->rawInfos, $matches)) {
 		    $this->issuer = $matches[8];
 	    }
 	    
