@@ -101,3 +101,18 @@ function IspGetServersConfig($session_id) {
 	$res = json_decode($result, true)['response'];
 	return $res;
 }
+
+
+function execMultipleProcesses($cmds, $wait) {
+	// fork processes
+	$pipe = [];
+	foreach ($cmds as $i => $cmd) {
+		$pipe[$i] = popen($cmd, 'r');
+	}
+	if ($wait) {
+		//  wait for them to finish and get output
+		foreach ($cmds as $i => $cmd) {
+			pclose($pipe[$i]);
+		}
+	}
+}

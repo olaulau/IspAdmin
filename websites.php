@@ -8,20 +8,17 @@ $servers = IspGetServersConfig($session_id);
 $websites = IspGetWebsites ($session_id);
 IspLogout ($session_id);
 
-// fork processes to query sslExpires simultaneously
-$pipe = [];
+// fork processes to query ssl infos simultaneously
+$cmds = [];
 foreach ($websites as $website) {
-	$pipe[$website['domain']] = popen('php php/getSslRawInfos.php ' . $website['domain'], 'r');
+	$cmds[] = SslInfos::getOpensslCmd($website['domain']);
 }
+execMultipleProcesses($cmds, true);
 
-// get output and wait for them to finish
+// get ssl infos
 foreach ($websites as &$website) {
-    $sslRawInfos = '';
-    while (($sslRawInfo = fgets($pipe[$website['domain']])) !== false) {
-        $sslRawInfos.= $sslRawInfo;
-    }
-    $website['sslInfos'] = new SslInfos($website, $sslRawInfos);
-	pclose($pipe[$website['domain']]);
+	$sslRawInfos = SslInfos::readRawInfos($website['domain']);
+	$website['sslInfos'] = new SslInfos($website, $sslRawInfos);
 }
 unset($website);
 

@@ -31,11 +31,15 @@ class SslInfos {
 		}
 	}
 	
-	public static function execOpenssl ($domain) {
-	    $tmp = tempnam("/tmp/ssl/", "ssl");
-		$cmd = "echo | openssl s_client -showcerts -servername $domain -connect $domain:443 2>> $tmp | openssl x509 -inform pem -noout -text >> $tmp && cat $tmp" . " && rm $tmp";
-		$handle = popen ($cmd, "r");
-		echo stream_get_contents($handle);
+	public static function getOpensslCmd ($domain) {
+		$tmp = "./tmp/ssl/" . $domain;
+		$cmd = "echo | openssl s_client -showcerts -servername $domain -connect $domain:443 2>> $tmp | openssl x509 -inform pem -noout -text >> $tmp";
+		return $cmd;
+	}
+	
+	public static function readRawInfos($domain) {
+		$tmp = "./tmp/ssl/" . $domain;
+		return file_get_contents($tmp);
 	}
 	
 	
