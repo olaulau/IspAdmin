@@ -1,21 +1,24 @@
 <?php
-require_once 'php/config.inc.php';
-require_once 'php/functions.inc.php';
-require_once 'php/SslInfos.class.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../php/config.inc.php';
+require_once __DIR__ . '/../php/functions.inc.php';
+require_once __DIR__ . '/../php/SslInfos.class.php';
 
-$session_id = IspLogin ();
-$servers = IspGetServersConfig($session_id);
-$websites = IspGetWebsites ($session_id);
-IspLogout ($session_id);
+use Wruczek\PhpFileCache\PhpFileCache;
 
-// fork processes to query ssl infos simultaneously
+
+$cache = new PhpFileCache();
+list($servers, $websites) = $cache->refreshIfExpired("IspGetInfos", function () {
+	return IspGetInfos ();
+}, 10);
+	
+
+// get SSL infos
 $cmds = [];
 foreach ($websites as $website) {
 	$cmds[] = SslInfos::getOpensslCmd($website['domain']);
 }
-execMultipleProcesses($cmds, true);
-
-// get ssl infos
+execMultipleProcesses($cmds, true, true);
 foreach ($websites as &$website) {
 	$sslRawInfos = SslInfos::readRawInfos($website['domain']);
 	$website['sslInfos'] = new SslInfos($website, $sslRawInfos);

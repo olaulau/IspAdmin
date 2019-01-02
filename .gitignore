@@ -4,5 +4,9 @@
 
 /php/config.inc.php
 /vendor/
+
+/cache/*
+!/cache/.gitkeep
+
 /tmp/ssl/*
 !/tmp/ssl/.gitkeep

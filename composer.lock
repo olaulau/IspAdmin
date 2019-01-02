@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9a10177794420e01e5908f0a28c12497",
+    "content-hash": "de2b0b42e1b9a50b815bb61d039bb6ba",
     "packages": [
         {
             "name": "components/jquery",
@@ -134,6 +134,62 @@
             "time": "2016-09-16T05:47:55+00:00"
         },
         {
+            "name": "io-developer/php-whois",
+            "version": "3.2.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/io-developer/php-whois.git",
+                "reference": "eda732ddd68dd8e5a8d59d978c90ded75d23df43"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/io-developer/php-whois/zipball/eda732ddd68dd8e5a8d59d978c90ded75d23df43",
+                "reference": "eda732ddd68dd8e5a8d59d978c90ded75d23df43",
+                "shasum": ""
+            },
+            "require": {
+                "ext-intl": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Iodev\\": "src/Iodev/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Sedyshev",
+                    "email": "i.o.developer@gmail.com",
+                    "homepage": "https://github.com/io-developer"
+                }
+            ],
+            "description": "PHP WHOIS provides parsed and raw whois lookup of domains and ASN routes. PHP 5.4+ and 7+ compatible ",
+            "homepage": "https://github.com/io-developer/php-whois",
+            "keywords": [
+                "asn",
+                "domain",
+                "info",
+                "lookup",
+                "parser",
+                "php",
+                "query",
+                "routes",
+                "tld",
+                "whois",
+                "црщшы"
+            ],
+            "time": "2018-12-10T16:31:16+00:00"
+        },
+        {
             "name": "twbs/bootstrap",
             "version": "v4.2.1",
             "source": {
@@ -183,6 +239,47 @@
                 "web"
             ],
             "time": "2018-12-21T18:55:28+00:00"
+        },
+        {
+            "name": "wruczek/php-file-cache",
+            "version": "0.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Wruczek/PHP-File-Cache.git",
+                "reference": "96fd502522beb7438f0874c7d39e096f5c96764f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Wruczek/PHP-File-Cache/zipball/96fd502522beb7438f0874c7d39e096f5c96764f",
+                "reference": "96fd502522beb7438f0874c7d39e096f5c96764f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "php": ">=5.6.0",
+                "phpunit/phpunit": "5.6.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Wruczek\\PhpFileCache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Wruczek",
+                    "email": "wruczekk@gmail.com",
+                    "homepage": "https://wruczek.tech"
+                }
+            ],
+            "description": "Light, simple and standalone PHP in-file caching class",
+            "time": "2018-01-20T17:06:00+00:00"
         }
     ],
     "packages-dev": [],

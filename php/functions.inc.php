@@ -103,16 +103,34 @@ function IspGetServersConfig($session_id) {
 }
 
 
-function execMultipleProcesses($cmds, $wait) {
-	// fork processes
-	$pipe = [];
-	foreach ($cmds as $i => $cmd) {
-		$pipe[$i] = popen($cmd, 'r');
-	}
-	if ($wait) {
-		//  wait for them to finish and get output
+function execMultipleProcesses($cmds, $fork=true, $wait=true) {
+	if ($fork) {
+		// fork processes
+		$pipe = [];
 		foreach ($cmds as $i => $cmd) {
-			pclose($pipe[$i]);
+			$pipe[$i] = popen($cmd, 'r');
+		}
+		if ($wait) {
+			//  wait for them to finish and get output
+			foreach ($cmds as $i => $cmd) {
+				pclose($pipe[$i]);
+			}
 		}
 	}
+	else {
+		foreach ($cmds as $i => $cmd) {
+			if (!$wait)
+				$cmd = $cmd . ' &';
+			exec($cmd);
+		}
+	}
+}
+
+
+function IspGetInfos () {
+	$session_id = IspLogin ();
+	$servers = IspGetServersConfig($session_id);
+	$websites = IspGetWebsites ($session_id);
+	IspLogout ($session_id);
+	return [$servers, $websites];
 }
