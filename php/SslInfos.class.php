@@ -33,7 +33,7 @@ class SslInfos {
 	
 	public static function getOpensslCmd ($domain) {
 		$tmp = "./tmp/ssl/" . $domain;
-		$cmd = "echo | openssl s_client -showcerts -servername $domain -connect $domain:443 2>> $tmp | openssl x509 -inform pem -noout -text >> $tmp";
+		$cmd = "rm -f $tmp && echo | openssl s_client -showcerts -servername $domain -connect $domain:443 2>> $tmp | openssl x509 -inform pem -noout -text >> $tmp";
 		return $cmd;
 	}
 	

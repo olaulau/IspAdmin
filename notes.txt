@@ -1,1 +1,2 @@
-must create a remote user under "System > Remote users"
+- must create a remote user under "System > Remote users"
+- requires php-intl installed before executing 'composer install'

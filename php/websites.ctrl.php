@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../php/config.inc.php';
 require_once __DIR__ . '/../php/functions.inc.php';
+require_once __DIR__ . '/../php/DnsInfos.class.php';
 require_once __DIR__ . '/../php/SslInfos.class.php';
 
 use Wruczek\PhpFileCache\PhpFileCache;
@@ -11,7 +12,23 @@ $cache = new PhpFileCache();
 list($servers, $websites) = $cache->refreshIfExpired("IspGetInfos", function () {
 	return IspGetInfos ();
 }, 10);
-	
+// dev test with only 1 domain
+// $websites = [$websites[0]];
+
+
+// get DNS infos
+$cmds = [];
+foreach ($websites as $website) {
+	//TODO handle cache to limit up to 1000 queries / month
+	$cmds[] = DnsInfos::getWhoisCmd(DnsInfos::getParent($website['domain']));
+}
+execMultipleProcesses($cmds, true, true);
+foreach ($websites as &$website) {
+	$whoisRawInfos = DnsInfos::readWhoisInfos(DnsInfos::getParent($website['domain']));
+	$website['dnsInfos'] = new DnsInfos($website, $whoisRawInfos);
+}
+unset($website);
+
 
 // get SSL infos
 $cmds = [];

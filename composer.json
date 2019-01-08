@@ -3,7 +3,7 @@
 		"twbs/bootstrap" : "^4.2",
 		"components/jquery" : "^3.3",
 		"components/jqueryui" : "^1.12",
-		"io-developer/php-whois": "^3.2",
-		"wruczek/php-file-cache": "^0.0.4"
+		"wruczek/php-file-cache": "^0.0.4",
+		"mashape/unirest-php": "^3.0"
 	}
 }
