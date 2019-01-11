@@ -29,7 +29,7 @@ unset($website);
 // get SSL infos
 $cmds = [];
 foreach ($websites as $website) {
-// 	$cmds[] = SslInfos::getOpensslCmd($website['domain']);
+	$cmds[] = SslInfos::getOpensslCmd($website['domain']);
 }
 execMultipleProcesses($cmds, true, true);
 foreach ($websites as &$website) {
@@ -39,7 +39,20 @@ foreach ($websites as &$website) {
 unset($website);
 
 
-// get php infos
+// get HTTP infos
+$cmds = [];
+foreach ($websites as $website) {
+	$cmds[] = HttpInfos::getCmd($website['domain']);
+}
+execMultipleProcesses($cmds, true, true);
+foreach ($websites as &$website) {
+	$rawInfos = HttpInfos::readInfos($website['domain']);
+	$website['httpInfos'] = new HttpInfos($website, $rawInfos);
+}
+unset($website);
+
+
+// get PHP infos
 foreach ($websites as &$website) {
 	$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*:[^:]*:[^:]*:[^:]*$/";
 	if (!empty ($website['fastcgi_php_version']) && preg_match($regex, $website['fastcgi_php_version'], $matches)) {
@@ -52,10 +65,10 @@ foreach ($websites as &$website) {
 			$website['php_label_string'] = $matches[1];
 		}
 	}
-	if ($website['php_label_string'] < '7.0') {
+	if ($website['php_label_string'] < '7.0') { //TODO put into config, or fetch infos from php.net !
 		$website['php_label_type'] = 'danger';
 	}
-	elseif ($website['php_label_string'] < '7.2') {
+	elseif ($website['php_label_string'] < '7.2') { //TODO same
 		$website['php_label_type'] = 'warning';
 	}
 	else {

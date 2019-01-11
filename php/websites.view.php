@@ -64,7 +64,7 @@
 					<td class="<?= $website['active']==='n' ? 'table-danger' : '' ?>"> <a href="https://<?= $website['domain'] ?>/"><?= $website['domain'] ?></a> </td>
 					<td class="table-<?= $website['dnsInfos']->labelType() ?>"><?= $website['dnsInfos']->labelString() ?></td>
 					<td class="table-<?= $website['sslInfos']->labelType() ?>"><?= $website['sslInfos']->labelString() ?></td>
-					<td> &nbsp; </td>
+					<td class="table-<?= $website['httpInfos']->labelType() ?>"><?= $website['httpInfos']->labelString() ?></td>
 					<td class="<?= !empty($website['php_label_type']) ? 'table-'.$website['php_label_type'] : '' ?>"> <?= $website['php_label_string'] ?> </td>
 				</tr>
 			<?php
