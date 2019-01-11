@@ -1,39 +1,35 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../php/config.inc.php';
-require_once __DIR__ . '/../php/functions.inc.php';
-require_once __DIR__ . '/../php/DnsInfos.class.php';
-require_once __DIR__ . '/../php/SslInfos.class.php';
+require_once __DIR__ . '/autoload.inc.php';
 
-use Wruczek\PhpFileCache\PhpFileCache;
-
-
-$cache = new PhpFileCache();
+$cache = new PhpFileCacheBis();
 list($servers, $websites) = $cache->refreshIfExpired("IspGetInfos", function () {
 	return IspGetInfos ();
 }, 10);
-// dev test with only 1 domain
-// $websites = [$websites[0]];
+unset($cache);
+// $websites = [$websites[0]]; // dev test with only 1 domain
 
 
 // get DNS infos
 $cmds = [];
 foreach ($websites as $website) {
-	//TODO handle cache to limit up to 1000 queries / month
-	$cmds[] = DnsInfos::getWhoisCmd(DnsInfos::getParent($website['domain']));
+	//TODO handle cache to limit up to 1000 whois queries / month
+	$parentdomain = DnsInfos::getParent($website['domain']);
+	$cmds["whois_$parentdomain"] = DnsInfos::getWhoisCmd($parentdomain);
+	$cmds[] = DnsInfos::getLookupCmd($website['domain']);
 }
 execMultipleProcesses($cmds, true, true);
 foreach ($websites as &$website) {
 	$whoisRawInfos = DnsInfos::readWhoisInfos(DnsInfos::getParent($website['domain']));
-	$website['dnsInfos'] = new DnsInfos($website, $whoisRawInfos);
+	$lookupRawInfos = DnsInfos::readLookupInfos($website['domain']);
+	$server = $servers[$website["server_id"]];
+	$website['dnsInfos'] = new DnsInfos($website, $server, $whoisRawInfos, $lookupRawInfos);
 }
 unset($website);
-
 
 // get SSL infos
 $cmds = [];
 foreach ($websites as $website) {
-	$cmds[] = SslInfos::getOpensslCmd($website['domain']);
+// 	$cmds[] = SslInfos::getOpensslCmd($website['domain']);
 }
 execMultipleProcesses($cmds, true, true);
 foreach ($websites as &$website) {

@@ -1,11 +1,5 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../php/config.inc.php';
-require_once __DIR__ . '/../php/functions.inc.php';
-require_once __DIR__ . '/../php/DnsInfos.class.php';
-require_once __DIR__ . '/../php/SslInfos.class.php';
-
-use Wruczek\PhpFileCache\PhpFileCache;
+require_once __DIR__ . '/autoload.inc.php';
 
 
 $domain = $argv[1];
@@ -18,5 +12,5 @@ $headers = array("Accept" => "application/json");
 $url = "https://jsonwhoisapi.com/api/v1/whois?identifier=$domain";
 $response = Unirest\Request::get($url, $headers);
 
-$cache = new PhpFileCache();
+$cache = new PhpFileCacheBis();
 $cache->store("whois_$domain", $response, 60*60*24*2); //TODO calculate expiration

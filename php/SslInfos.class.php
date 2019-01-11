@@ -67,7 +67,7 @@ class SslInfos {
 	    }
 	    elseif ($this->getRemainingValidityDays() < 30) {
 	    	$this->labelType = 'warning';
-	    	$this->labelString = 'certificate not renewed : ' . $this->getRemainingValidityDays() . ' days left';
+	    	$this->labelString = 'certificate not renewed : <br/> ' . $this->getRemainingValidityDays() . ' days left';
 	    }
 	    else {
 	    	$this->labelType = 'success';

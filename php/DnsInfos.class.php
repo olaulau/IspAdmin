@@ -1,25 +1,21 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../php/config.inc.php';
-require_once __DIR__ . '/../php/functions.inc.php';
-require_once __DIR__ . '/../php/DnsInfos.class.php';
-require_once __DIR__ . '/../php/SslInfos.class.php';
-
-use Wruczek\PhpFileCache\PhpFileCache;
+require_once __DIR__ . '/autoload.inc.php';
 
 
 class DnsInfos {
 	
 	private $domain;
 	private $whoisRawInfos;
+	private $lookupRawInfos;
 	private $ns;
 	private $labelType;
 	private $labelString;
 	
-	function __construct ($website, $whoisRawInfos) {
+	function __construct ($website, $server, $whoisRawInfos, $lookupRawInfos) {
 		$this->domain = $website['domain'];
 		$this->whoisRawInfos = $whoisRawInfos;
-		$this->extractInfos();
+		$this->lookupRawInfos = $lookupRawInfos;
+		$this->extractInfos($server);
 	}
 	
 	
@@ -29,10 +25,11 @@ class DnsInfos {
 		return $parent_domain;
 	}
 	
+	
 	public static function getWhoisCmd ($parent_domain) {
 		$cmd = "php php/whois.script.php $parent_domain";
 		
-		$cache = new PhpFileCache();
+		$cache = new PhpFileCacheBis();
 		if (! $cache->isExpired("whois_$parent_domain")) {
 			$cmd = "# $cmd"; //TODO faster if no process is created ?
 		}
@@ -41,7 +38,7 @@ class DnsInfos {
 	}
 	
 	public static function readWhoisInfos($parent_domain) {
-		$cache = new PhpFileCache();
+		$cache = new PhpFileCacheBis();
 		$infos = $cache->retrieve("whois_$parent_domain");
 		if(isset($infos->body->errors)) {
 			$cache->eraseKey("whois_$parent_domain");
@@ -51,7 +48,31 @@ class DnsInfos {
 	}
 	
 	
-	public function extractInfos () {
+	public static function getLookupCmd ($domain) {
+		$cmd = "php php/lookup.script.php $domain";
+		
+		$cache = new PhpFileCacheBis();
+		$key = "lookup_$domain";
+		if (! $cache->isExpired($key)) {
+			$cmd = "# $cmd"; //TODO faster if no process is created ?
+		}
+		
+		return $cmd;
+	}
+	
+	public static function readLookupInfos($domain) {
+		$cache = new PhpFileCacheBis();
+		$key = "lookup_$domain";
+		$infos = $cache->retrieve($key);
+		if(isset($infos->body->errors)) {
+			$cache->eraseKey($key);
+			return null;
+		}
+		return $infos;
+	}
+	
+	
+	public function extractInfos ($server) {
 		global $conf;
 		if (isset ($this->whoisRawInfos->body->nameservers)) {
 			$this->ns = $this->whoisRawInfos->body->nameservers;
@@ -67,6 +88,10 @@ class DnsInfos {
 			$this->labelString = 'bad name servers :<br/>' . implode(', ', $this->ns);
 		}
 	    
+		if ($server["server"]["ip_address"] !== $this->lookupRawInfos) {
+			$this->labelType = 'danger';
+			$this->labelString = "DNS doesn't resolve to server IP : <br/> " . $server["server"]["ip_address"] . " !== " . $this->lookupRawInfos;
+		}
 	}
 	
 	
