@@ -4,10 +4,7 @@ require_once __DIR__ . '/autoload.inc.php';
 
 $domain = $argv[1];
 
-// Set authentication information
-$customer_id = '370958665';
-$api_key = '81VKHFB6wmtYp2nrjFt2KA';
-Unirest\Request::auth($customer_id, $api_key);
+Unirest\Request::auth($conf['jsonwhoisapi']['customer_id'], $conf['jsonwhoisapi']['api_key']);
 $headers = array("Accept" => "application/json");
 $url = "https://jsonwhoisapi.com/api/v1/whois?identifier=$domain";
 $response = Unirest\Request::get($url, $headers);
