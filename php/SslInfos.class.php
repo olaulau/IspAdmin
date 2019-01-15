@@ -17,18 +17,17 @@ class SslInfos {
 			$this->labelType = 'danger';
 			$this->labelString = 'ssl disabled';
 		}
-		elseif ($website['ssl_letsencrypt'] == 'n') {
-			$this->labelType = 'warning';
-			$this->labelString = "let's encrypt disabled";
-		}
 		elseif (empty($rawInfos)) {
 			$this->labelType = 'danger';
 			$this->labelString = 'error getting infos';
 		}
-		else {
-			$this->rawInfos = $rawInfos;
-			$this->extractInfos ();
+		
+		if ($website['ssl_letsencrypt'] == 'n') {
+			$this->labelType = 'warning';
+			$this->labelString = "let's encrypt disabled";
 		}
+		$this->rawInfos = $rawInfos;
+		$this->extractInfos ();
 	}
 	
 	public static function getOpensslCmd ($domain) {
@@ -48,11 +47,9 @@ class SslInfos {
 			$this->sslExpires = new DateTime ($matches[1]);
 			$this->sslExpires->setTimezone(new DateTimeZone('Europe/Paris'));
 	    }
-	    
 	    if (preg_match("/verify error:num=(.*):(.*)/", $this->rawInfos, $matches)) {
 			$this->error = $matches[2];
 	    }
-	    
 	    if (preg_match("/Issuer: (C[\s]?=[\s]?([^,\n]*))?(, )?(O[\s]?=[\s]?([^,\n]*))?(, )?(CN[\s]?=[\s]?([^,\n]*))?\n/m", $this->rawInfos, $matches)) {
 		    $this->issuer = $matches[8];
 	    }
