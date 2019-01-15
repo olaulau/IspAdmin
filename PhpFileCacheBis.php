@@ -68,7 +68,7 @@ class PhpFileCacheBis {
         }
         $this->lockFp = fopen($this->getCacheFilePath().'.lock', 'r+');
         if (!flock($this->lockFp, LOCK_EX)) {  // acquire an exclusive lock
-        	throw new Exception("Couldn't acquire thee lock");
+        	throw new Exception("Couldn't acquire the lock");
         }
         $this->reloadFromDisc();
     }
@@ -76,6 +76,7 @@ class PhpFileCacheBis {
     function __destruct() {
     	flock($this->lockFp, LOCK_UN);
     	fclose($this->lockFp);
+    	unlink($this->getCacheFilePath().'.lock');
     }
 
     /**

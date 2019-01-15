@@ -9,44 +9,28 @@ unset($cache);
 // $websites = [$websites[0]]; // dev test with only 1 domain
 
 
-// get DNS infos
+// get infos (by running external processes)
 $cmds = [];
 foreach ($websites as $website) {
 	//TODO handle cache to limit up to 1000 whois queries / month
+	$domain = $website['domain'];
 	$parentdomain = DnsInfos::getParent($website['domain']);
-	$cmds["whois_$parentdomain"] = DnsInfos::getWhoisCmd($parentdomain);
-	$cmds[] = DnsInfos::getLookupCmd($website['domain']);
+	$cmds["whois_$parentdomain"] = DnsInfos::getWhoisCmd($parentdomain); //TODO pb d'indice de tableaux ??
+	$cmds["lookup_$domain"] = DnsInfos::getLookupCmd($domain);
+	$cmds["ssl_$domain"] = SslInfos::getOpensslCmd($domain);
+	$cmds["http_$domain"] = HttpInfos::getCmd($domain);
 }
 execMultipleProcesses($cmds, true, true);
 foreach ($websites as &$website) {
-	$whoisRawInfos = DnsInfos::readWhoisInfos(DnsInfos::getParent($website['domain']));
-	$lookupRawInfos = DnsInfos::readLookupInfos($website['domain']);
+	$domain = $website['domain'];
+	$parentdomain = DnsInfos::getParent($domain);
+	$whoisRawInfos = DnsInfos::readWhoisInfos($parentdomain);
+	$lookupRawInfos = DnsInfos::readLookupInfos($domain);
 	$server = $servers[$website["server_id"]];
 	$website['dnsInfos'] = new DnsInfos($website, $server, $whoisRawInfos, $lookupRawInfos);
-}
-unset($website);
-
-// get SSL infos
-$cmds = [];
-foreach ($websites as $website) {
-	$cmds[] = SslInfos::getOpensslCmd($website['domain']);
-}
-execMultipleProcesses($cmds, true, true);
-foreach ($websites as &$website) {
-	$sslRawInfos = SslInfos::readRawInfos($website['domain']);
+	$sslRawInfos = SslInfos::readRawInfos($domain);
 	$website['sslInfos'] = new SslInfos($website, $sslRawInfos);
-}
-unset($website);
-
-
-// get HTTP infos
-$cmds = [];
-foreach ($websites as $website) {
-	$cmds[] = HttpInfos::getCmd($website['domain']);
-}
-execMultipleProcesses($cmds, true, true);
-foreach ($websites as &$website) {
-	$rawInfos = HttpInfos::readInfos($website['domain']);
+	$rawInfos = HttpInfos::readInfos($domain);
 	$website['httpInfos'] = new HttpInfos($website, $rawInfos);
 }
 unset($website);

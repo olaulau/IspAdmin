@@ -111,7 +111,7 @@ function execMultipleProcesses($cmds, $fork=true, $wait=true) {
 			$pipe[$i] = popen($cmd, 'r');
 		}
 		if ($wait) {
-			//  wait for them to finish and get output
+			//  wait for them to finish
 			foreach ($cmds as $i => $cmd) {
 				pclose($pipe[$i]);
 			}
