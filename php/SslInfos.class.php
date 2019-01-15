@@ -13,6 +13,8 @@ class SslInfos {
 	
 	function __construct ($website, $rawInfos) {
 		$this->domain = $website['domain'];
+		$this->rawInfos = $rawInfos;
+		
 		if ($website['ssl'] == 'n') {
 			$this->labelType = 'danger';
 			$this->labelString = 'ssl disabled';
@@ -21,13 +23,13 @@ class SslInfos {
 			$this->labelType = 'danger';
 			$this->labelString = 'error getting infos';
 		}
-		
-		if ($website['ssl_letsencrypt'] == 'n') {
-			$this->labelType = 'warning';
-			$this->labelString = "let's encrypt disabled";
+		else {
+			if ($website['ssl_letsencrypt'] == 'n') {
+				$this->labelType = 'warning';
+				$this->labelString = "let's encrypt disabled";
+			}
+			$this->extractInfos ();
 		}
-		$this->rawInfos = $rawInfos;
-		$this->extractInfos ();
 	}
 	
 	public static function getOpensslCmd ($domain) {
