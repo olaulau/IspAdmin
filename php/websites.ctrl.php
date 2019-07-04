@@ -14,7 +14,7 @@ $cmds = [];
 foreach ($websites as $website) {
 	//TODO handle cache to limit up to 1000 whois queries / month
 	$domain = $website['domain'];
-	$parentdomain = DnsInfos::getParent($website['domain']);
+	$parentdomain = DnsInfos::getParent($domain);
 	$cmds["whois_$parentdomain"] = DnsInfos::getWhoisCmd($parentdomain); //TODO pb d'indice de tableaux ??
 	$cmds["lookup_$domain"] = DnsInfos::getLookupCmd($domain);
 	$cmds["ssl_$domain"] = SslInfos::getOpensslCmd($domain);

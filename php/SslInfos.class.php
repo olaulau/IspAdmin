@@ -94,14 +94,19 @@ class SslInfos {
 	
 	
 	public function getRemainingValidityDays () {
-	    $now = new DateTime();
-	    $diff = $now->diff($this->getSslExpires());
-	    if(!$diff) vdd($this->getSslExpires());
-	    $res = $diff->days;
-	    if ($diff->invert === 1) {
-	        $res = -$res;
-	    }
-	    return $res;
+		if(!empty($this->getSslExpires())) {
+			$now = new DateTime();
+		    $diff = $now->diff($this->getSslExpires());
+		    if(!$diff) vdd($this->getSslExpires());
+		    $res = $diff->days;
+		    if ($diff->invert === 1) {
+		        $res = -$res;
+		    }
+		    return $res;
+		}
+		else {
+			return null;
+		}
 	}
 	
 	
