@@ -4,7 +4,7 @@ require_once __DIR__ . '/../autoload.inc.php';
 
 class IspConfig {
 	
-	public static function restCall ($method, $data) {
+	private static function restCall ($method, $data) {
 		global $conf;
 		
 		if(!is_array($data)) return false;
@@ -18,6 +18,8 @@ class IspConfig {
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		
 		$result = curl_exec($curl);
+		if ($result === FALSE)
+			echo curl_errno($curl) . ' : ' . curl_error($curl) . '<br/>';
 		curl_close($curl);
 		
 		return $result;
@@ -38,6 +40,13 @@ class IspConfig {
 	}
 	
 	
+	public static function IspLogout ($session_id) {
+		// logout
+		$result = IspConfig::restCall('logout', array('session_id' => $session_id));
+		if(!$result) print "Could not get logout result\n";
+	}
+	
+	
 	public static function IspGetWebsites ($session_id) {
 		$result = IspConfig::restCall('sites_web_domain_get', array('session_id' => $session_id, 'primary_id' => ['type' => 'vhost'])); //TODO handle type=alias
 		if(!$result) die("error");
@@ -50,15 +59,16 @@ class IspConfig {
 	}
 	
 	
-	public static function IspLogout ($session_id) {
-		// logout
-		$result = IspConfig::restCall('logout', array('session_id' => $session_id));
-		if(!$result) print "Could not get logout result\n";
+	public static function IspGetServersConfig($session_id) {
+		$result = IspConfig::restCall('server_get', array('session_id' => $session_id, 'server_id' => []));
+		if(!$result) die("error");
+		$res = json_decode($result, true)['response'];
+		return $res;
 	}
 	
 	
-	public static function IspGetServersConfig($session_id) {
-		$result = IspConfig::restCall('server_get', array('session_id' => $session_id, 'server_id' => []));
+	public static function IspUpdateWebsite ($session_id, $website) {
+		$result = IspConfig::restCall('sites_web_domain_update', array('session_id' => $session_id, 'client_id' => null, 'primary_id' => $website['domain_id'], 'params' => $website));
 		if(!$result) die("error");
 		$res = json_decode($result, true)['response'];
 		return $res;

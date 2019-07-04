@@ -41,9 +41,12 @@ sort2dArray ($websites, 'sslRemainingValidityDays');
 foreach ($websites as &$website) {
 	if ($website['sslRemainingValidityDays'] !== null && $website['sslRemainingValidityDays'] < 30) {
 		echo $website['domain'] . " : " . $website['sslRemainingValidityDays'] . " days left <br/>";
-		// renew
-		//////////
 		
-		break;
+		// renew
+		$session_id = IspConfig::IspLogin ();
+		$website['ssl_letsencrypt'] = 'n';
+		IspConfig::IspUpdateWebsite($session_id, $website);
+		$website['ssl_letsencrypt'] = 'y';
+		IspConfig::IspUpdateWebsite($session_id, $website);
 	}
 }
