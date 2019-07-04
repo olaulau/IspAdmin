@@ -3,7 +3,7 @@ require_once __DIR__ . '/autoload.inc.php';
 
 $cache = new PhpFileCacheBis();
 list($servers, $websites) = $cache->refreshIfExpired("IspGetInfos", function () {
-	return IspGetInfos ();
+	return IspConfig::IspGetInfos ();
 }, 10);
 unset($cache);
 // $websites = [$websites[0]]; // dev test with only 1 domain
