@@ -1,5 +1,8 @@
+#!/usr/bin/php
 <?php
 require_once __DIR__ . '/php/autoload.inc.php';
+
+chdir(__DIR__);
 
 $cache = new PhpFileCacheBis();
 list($servers, $websites) = $cache->refreshIfExpired("IspGetInfos", function () {
@@ -40,7 +43,7 @@ sort2dArray ($websites, 'sslRemainingValidityDays');
 // vdd($websites);
 foreach ($websites as &$website) {
 	if ($website['sslRemainingValidityDays'] !== null && $website['sslRemainingValidityDays'] < 30) {
-		echo $website['domain'] . " : " . $website['sslRemainingValidityDays'] . " days left <br/>";
+		echo $website['domain'] . " : " . $website['sslRemainingValidityDays'] . " days left" . PHP_EOL;
 		
 		// renew
 		$session_id = IspConfig::IspLogin ();
