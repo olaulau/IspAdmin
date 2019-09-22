@@ -1,0 +1,4 @@
+- use fat free framework
+	- change cache system which is very slow
+	- use rewrite with index.php, and MVC
+- get supported PHP versions from official site, and cache response for a while

@@ -43,6 +43,13 @@ function sort2dArray (&$table, $column, $reverse=false) {
 
 
 function execMultipleProcesses($cmds, $fork=true, $wait=true) {
+	// don't execute commented commands
+	foreach ($cmds as $i => $cmd) {
+		if (strpos($cmd, '#') === 0) {
+			unset($cmds[$i]);
+		}
+	}
+	
 	if ($fork) {
 		// fork processes
 		$pipe = [];

@@ -27,7 +27,7 @@ class DnsInfos {
 	
 	
 	public static function getWhoisCmd ($parent_domain) {
-		$cmd = "php php/whois.script.php $parent_domain";
+		$cmd = "php php/scripts/whois.script.php $parent_domain";
 		
 		$cache = new PhpFileCacheBis();
 		if (! $cache->isExpired("whois_$parent_domain")) {
@@ -49,7 +49,7 @@ class DnsInfos {
 	
 	
 	public static function getLookupCmd ($domain) {
-		$cmd = "php php/lookup.script.php $domain";
+		$cmd = "php php/scripts/lookup.script.php $domain";
 		
 		$cache = new PhpFileCacheBis();
 		$key = "lookup_$domain";
@@ -83,23 +83,40 @@ class DnsInfos {
 		
 		$this->labelType = 'success';
 		$this->labelString = 'OK';
+		
 		if (!empty (array_diff($this->ns , $conf['dns']['nameservers'])) || !empty (array_diff($conf['dns']['nameservers'], $this->ns))) {
+			// if domaine nameervers aren't exactly those in config
 			$this->labelType = 'warning';
-			$this->labelString = 'bad name servers :<br/>' . implode(', ', $this->ns);
+			if (count($this->ns) === 0) {
+				$this->labelString = "WHOIS failed";
+			}
+			else {
+				$this->labelString = 'bad name servers :<br/>' . implode(', ', $this->ns);
+			}
 		}
 	    
 		if ($server["server"]["ip_address"] !== $this->lookupRawInfos) {
+			// if resolved ip address isn't the IP of the server hosting the website
 			$this->labelType = 'danger';
-			$this->labelString = "DNS doesn't resolve to server IP : <br/> " . $server["server"]["ip_address"] . " !== " . $this->lookupRawInfos;
+			
+			if (empty($this->lookupRawInfos)) {
+				$this->labelString = "DNS resolution failed";
+			}
+			elseif ($this->domain === $this->lookupRawInfos) {
+				$this->labelString = "domain doesn't exist in DNS";
+			}
+			else {
+				$this->labelString = "DNS doesn't resolve to server IP : <br/> " . $server["server"]["ip_address"] . " !== " . $this->lookupRawInfos;
+			}
 		}
 	}
 	
 	
-	public function labelType () {
+	public function getLabelType () {
 		return $this->labelType;
 	}
 	
-	public function labelString () {
+	public function getLabelString () {
 	    return $this->labelString;
 	}
 	

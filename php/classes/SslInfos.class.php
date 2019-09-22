@@ -110,11 +110,11 @@ class SslInfos {
 	}
 	
 	
-	public function labelType () {
+	public function getLabelType () {
 		return $this->labelType;
 	}
 	
-	public function labelString () {
+	public function getLabelString () {
 	    return $this->labelString;
 	}
 	

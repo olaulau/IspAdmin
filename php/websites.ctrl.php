@@ -8,19 +8,20 @@ list($servers, $websites) = $cache->refreshIfExpired("IspGetInfos", function () 
 unset($cache);
 // $websites = [$websites[0]]; // dev test with only 1 domain
 
-
 // get infos (by running external processes)
 $cmds = [];
 foreach ($websites as $website) {
 	//TODO handle cache to limit up to 1000 whois queries / month
 	$domain = $website['domain'];
 	$parentdomain = DnsInfos::getParent($domain);
-	$cmds["whois_$parentdomain"] = DnsInfos::getWhoisCmd($parentdomain); //TODO pb d'indice de tableaux ??
+	$cmds["whois_$parentdomain"] = DnsInfos::getWhoisCmd($parentdomain);
 	$cmds["lookup_$domain"] = DnsInfos::getLookupCmd($domain);
 	$cmds["ssl_$domain"] = SslInfos::getOpensslCmd($domain);
 	$cmds["http_$domain"] = HttpInfos::getCmd($domain);
 }
+// vdd($cmds);
 execMultipleProcesses($cmds, true, true);
+
 foreach ($websites as &$website) {
 	$domain = $website['domain'];
 	$parentdomain = DnsInfos::getParent($domain);

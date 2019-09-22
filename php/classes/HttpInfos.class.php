@@ -18,7 +18,7 @@ class HttpInfos {
 	
 	
 	public static function getCmd ($domain) {
-		$cmd = "php php/curl.script.php $domain";
+		$cmd = "php php/scripts/curl.script.php $domain";
 		
 		$cache = new PhpFileCacheBis();
 		if (! $cache->isExpired("curl_$domain")) {
@@ -40,32 +40,30 @@ class HttpInfos {
 	
 	
 	public function extractInfos () {
-		if($this->rawInfos === '000') {
-			$this->status = null;
-		}
-		else {
-			$this->status = $this->rawInfos;
-		}
-		 
-		
+		$this->status = $this->rawInfos;
 		$this->labelType = 'success';
 		$this->labelString = 'OK';
+		
 		if (empty ($this->status)) {
 			$this->labelType = 'danger';
 			$this->labelString = "http query failed";
 		}
-		elseif ($this->status >= 400) {
+		elseif ($this->status >= 500) {
 			$this->labelType = 'danger';
-			$this->labelString = "bad status : <br/> " . $this->status;
+			$this->labelString = "server side error : <br/> " . $this->status;
+		}
+		elseif ($this->status >= 400) {
+			$this->labelType = 'warning';
+			$this->labelString = "client side error : <br/> " . $this->status;
 		}
 	}
 	
 	
-	public function labelType () {
+	public function getLabelType () {
 		return $this->labelType;
 	}
 	
-	public function labelString () {
+	public function getLabelString () {
 	    return $this->labelString;
 	}
 	
