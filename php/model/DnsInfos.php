@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/../autoload.inc.php';
-
+namespace model;
 
 class DnsInfos {
 	
@@ -27,9 +26,9 @@ class DnsInfos {
 	
 	
 	public static function getWhoisCmd ($parent_domain) {
-		$cmd = "php php/scripts/whois.script.php $parent_domain";
+		$cmd = "php index.php whois $parent_domain";
 		
-		$cache = new PhpFileCacheBis();
+		$cache = new \PhpFileCacheBis();
 		if (! $cache->isExpired("whois_$parent_domain")) {
 			$cmd = "# $cmd"; //TODO faster if no process is created ?
 		}
@@ -38,7 +37,7 @@ class DnsInfos {
 	}
 	
 	public static function readWhoisInfos($parent_domain) {
-		$cache = new PhpFileCacheBis();
+		$cache = new \PhpFileCacheBis();
 		$infos = $cache->retrieve("whois_$parent_domain");
 		if(isset($infos->body->errors)) {
 			$cache->eraseKey("whois_$parent_domain");
@@ -49,9 +48,9 @@ class DnsInfos {
 	
 	
 	public static function getLookupCmd ($domain) {
-		$cmd = "php php/scripts/lookup.script.php $domain";
+		$cmd = "php index.php lookup $domain";
 		
-		$cache = new PhpFileCacheBis();
+		$cache = new \PhpFileCacheBis();
 		$key = "lookup_$domain";
 		if (! $cache->isExpired($key)) {
 			$cmd = "# $cmd"; //TODO faster if no process is created ?
@@ -61,7 +60,7 @@ class DnsInfos {
 	}
 	
 	public static function readLookupInfos($domain) {
-		$cache = new PhpFileCacheBis();
+		$cache = new \PhpFileCacheBis();
 		$key = "lookup_$domain";
 		$infos = $cache->retrieve($key);
 		if(isset($infos->body->errors)) {

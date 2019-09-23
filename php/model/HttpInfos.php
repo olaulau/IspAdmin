@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/../autoload.inc.php';
-
+namespace model;
 
 class HttpInfos {
 	
@@ -18,9 +17,9 @@ class HttpInfos {
 	
 	
 	public static function getCmd ($domain) {
-		$cmd = "php php/scripts/curl.script.php $domain";
+		$cmd = "php index.php curl $domain";
 		
-		$cache = new PhpFileCacheBis();
+		$cache = new \PhpFileCacheBis();
 		if (! $cache->isExpired("curl_$domain")) {
 			$cmd = "# $cmd"; //TODO faster if no process is created ?
 		}
@@ -29,7 +28,7 @@ class HttpInfos {
 	}
 	
 	public static function readInfos($domain) {
-		$cache = new PhpFileCacheBis();
+		$cache = new \PhpFileCacheBis();
 		$infos = $cache->retrieve("curl_$domain");
 		if(isset($infos->body->errors)) {
 			$cache->eraseKey("curl_$domain");

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../functions.inc.php';
+namespace model;
 
 class SslInfos {
 	
@@ -35,7 +35,7 @@ class SslInfos {
 	public static function getOpensslCmd ($domain) {
 		$tmp = "./tmp/ssl/" . $domain;
 		$cmd = "rm -f $tmp && echo | openssl s_client -showcerts -servername $domain -connect $domain:443 2>> $tmp | openssl x509 -inform pem -noout -text >> $tmp 2>&1";
-		return $cmd;
+		return $cmd; //TODO use a php cli script to put into cache ?
 	}
 	
 	public static function readRawInfos($domain) {
@@ -46,8 +46,8 @@ class SslInfos {
 	
 	public function extractInfos () {
 	    if (preg_match("/Not After : (.*)/", $this->rawInfos, $matches)) {
-			$this->sslExpires = new DateTime ($matches[1]);
-			$this->sslExpires->setTimezone(new DateTimeZone('Europe/Paris'));
+			$this->sslExpires = new \DateTime ($matches[1]);
+			$this->sslExpires->setTimezone(new \DateTimeZone('Europe/Paris'));
 	    }
 	    if (preg_match("/verify error:num=(.*):(.*)/", $this->rawInfos, $matches)) {
 			$this->error = $matches[2];
@@ -95,7 +95,7 @@ class SslInfos {
 	
 	public function getRemainingValidityDays () {
 		if(!empty($this->getSslExpires())) {
-			$now = new DateTime();
+			$now = new \DateTime();
 		    $diff = $now->diff($this->getSslExpires());
 		    if(!$diff) vdd($this->getSslExpires());
 		    $res = $diff->days;

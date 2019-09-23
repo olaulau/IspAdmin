@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/autoload.inc.php';
-
 
 function vd ($var) {
 	echo "<pre>";

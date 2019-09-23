@@ -4,8 +4,39 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8cb02f02033f80fa33799bc3b4a67351",
+    "content-hash": "f603bf39072e4243432c1efccd3128a2",
     "packages": [
+        {
+            "name": "bcosca/fatfree",
+            "version": "3.6.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bcosca/fatfree.git",
+                "reference": "a841d838e8f146486d85e4947fb92e2fa78fdeb8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bcosca/fatfree/zipball/a841d838e8f146486d85e4947fb92e2fa78fdeb8",
+                "reference": "a841d838e8f146486d85e4947fb92e2fa78fdeb8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "lib/base.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "description": "A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!",
+            "homepage": "http://fatfreeframework.com/",
+            "time": "2018-12-24T13:43:34+00:00"
+        },
         {
             "name": "components/jquery",
             "version": "3.3.1",
@@ -134,6 +165,69 @@
             "time": "2016-09-16T05:47:55+00:00"
         },
         {
+            "name": "fortawesome/font-awesome",
+            "version": "5.11.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FortAwesome/Font-Awesome.git",
+                "reference": "89fdc36835577d7884637aa56e6cbf167f758095"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/89fdc36835577d7884637aa56e6cbf167f758095",
+                "reference": "89fdc36835577d7884637aa56e6cbf167f758095",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "CC-BY-4.0",
+                "OFL-1.1",
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Travis Chase",
+                    "homepage": "http://twitter.com/supercodepoet"
+                },
+                {
+                    "name": "Dave Gandy",
+                    "homepage": "http://twitter.com/davegandy"
+                },
+                {
+                    "name": "Rob Madole",
+                    "homepage": "http://twitter.com/robmadole"
+                },
+                {
+                    "name": "Jory Raphael",
+                    "homepage": "http://twitter.com/sensibleworld"
+                },
+                {
+                    "name": "Geremia Taglialatela",
+                    "homepage": "http://twitter.com/gtagliala"
+                },
+                {
+                    "name": "Brian Talbot",
+                    "homepage": "http://twitter.com/talbs"
+                },
+                {
+                    "name": "Mike Wilkerson",
+                    "homepage": "http://twitter.com/mw77"
+                }
+            ],
+            "description": "The iconic font, CSS, and SVG framework",
+            "homepage": "https://fontawesome.com",
+            "keywords": [
+                "FontAwesome",
+                "awesome",
+                "bootstrap",
+                "font",
+                "icon",
+                "svg"
+            ],
+            "time": "2019-09-18T23:02:29+00:00"
+        },
+        {
             "name": "mashape/unirest-php",
             "version": "v3.0.4",
             "source": {
@@ -180,17 +274,45 @@
             "time": "2016-08-11T17:49:21+00:00"
         },
         {
-            "name": "twbs/bootstrap",
-            "version": "v4.2.1",
+            "name": "olaulau/htmlskel",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/twbs/bootstrap.git",
-                "reference": "9e4e94747bd698f4f61d48ed54c9c6d4d199bd32"
+                "url": "https://github.com/olaulau/HtmlSkel.git",
+                "reference": "ba51cc8817632e67348a930758583cf3b24988ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/9e4e94747bd698f4f61d48ed54c9c6d4d199bd32",
-                "reference": "9e4e94747bd698f4f61d48ed54c9c6d4d199bd32",
+                "url": "https://api.github.com/repos/olaulau/HtmlSkel/zipball/ba51cc8817632e67348a930758583cf3b24988ae",
+                "reference": "ba51cc8817632e67348a930758583cf3b24988ae",
+                "shasum": ""
+            },
+            "require": {
+                "bcosca/fatfree": "^3.6",
+                "components/jquery": "^3.3",
+                "components/jqueryui": "^1.12",
+                "fortawesome/font-awesome": "^5.8",
+                "twbs/bootstrap": "^4.1"
+            },
+            "type": "library",
+            "support": {
+                "source": "https://github.com/olaulau/HtmlSkel/tree/master",
+                "issues": "https://github.com/olaulau/HtmlSkel/issues"
+            },
+            "time": "2019-09-23T15:09:55+00:00"
+        },
+        {
+            "name": "twbs/bootstrap",
+            "version": "v4.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twbs/bootstrap.git",
+                "reference": "8fa0d3010112dca5dd6dd501173415856001ba8b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/8fa0d3010112dca5dd6dd501173415856001ba8b",
+                "reference": "8fa0d3010112dca5dd6dd501173415856001ba8b",
                 "shasum": ""
             },
             "replace": {
@@ -228,7 +350,7 @@
                 "sass",
                 "web"
             ],
-            "time": "2018-12-21T18:55:28+00:00"
+            "time": "2019-02-13T16:01:40+00:00"
         },
         {
             "name": "wruczek/php-file-cache",
@@ -275,7 +397,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "olaulau/htmlskel": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
