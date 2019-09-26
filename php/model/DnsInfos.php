@@ -39,7 +39,7 @@ class DnsInfos {
 	public static function readWhoisInfos($parent_domain) {
 		$cache = new \PhpFileCacheBis();
 		$infos = $cache->retrieve("whois_$parent_domain");
-		if(isset($infos->body->errors)) {
+		if(!isset($infos)) {
 			$cache->eraseKey("whois_$parent_domain");
 			return null;
 		}
@@ -73,8 +73,8 @@ class DnsInfos {
 	
 	public function extractInfos ($server) {
 		global $conf;
-		if (isset ($this->whoisRawInfos->body->nameservers)) {
-			$this->ns = $this->whoisRawInfos->body->nameservers;
+		if (isset ($this->whoisRawInfos)) {
+			$this->ns = $this->whoisRawInfos->getNameServers();
 		}
 		else {
 			$this->ns = [];
@@ -84,7 +84,7 @@ class DnsInfos {
 		$this->labelString = 'OK';
 		
 		if (!empty (array_diff($this->ns , $conf['dns']['nameservers'])) || !empty (array_diff($conf['dns']['nameservers'], $this->ns))) {
-			// if domaine nameervers aren't exactly those in config
+			// if domaine nameservers aren't exactly those in config
 			$this->labelType = 'warning';
 			if (count($this->ns) === 0) {
 				$this->labelString = "WHOIS failed";

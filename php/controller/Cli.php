@@ -19,13 +19,11 @@ class Cli
 		$f3 = \Base::instance();
 		$domain = $f3->get('PARAMS.domain');
 		
-		\Unirest\Request::auth($conf['jsonwhoisapi']['customer_id'], $conf['jsonwhoisapi']['api_key']);
-		$headers = array("Accept" => "application/json");
-		$url = "https://jsonwhoisapi.com/api/v1/whois?identifier=$domain";
-		$response = \Unirest\Request::get($url, $headers);
+		$whois = \Iodev\Whois\Whois::create();
+		$response = $whois->loadDomainInfo($domain);
 		
 		$cache = new \PhpFileCacheBis();
-		$cache->store("whois_$domain", $response, 60*60*24*2); //TODO calculate expiration
+		$cache->store("whois_$domain", $response, 60*60*24*2);
 	}
 	
 	
@@ -34,8 +32,8 @@ class Cli
 		$f3 = \Base::instance();
 		$domain = $f3->get('PARAMS.domain');
 		
+		putenv('RES_OPTIONS=retrans:1 retry:1 timeout:1 attempts:1');
 		$response = gethostbyname($domain);
-		putenv('RES_OPTIONS=retrans:1 retry:1 timeout:1 attempts:3');
 		
 		$cache = new \PhpFileCacheBis();
 		$key = "lookup_$domain";
