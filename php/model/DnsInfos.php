@@ -72,7 +72,8 @@ class DnsInfos {
 	
 	
 	public function extractInfos ($server) {
-		global $conf;
+		$f3 = \Base::instance();
+		
 		if (isset ($this->whoisRawInfos)) {
 			$this->ns = $this->whoisRawInfos->getNameServers();
 		}
@@ -83,7 +84,7 @@ class DnsInfos {
 		$this->labelType = 'success';
 		$this->labelString = 'OK';
 		
-		if (!empty (array_diff($this->ns , $conf['dns']['nameservers'])) || !empty (array_diff($conf['dns']['nameservers'], $this->ns))) {
+		if (!empty (array_diff($this->ns , $f3->get('tech.dns.nameservers'))) || !empty (array_diff($f3->get('tech.dns.nameservers'), $this->ns))) {
 			// if domaine nameservers aren't exactly those in config
 			$this->labelType = 'warning';
 			if (count($this->ns) === 0) {

@@ -3,7 +3,7 @@
 class IspConfig {
 	
 	private static function restCall ($method, $data) {
-		global $conf;
+		$f3 = \Base::instance();
 		
 		if(!is_array($data)) return false;
 		$json = json_encode($data);
@@ -12,7 +12,7 @@ class IspConfig {
 		curl_setopt($curl, CURLOPT_POST, 1);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $json);
 		
-		curl_setopt($curl, CURLOPT_URL, $conf['ispconfig']['rest']['url'] . '?' . $method);
+		curl_setopt($curl, CURLOPT_URL, $f3->get('tech.ispconfig.rest.url') . '?' . $method);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		
 		$result = curl_exec($curl);
@@ -25,9 +25,9 @@ class IspConfig {
 	
 	
 	public static function IspLogin () {
-		global $conf;
+		$f3 = \Base::instance();
 		
-		$result = \IspConfig::restCall('login', array('username' => $conf['ispconfig']['rest']['user'], 'password' => $conf['ispconfig']['rest']['password'], 'client_login' => false));
+		$result = \IspConfig::restCall('login', array('username' => $f3->get('tech.ispconfig.rest.user'), 'password' =>$f3->get('tech.ispconfig.rest.password'), 'client_login' => false));
 		if($result) {
 			$data = json_decode($result, true);
 			if(!$data) return false;

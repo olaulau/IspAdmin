@@ -4,7 +4,7 @@ require 'vendor/autoload.php';
 $f3 = \Base::instance();
 
 $f3->config('conf/globals.ini');
-require_once __DIR__ . '/php/autoload.inc.php';
+require_once __DIR__ . '/php/functions.inc.php';
 
 // $cache = \Cache::instance();
 

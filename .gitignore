@@ -2,8 +2,9 @@
 /.project
 /.settings/
 
-/php/config.inc.php
 /vendor/
+
+/conf/tech.ini
 
 /cache/*
 !/cache/.gitkeep
