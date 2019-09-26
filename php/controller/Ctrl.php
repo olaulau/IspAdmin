@@ -24,6 +24,8 @@ class Ctrl
 	public static function GET_websites ()
 	{
 		$f3 = \Base::instance();
+		
+		$stats = [];
 
 		$cache = new \PhpFileCacheBis();
 		list($servers, $websites) = $cache->refreshIfExpired("IspGetInfos", function () {
@@ -44,7 +46,9 @@ class Ctrl
 			$cmds["http_$domain"] = \model\HttpInfos::getCmd($domain);
 		}
 		// vdd($cmds);
+		$stats['total_cmds'] = count($cmds);
 		execMultipleProcesses($cmds, true, true);
+		$stats['executed_cmds'] = count($cmds);
 		
 		foreach ($websites as &$website) {
 			$domain = $website['domain'];
@@ -90,6 +94,7 @@ class Ctrl
 		sort2dArray ($websites, 'domain'); //TODO sort by status ?
 		
 		$f3->set('websites', $websites);
+		$f3->set('stats', $stats);
 		
 		$view = new \View();
 		echo $view->render('websites.phtml');

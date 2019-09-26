@@ -39,7 +39,7 @@ class Cli
 		
 		$cache = new \PhpFileCacheBis();
 		$key = "lookup_$domain";
-		$cache->store($key, $response, 60);
+		$cache->store($key, $response, 600);
 	}
 	
 	
@@ -50,6 +50,6 @@ class Cli
 		$response = shell_exec("curl -L -s -o /dev/null -X GET -w '%{http_code}' $domain");
 
 		$cache = new \PhpFileCacheBis();
-		$cache->store("curl_$domain", $response, 10);
+		$cache->store("curl_$domain", $response, 60);
 	}
 }
