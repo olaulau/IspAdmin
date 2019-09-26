@@ -64,7 +64,7 @@ class SslInfos {
 	    	$this->labelType = 'danger';
 	    	$this->labelString = 'certificate expired ' . -$this->getRemainingValidityDays() . ' days ago';
 	    }
-	    elseif ($this->getRemainingValidityDays() < 30) {
+	    elseif ($this->getRemainingValidityDays() < 29) {
 	    	$this->labelType = 'warning';
 	    	$this->labelString = 'certificate not renewed : <br/> ' . $this->getRemainingValidityDays() . ' days left';
 	    }
@@ -100,7 +100,7 @@ class SslInfos {
 		    if(!$diff) vdd($this->getSslExpires());
 		    $res = $diff->days;
 		    if ($diff->invert === 1) {
-		        $res = -$res;
+		        $res = -$res; // expired cert
 		    }
 		    return $res;
 		}
