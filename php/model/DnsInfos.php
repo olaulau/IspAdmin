@@ -28,8 +28,8 @@ class DnsInfos {
 	public static function getWhoisCmd ($parent_domain) {
 		$cmd = "php index.php whois $parent_domain";
 		
-		$cache = new \PhpFileCacheBis();
-		if (! $cache->isExpired("whois_$parent_domain")) {
+		$cache = \Cache::instance();
+		if($cache->exists("whois_$parent_domain") !== false) {
 			$cmd = "# $cmd"; //TODO faster if no process is created ?
 		}
 		
@@ -37,13 +37,11 @@ class DnsInfos {
 	}
 	
 	public static function readWhoisInfos($parent_domain) {
-		$cache = new \PhpFileCacheBis();
-		$infos = $cache->retrieve("whois_$parent_domain");
-		if(!isset($infos)) {
-			$cache->eraseKey("whois_$parent_domain");
+		$cache = \Cache::instance();
+		if($cache->exists("whois_$parent_domain") === false) {
 			return null;
 		}
-		return $infos;
+		return $cache->get("whois_$parent_domain");
 	}
 	
 	

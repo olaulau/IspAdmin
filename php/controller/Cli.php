@@ -22,8 +22,8 @@ class Cli
 		$whois = \Iodev\Whois\Whois::create();
 		$response = $whois->loadDomainInfo($domain);
 		
-		$cache = new \PhpFileCacheBis();
-		$cache->store("whois_$domain", $response, 60*60*24*2);
+		$cache = \Cache::instance();
+		$cache->set("whois_$domain", $response, 60*60*24*2);
 	}
 	
 	

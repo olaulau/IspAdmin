@@ -1,6 +1,8 @@
 <?php
 namespace controller;
 
+use model\DnsInfos;
+
 class Ctrl
 {
 	
@@ -32,7 +34,7 @@ class Ctrl
 			return \IspConfig::IspGetInfos ();
 		}, 10);
 		unset($cache);
-		// $websites = [$websites[0]]; // dev test with only 1 domain
+// 		$websites = array_slice($websites, 0, 1); // dev test with only 10 domains
 		
 		// get infos (by running external processes)
 		$cmds = [];
@@ -49,6 +51,7 @@ class Ctrl
 		$stats['total_cmds'] = count($cmds);
 		execMultipleProcesses($cmds, true, true);
 		$stats['executed_cmds'] = count($cmds);
+// 		var_dump($cmds); die;
 		
 		foreach ($websites as &$website) {
 			$domain = $website['domain'];
