@@ -40,9 +40,27 @@
 		<thead class="thead-dark">
 			<tr>
 				<th>Domain</th>
-				<th>DNS</th>
-				<th>SSL</th>
-				<th>HTTP</th>
+				<?php
+				if ($debug['active_modules']['whois'] === true && $debug['active_modules']['lookup'] === true) {
+					?>
+					<th>DNS</th>
+					<?php
+				}
+				?>
+				<?php
+				if ($debug['active_modules']['ssl'] === true) {
+					?>
+					<th>SSL</th>
+					<?php
+				}
+				?>
+				<?php
+				if ($debug['active_modules']['http'] === true) {
+					?>
+					<th>HTTP</th>
+					<?php
+				}
+				?>
 				<th>PHP</th>
 			</tr>
 		</thead>
@@ -51,11 +69,30 @@
 			foreach ($websites as $website) {
 				?>
 				<tr>
-				<td class="<?= $website['active']==='n' ? 'table-danger' : '' ?>"><a href="https://<?= $website['domain'] ?>/"><?= $website['domain'] ?></a>
+				<td class="<?= $website['active']==='n' ? 'table-danger' : '' ?>">
+					<a href="https://<?= $website['domain'] ?>/"><?= $website['domain'] ?></a>
 				</td>
-				<td class="table-<?= $website['dnsInfos']->getLabelType() ?>"><?= $website['dnsInfos']->getLabelString() ?></td>
-				<td class="table-<?= $website['sslInfos']->getLabelType() ?>"><?= $website['sslInfos']->getLabelString() ?></td>
-				<td class="table-<?= $website['httpInfos']->getLabelType() ?>"><?= $website['httpInfos']->getLabelString() ?></td>
+				<?php
+				if ($debug['active_modules']['whois'] === true && $debug['active_modules']['lookup'] === true) {
+					?>
+					<td class="table-<?= $website['dnsInfos']->getLabelType() ?>"><?= $website['dnsInfos']->getLabelString() ?></td>
+					<?php
+				}
+				?>
+				<?php
+				if ($debug['active_modules']['ssl'] === true) {
+					?>
+					<td class="table-<?= $website['sslInfos']->getLabelType() ?>"><?= $website['sslInfos']->getLabelString() ?></td>
+					<?php
+				}
+				?>
+				<?php
+				if ($debug['active_modules']['http'] === true) {
+					?>
+					<td class="table-<?= $website['httpInfos']->getLabelType() ?>"><?= $website['httpInfos']->getLabelString() ?></td>
+					<?php
+				}
+				?>
 				<td class="<?= !empty($website['php_label_type']) ? 'table-'.$website['php_label_type'] : '' ?>"> <?= $website['php_label_string'] ?> </td>
 			</tr>
 			<?php

@@ -28,37 +28,49 @@ class Ctrl
 		$f3 = \Base::instance();
 		
 		$stats = [];
-
+		
+		// get servers and websites list
 		$cache = new \PhpFileCacheBis();
 		list($servers, $websites) = $cache->refreshIfExpired("IspGetInfos", function () {
 			return \IspConfig::IspGetInfos ();
 		}, 10);
 		unset($cache);
-// 		$websites = array_slice($websites, 0, 1); // dev test with only 10 domains
+		if(!empty($f3->get('debug.websites_max_number'))) {
+			$websites = array_slice($websites, 0, $f3->get('debug.websites_max_number')); // dev test with few domains
+		}
 		
 		// get infos (by running external processes)
 		$cmds = [];
 		foreach ($websites as $website) {
-			//TODO handle cache to limit up to 1000 whois queries / month
 			$domain = $website['domain'];
 			$parentdomain = \model\DnsInfos::getParent($domain);
-			$cmds["whois_$parentdomain"] = \model\DnsInfos::getWhoisCmd($parentdomain);
-			$cmds["lookup_$domain"] = \model\DnsInfos::getLookupCmd($domain);
-			$cmds["ssl_$domain"] = \model\SslInfos::getOpensslCmd($domain);
-			$cmds["http_$domain"] = \model\HttpInfos::getCmd($domain);
+			
+			if ($f3->get('debug.active_modules.whois') === true) {
+				$cmds["whois_$parentdomain"] = \model\DnsInfos::getWhoisCmd($parentdomain);
+			}
+			if ($f3->get('debug.active_modules.lookup') === true) {
+				$cmds["lookup_$domain"] = \model\DnsInfos::getLookupCmd($domain);
+			}
+			if ($f3->get('debug.active_modules.whois') === true) {
+				$cmds["ssl_$domain"] = \model\SslInfos::getOpensslCmd($domain);
+			}
+			if ($f3->get('debug.active_modules.http') === true) {
+				$cmds["http_$domain"] = \model\HttpInfos::getCmd($domain);
+			}
 		}
-		// vdd($cmds);
+// 		vdd($cmds);
 		$stats['total_cmds'] = count($cmds);
 		execMultipleProcesses($cmds, true, true);
 		$stats['executed_cmds'] = count($cmds);
-// 		var_dump($cmds); die;
+// 		vdd($cmds);
 		
 		foreach ($websites as &$website) {
+			$server = $servers[$website["server_id"]];
 			$domain = $website['domain'];
 			$parentdomain = \model\DnsInfos::getParent($domain);
+			
 			$whoisRawInfos = \model\DnsInfos::readWhoisInfos($parentdomain);
 			$lookupRawInfos = \model\DnsInfos::readLookupInfos($domain);
-			$server = $servers[$website["server_id"]];
 			$website['dnsInfos'] = new \model\DnsInfos($website, $server, $whoisRawInfos, $lookupRawInfos);
 			$sslRawInfos = \model\SslInfos::readRawInfos($domain);
 			$website['sslInfos'] = new \model\SslInfos($website, $sslRawInfos);
