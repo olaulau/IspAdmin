@@ -43,15 +43,15 @@ class Ctrl
 		$cmds = [];
 		foreach ($websites as $website) {
 			$domain = $website['domain'];
-			$parentdomain = \model\DnsInfos::getParent($domain);
+			$parentDomain = \model\DnsInfos::getParent($domain);
 			
 			if ($f3->get('debug.active_modules.whois') === true) {
-				$cmds["whois_$parentdomain"] = \model\DnsInfos::getWhoisCmd($parentdomain);
+				$cmds["whois_$parentDomain"] = \model\Whois::getcmd($parentDomain);
 			}
 			if ($f3->get('debug.active_modules.lookup') === true) {
 				$cmds["lookup_$domain"] = \model\DnsInfos::getLookupCmd($domain);
 			}
-			if ($f3->get('debug.active_modules.whois') === true) {
+			if ($f3->get('debug.active_modules.ssl') === true) {
 				$cmds["ssl_$domain"] = \model\SslInfos::getOpensslCmd($domain);
 			}
 			if ($f3->get('debug.active_modules.http') === true) {
@@ -67,43 +67,54 @@ class Ctrl
 		foreach ($websites as &$website) {
 			$server = $servers[$website["server_id"]];
 			$domain = $website['domain'];
-			$parentdomain = \model\DnsInfos::getParent($domain);
+			$parentDomain = \model\DnsInfos::getParent($domain);
 			
-			$whoisRawInfos = \model\DnsInfos::readWhoisInfos($parentdomain);
-			$lookupRawInfos = \model\DnsInfos::readLookupInfos($domain);
-			$website['dnsInfos'] = new \model\DnsInfos($website, $server, $whoisRawInfos, $lookupRawInfos);
-			$sslRawInfos = \model\SslInfos::readRawInfos($domain);
-			$website['sslInfos'] = new \model\SslInfos($website, $sslRawInfos);
-			$rawInfos = \model\HttpInfos::readInfos($domain);
-			$website['httpInfos'] = new \model\HttpInfos($website, $rawInfos);
+			if ($f3->get('debug.active_modules.whois') === true) {
+				$website['dnsInfos'] = \model\Whois::extractInfos($parentDomain, $server);
+			}
+			if ($f3->get('debug.active_modules.lookup') === true) {
+				$lookupRawInfos = \model\DnsInfos::readLookupInfos($domain);
+			}
+// 			$website['dnsInfos'] = new \model\DnsInfos($website, $server, $whoisRawInfos, $lookupRawInfos);
+			
+			if ($f3->get('debug.active_modules.ssl') === true) {
+				$sslRawInfos = \model\SslInfos::readRawInfos($domain);
+				$website['sslInfos'] = new \model\SslInfos($website, $sslRawInfos);
+			}
+			if ($f3->get('debug.active_modules.http') === true) {
+				$rawInfos = \model\HttpInfos::readInfos($domain);
+				$website['httpInfos'] = new \model\HttpInfos($website, $rawInfos);
+			}
 		}
 		unset($website);
 		
 		
 		// get PHP infos
-		foreach ($websites as &$website) {
-			$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*:[^:]*:[^:]*:[^:]*$/";
-			if (!empty ($website['fastcgi_php_version']) && preg_match($regex, $website['fastcgi_php_version'], $matches)) {
-				$website['php_label_string'] = $matches[1];
-			}
-			else {
-				$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
-				$website['php_label_string'] = $servers[$website['server_id']]["web"]["php_default_name"];
-				if (preg_match($regex, $website['php_label_string'], $matches)) {
+		if ($f3->get('debug.active_modules.php') === true) {
+			foreach ($websites as &$website) {
+				$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*:[^:]*:[^:]*:[^:]*$/";
+				if (!empty ($website['fastcgi_php_version']) && preg_match($regex, $website['fastcgi_php_version'], $matches)) {
 					$website['php_label_string'] = $matches[1];
 				}
+				else {
+					$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
+					$website['php_label_string'] = $servers[$website['server_id']]["web"]["php_default_name"];
+					if (preg_match($regex, $website['php_label_string'], $matches)) {
+						$website['php_label_string'] = $matches[1];
+					}
+				}
+				if ($website['php_label_string'] < '7.0') { //TODO put into config, or fetch infos from php.net !
+					$website['php_label_type'] = 'danger';
+				}
+				elseif ($website['php_label_string'] < '7.2') { //TODO same
+					$website['php_label_type'] = 'warning';
+				}
+				else {
+					$website['php_label_type'] = 'success';
+				}
 			}
-			if ($website['php_label_string'] < '7.0') { //TODO put into config, or fetch infos from php.net !
-				$website['php_label_type'] = 'danger';
-			}
-			elseif ($website['php_label_string'] < '7.2') { //TODO same
-				$website['php_label_type'] = 'warning';
-			}
-			else {
-				$website['php_label_type'] = 'success';
-			}
+			unset($website);
 		}
-		unset($website);
 		
 		// sort table
 		sort2dArray ($websites, 'domain'); //TODO sort by status ?

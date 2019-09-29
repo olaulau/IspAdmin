@@ -21,7 +21,7 @@ class HttpInfos {
 		
 		$cache = new \PhpFileCacheBis();
 		if (! $cache->isExpired("curl_$domain")) {
-			$cmd = "# $cmd"; //TODO faster if no process is created ?
+			$cmd = "# $cmd";
 		}
 		
 		return $cmd;

@@ -25,33 +25,13 @@ class DnsInfos {
 	}
 	
 	
-	public static function getWhoisCmd ($parent_domain) {
-		$cmd = "php index.php whois $parent_domain";
-		
-		$cache = \Cache::instance();
-		if($cache->exists("whois_$parent_domain") !== false) {
-			$cmd = "# $cmd"; //TODO faster if no process is created ?
-		}
-		
-		return $cmd;
-	}
-	
-	public static function readWhoisInfos($parent_domain) {
-		$cache = \Cache::instance();
-		if($cache->exists("whois_$parent_domain") === false) {
-			return null;
-		}
-		return $cache->get("whois_$parent_domain");
-	}
-	
-	
 	public static function getLookupCmd ($domain) {
 		$cmd = "php index.php lookup $domain";
 		
 		$cache = new \PhpFileCacheBis();
 		$key = "lookup_$domain";
 		if (! $cache->isExpired($key)) {
-			$cmd = "# $cmd"; //TODO faster if no process is created ?
+			$cmd = "# $cmd";
 		}
 		
 		return $cmd;

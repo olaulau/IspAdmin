@@ -61,7 +61,13 @@
 					<?php
 				}
 				?>
-				<th>PHP</th>
+				<?php
+				if ($debug['active_modules']['php'] === true) {
+					?>
+					<th>PHP</th>
+					<?php
+				}
+				?>
 			</tr>
 		</thead>
 		<tbody class="table-hover">
@@ -75,7 +81,7 @@
 				<?php
 				if ($debug['active_modules']['whois'] === true && $debug['active_modules']['lookup'] === true) {
 					?>
-					<td class="table-<?= $website['dnsInfos']->getLabelType() ?>"><?= $website['dnsInfos']->getLabelString() ?></td>
+					<td class="table-<?= $website['dnsInfos']['labelType'] ?>"><?= nl2br($website['dnsInfos']['labelString']) ?></td>
 					<?php
 				}
 				?>
@@ -93,7 +99,14 @@
 					<?php
 				}
 				?>
-				<td class="<?= !empty($website['php_label_type']) ? 'table-'.$website['php_label_type'] : '' ?>"> <?= $website['php_label_string'] ?> </td>
+				<?php
+				if ($debug['active_modules']['php'] === true) {
+					?>
+					<<td class="<?= !empty($website['php_label_type']) ? 'table-'.$website['php_label_type'] : '' ?>"> <?= $website['php_label_string'] ?> </td>
+					<?php
+				}
+				?>
+				
 			</tr>
 			<?php
 			}
