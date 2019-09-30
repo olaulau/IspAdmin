@@ -29,8 +29,10 @@ class Whois extends Task {
 	public static function execCmd () {
 		$f3 = \Base::instance();
 		$domain = $f3->get('PARAMS.domain');
-		$whois = \Iodev\Whois\Whois::create();
+		
+		$whois = \Iodev\Whois\Whois::create(new \Iodev\Whois\Loaders\SocketLoader(10)); // 10 sec timeout
 		$response = $whois->loadDomainInfo($domain);
+		
 		if (!empty($response)) {
 			$cache = \Cache::instance();
 			$cache->set("whois_$domain", $response, 60*60*24*2);
