@@ -14,19 +14,6 @@ class Cli
 	}
 	
 	
-	public static function whois ()
-	{
-		$f3 = \Base::instance();
-		$domain = $f3->get('PARAMS.domain');
-		
-		$whois = \Iodev\Whois\Whois::create();
-		$response = $whois->loadDomainInfo($domain);
-		
-		$cache = \Cache::instance();
-		$cache->set("whois_$domain", $response, 60*60*24*2);
-	}
-	
-	
 	public static function lookup ()
 	{
 		$f3 = \Base::instance();

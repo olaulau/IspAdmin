@@ -26,6 +26,18 @@ class Whois extends Task {
 	}
 	
 	
+	public static function execCmd () {
+		$f3 = \Base::instance();
+		$domain = $f3->get('PARAMS.domain');
+		$whois = \Iodev\Whois\Whois::create();
+		$response = $whois->loadDomainInfo($domain);
+		if (!empty($response)) {
+			$cache = \Cache::instance();
+			$cache->set("whois_$domain", $response, 60*60*24*2);
+		}
+	}
+	
+	
 	public static function extractInfos ($domain, $server) {
 		$f3 = \Base::instance();
 		
@@ -38,22 +50,13 @@ class Whois extends Task {
 			return $res;
 		}
 		
-		$rawInfos = $cache->get("whois_$domain");
-		if (!isset ($rawInfos)) {
-			$res = [
-				'labelType' => 'warning',
-				'labelString' => 'WHOIS error',
-			];
-			return $res;
-		}
-		
-		$ns = $rawInfos->getNameServers();
-		
 		$res = [
 			'labelType' => 'success',
 			'labelString' => 'OK',
 		];
-		
+
+		$rawInfos = $cache->get("whois_$domain");
+		$ns = $rawInfos->getNameServers();
 		if (!empty (array_diff($ns , $f3->get('tech.dns.nameservers'))) || !empty (array_diff($f3->get('tech.dns.nameservers'), $ns))) {
 			// if domain nameservers aren't exactly those in config
 			$res['labelType'] = 'warning';

@@ -6,6 +6,8 @@ abstract class Task {
 	
 	public abstract static function getCmd ($domain) ;
 	
+	public abstract static function execCmd () ;
+	
 	public abstract static function extractInfos ($domain, $server) ;
 	
 }
