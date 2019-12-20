@@ -14,3 +14,6 @@
 
 /tmp/cache/*
 !/tmp/cache/.gitkeep
+
+/tmp/log/*
+!/tmp/log/.gitkeep

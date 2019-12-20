@@ -27,10 +27,11 @@ class IspConfig {
 	public static function IspLogin () {
 		$f3 = \Base::instance();
 		
-		$result = \IspConfig::restCall('login', array('username' => $f3->get('tech.ispconfig.rest.user'), 'password' =>$f3->get('tech.ispconfig.rest.password'), 'client_login' => false));
+		$result = \IspConfig::restCall('login', array('username' => $f3->get('tech.ispconfig.rest.user'), 'password' => $f3->get('tech.ispconfig.rest.password'), 'client_login' => false));
 		if($result) {
 			$data = json_decode($result, true);
-			if(!$data) return false;
+			if(!$data)
+			    return false;
 			return $data['response'];
 		}
 		else {
@@ -42,25 +43,28 @@ class IspConfig {
 	public static function IspLogout ($session_id) {
 		// logout
 		$result = \IspConfig::restCall('logout', array('session_id' => $session_id));
-		if(!$result) print "Could not get logout result\n";
+		if(!$result)
+		    print "Could not get logout result\n";
 	}
 	
 	
 	public static function IspGetWebsites ($session_id) {
 		$result = \IspConfig::restCall('sites_web_domain_get', array('session_id' => $session_id, 'primary_id' => ['type' => 'vhost'])); //TODO handle type=alias
-		if(!$result) die("error");
+		if(!$result)
+		    die("error");
 		$domain_record = json_decode($result, true)['response'];
 		$res = [];
 		foreach ($domain_record as $domain) {
-			$res[] = $domain['domain'];
+		    $res[$domain['domain']]['ispconfigInfos'] = $domain;
 		}
-		return $domain_record;
+		return $res;
 	}
 	
 	
 	public static function IspGetServersConfig($session_id) {
 		$result = \IspConfig::restCall('server_get', array('session_id' => $session_id, 'server_id' => []));
-		if(!$result) die("error");
+		if(!$result)
+		    die("error");
 		$res = json_decode($result, true)['response'];
 		return $res;
 	}
@@ -68,7 +72,8 @@ class IspConfig {
 	
 	public static function IspUpdateWebsite ($session_id, $website) {
 		$result = \IspConfig::restCall('sites_web_domain_update', array('session_id' => $session_id, 'client_id' => null, 'primary_id' => $website['domain_id'], 'params' => $website));
-		if(!$result) die("error");
+		if(!$result)
+		    die("error");
 		$res = json_decode($result, true)['response'];
 		return $res;
 	}

@@ -41,28 +41,35 @@
 			<tr>
 				<th>Domain</th>
 				<?php
-				if ($debug['active_modules']['whois'] === true && $debug['active_modules']['lookup'] === true) {
+				if ($active_modules['whois'] === true) {///////////////////////////
+					?>
+					<th>WhoIs</th>
+					<?php
+				}
+				?>
+				<?php
+				if ($active_modules['dns'] === true) {
 					?>
 					<th>DNS</th>
 					<?php
 				}
 				?>
 				<?php
-				if ($debug['active_modules']['ssl'] === true) {
+				if ($active_modules['ssl'] === true) {
 					?>
 					<th>SSL</th>
 					<?php
 				}
 				?>
 				<?php
-				if ($debug['active_modules']['http'] === true) {
+				if ($active_modules['http'] === true) {
 					?>
 					<th>HTTP</th>
 					<?php
 				}
 				?>
 				<?php
-				if ($debug['active_modules']['php'] === true) {
+				if ($active_modules['php'] === true) {
 					?>
 					<th>PHP</th>
 					<?php
@@ -72,37 +79,44 @@
 		</thead>
 		<tbody class="table-hover">
 			<?php
-			foreach ($websites as $website) {
+			foreach ($websites as $domain => $website) {
 				?>
 				<tr>
-				<td class="<?= $website['active']==='n' ? 'table-danger' : '' ?>">
-					<a href="https://<?= $website['domain'] ?>/"><?= $website['domain'] ?></a>
+				<td class="<?= $website["ispconfigInfos"]['active']==='n' ? 'table-danger' : '' ?>">
+					<a href="https://<?= $domain ?>/"><?= $domain ?></a>
 				</td>
 				<?php
-				if ($debug['active_modules']['whois'] === true && $debug['active_modules']['lookup'] === true) {
+				if ($active_modules['whois'] === true ) {
 					?>
-					<td class="table-<?= $website['dnsInfos']['labelType'] ?>"><?= nl2br($website['dnsInfos']['labelString']) ?></td>
+					<td class="table-<?= $website['whoisInfos']['labelType'] ?>"><?= nl2br($website['whoisInfos']['labelString']) ?></td>
 					<?php
 				}
 				?>
 				<?php
-				if ($debug['active_modules']['ssl'] === true) {
+				if ($active_modules['dns'] === true) {
+					?>
+					<td class="table-<?= $website['dnsInfos']->getLabelType() ?>"><?= nl2br($website['dnsInfos']->getLabelString()) ?></td>
+					<?php
+				}
+				?>
+				<?php
+				if ($active_modules['ssl'] === true) {
 					?>
 					<td class="table-<?= $website['sslInfos']->getLabelType() ?>"><?= $website['sslInfos']->getLabelString() ?></td>
 					<?php
 				}
 				?>
 				<?php
-				if ($debug['active_modules']['http'] === true) {
+				if ($active_modules['http'] === true) {
 					?>
 					<td class="table-<?= $website['httpInfos']->getLabelType() ?>"><?= $website['httpInfos']->getLabelString() ?></td>
 					<?php
 				}
 				?>
 				<?php
-				if ($debug['active_modules']['php'] === true) {
+				if ($active_modules['php'] === true) {
 					?>
-					<<td class="<?= !empty($website['php_label_type']) ? 'table-'.$website['php_label_type'] : '' ?>"> <?= $website['php_label_string'] ?> </td>
+					<td class="<?= !empty($website['phpInfos']['label_type']) ? 'table-'.$website['phpInfos']['label_type'] : '' ?>"> <?= $website['phpInfos']['label_string'] ?> </td>
 					<?php
 				}
 				?>

@@ -38,23 +38,23 @@ class Ctrl
 		if(!empty($f3->get('debug.websites_max_number'))) {
 			$websites = array_slice($websites, 0, $f3->get('debug.websites_max_number')); // dev test with few domains
 		}
+// 		var_dump($websites); die;
 		
 		// get infos (by running external processes)
 		$cmds = [];
-		foreach ($websites as $website) {
-			$domain = $website['domain'];
+		foreach ($websites as $domain => $website) {
 			$parentDomain = \model\DnsInfos::getParent($domain);
 			
-			if ($f3->get('debug.active_modules.whois') === true) {
+			if ($f3->get('active_modules.whois') === true) {
 				$cmds["whois_$parentDomain"] = \model\Whois::getcmd($parentDomain);
 			}
-			if ($f3->get('debug.active_modules.lookup') === true) {
+			if ($f3->get('active_modules.dns') === true) {
 				$cmds["lookup_$domain"] = \model\DnsInfos::getLookupCmd($domain);
 			}
-			if ($f3->get('debug.active_modules.ssl') === true) {
+			if ($f3->get('active_modules.ssl') === true) {
 				$cmds["ssl_$domain"] = \model\SslInfos::getOpensslCmd($domain);
 			}
-			if ($f3->get('debug.active_modules.http') === true) {
+			if ($f3->get('active_modules.http') === true) {
 				$cmds["http_$domain"] = \model\HttpInfos::getCmd($domain);
 			}
 		}
@@ -64,24 +64,26 @@ class Ctrl
 		$stats['executed_cmds'] = count($cmds);
 // 		vdd($cmds);
 		
-		foreach ($websites as &$website) {
-			$server = $servers[$website["server_id"]];
-			$domain = $website['domain'];
+		foreach ($websites as $domain => &$website) {
+			$server = $servers[$website["ispconfigInfos"]["server_id"]];
 			$parentDomain = \model\DnsInfos::getParent($domain);
 			
-			if ($f3->get('debug.active_modules.whois') === true) {
-				$website['dnsInfos'] = \model\Whois::extractInfos($parentDomain, $server);
+		    if ($f3->get('active_modules.whois') === true) {
+		        $website['whoisInfos'] = \model\Whois::extractInfos($parentDomain, $server);
+		    }
+		    
+			if ($f3->get('active_modules.dns') === true) {
+			     $dnsRawInfos = \model\DnsInfos::readLookupInfos($domain);
+			     $dnsInfos = new \model\DnsInfos();
+			     $dnsInfos->extractInfos($server, $dnsRawInfos);
+			     $website['dnsInfos'] = $dnsInfos;
 			}
-			if ($f3->get('debug.active_modules.lookup') === true) {
-				$lookupRawInfos = \model\DnsInfos::readLookupInfos($domain);
-			}
-// 			$website['dnsInfos'] = new \model\DnsInfos($website, $server, $whoisRawInfos, $lookupRawInfos);
 			
-			if ($f3->get('debug.active_modules.ssl') === true) {
+			if ($f3->get('active_modules.ssl') === true) {
 				$sslRawInfos = \model\SslInfos::readRawInfos($domain);
 				$website['sslInfos'] = new \model\SslInfos($website, $sslRawInfos);
 			}
-			if ($f3->get('debug.active_modules.http') === true) {
+			if ($f3->get('active_modules.http') === true) {
 				$rawInfos = \model\HttpInfos::readInfos($domain);
 				$website['httpInfos'] = new \model\HttpInfos($website, $rawInfos);
 			}
@@ -90,34 +92,40 @@ class Ctrl
 		
 		
 		// get PHP infos
-		if ($f3->get('debug.active_modules.php') === true) {
+		if ($f3->get('active_modules.php') === true) {
 			foreach ($websites as &$website) {
 				$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*:[^:]*:[^:]*:[^:]*$/";
-				if (!empty ($website['fastcgi_php_version']) && preg_match($regex, $website['fastcgi_php_version'], $matches)) {
-					$website['php_label_string'] = $matches[1];
+				$php = $website['ispconfigInfos']['fastcgi_php_version'];
+				if (!empty ($php) && preg_match($regex, $php, $matches)) {
+					$website['phpInfos']['label_string'] = $matches[1]; // alternative server PHP version
 				}
 				else {
 					$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
-					$website['php_label_string'] = $servers[$website['server_id']]["web"]["php_default_name"];
-					if (preg_match($regex, $website['php_label_string'], $matches)) {
-						$website['php_label_string'] = $matches[1];
+					$php = $servers [$website['ispconfigInfos']['server_id']] ["web"] ["php_default_name"];
+					if (preg_match($regex, $php, $matches)) {
+						$website['phpInfos']['label_string'] = $matches[1]; // default server PHP version
+					}
+					else {
+					    $website['phpInfos']['label_string'] = '??'; // unknown
 					}
 				}
-				if ($website['php_label_string'] < '7.0') { //TODO put into config, or fetch infos from php.net !
-					$website['php_label_type'] = 'danger';
+				if ($website['phpInfos']['label_string'] < '7.0') { //TODO put into config, or fetch infos from php.net !
+					$website['phpInfos']['label_type'] = 'danger';
 				}
-				elseif ($website['php_label_string'] < '7.2') { //TODO same
-					$website['php_label_type'] = 'warning';
+				elseif ($website['phpInfos']['label_string'] < '7.2') { //TODO same
+					$website['phpInfos']['label_type'] = 'warning';
 				}
 				else {
-					$website['php_label_type'] = 'success';
+					$website['phpInfos']['label_type'] = 'success';
 				}
 			}
 			unset($website);
 		}
+// 		var_dump($websites); die;
 		
 		// sort table
-		sort2dArray ($websites, 'domain'); //TODO sort by status ?
+// 		sort2dArray ($websites, 'domain'); //TODO sort by status ?
+		ksort($websites);
 		
 		$f3->set('websites', $websites);
 		$f3->set('stats', $stats);
