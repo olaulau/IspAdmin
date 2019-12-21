@@ -43,7 +43,7 @@ class HttpInfos {
 		$this->labelType = 'success';
 		$this->labelString = 'OK';
 		
-		if (empty ($this->status)) {
+		if (empty (intval($this->status))) {
 			$this->labelType = 'danger';
 			$this->labelString = "http query failed";
 		}
