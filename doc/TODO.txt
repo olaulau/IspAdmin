@@ -1,3 +1,4 @@
 - fat free framework
 	- change cache system which is very slow
 - get supported PHP versions from official site, and cache response for a while
+- domains : hierarchical view (subdomains under parent domain)

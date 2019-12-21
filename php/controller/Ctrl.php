@@ -38,6 +38,14 @@ class Ctrl
 		if(!empty($f3->get('debug.websites_max_number'))) {
 			$websites = array_slice($websites, 0, $f3->get('debug.websites_max_number')); // dev test with few domains
 		}
+		
+		if(!empty($f3->get('debug.websites_filter'))) {
+			array_walk ( $websites , function ( $value , $key , $filter ) use ( &$websites ) {
+				if (strpos($key, $filter) === false) {
+					unset ($websites[$key]); // dev test by filtering domain
+				}
+			} , "toto" );
+		}
 // 		var_dump($websites); die;
 		
 		// get infos (by running external processes)
