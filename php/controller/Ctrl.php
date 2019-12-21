@@ -6,8 +6,10 @@ use model\DnsInfos;
 class Ctrl
 {
 	
+	private static $generation_start;
+	
 	public static function beforeroute() {
-		
+		self::$generation_start = microtime(true);
 	}
 	
 	
@@ -137,6 +139,10 @@ class Ctrl
 		
 		$f3->set('websites', $websites);
 		$f3->set('stats', $stats);
+		
+		$generation_end = microtime(true);
+		$generation_time = number_format ( (($generation_end - self::$generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
+		$f3->set("generation_time", $generation_time);
 		
 		$view = new \View();
 		echo $view->render('websites.phtml');
