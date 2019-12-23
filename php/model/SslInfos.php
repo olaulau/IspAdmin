@@ -1,103 +1,84 @@
 <?php
 namespace model;
 
-class SslInfos {
+class SslInfos extends Task {
 	
-	private $domain;
-	private $rawInfos;
-	private $sslExpires;
-	private $error;
-	private $issuer;
-	private $labelType;
-	private $labelString;
-	
-	function __construct ($website, $rawInfos) {
-		$this->domain = $website['domain'];
-		$this->rawInfos = $rawInfos;
-		
-		if ($website['ssl'] == 'n') {
-			$this->labelType = 'danger';
-			$this->labelString = 'ssl disabled';
-		}
-		elseif (empty($rawInfos)) {
-			$this->labelType = 'danger';
-			$this->labelString = 'error getting infos';
-		}
-		else {
-			if ($website['ssl_letsencrypt'] == 'n') {
-				$this->labelType = 'warning';
-				$this->labelString = "let's encrypt disabled";
-			}
-			$this->extractInfos ();
-		}
-	}
-	
-	public static function getOpensslCmd ($domain) {
-		$tmp = "./tmp/ssl/" . $domain;
-		$cmd = "rm -f $tmp && echo | openssl s_client -showcerts -servername $domain -connect $domain:443 2>> $tmp | openssl x509 -inform pem -noout -text >> $tmp 2>&1";
+	public function getCmd () {
+		$tmp = "./tmp/ssl/" . $this->domain;
+		$cmd = "rm -f $tmp && echo | openssl s_client -showcerts -servername $this->domain -connect $this->domain:443 2>> $tmp | openssl x509 -inform pem -noout -text >> $tmp 2>&1";
 		return $cmd; //TODO use a php cli script to put into cache ?
 	}
 	
-	public static function readRawInfos($domain) {
-		$tmp = "./tmp/ssl/" . $domain;
+	
+	public function execCmd () {
+		//  nothing to do, cmd is external (openssl)
+		return;
+	}
+	
+	
+	public function readInfos() {
+		$tmp = "./tmp/ssl/" . $this->domain;
 		return file_get_contents($tmp);
 	}
 	
 	
 	public function extractInfos () {
-	    if (preg_match("/Not After : (.*)/", $this->rawInfos, $matches)) {
-			$this->sslExpires = new \DateTime ($matches[1]);
-			$this->sslExpires->setTimezone(new \DateTimeZone('Europe/Paris'));
+		$tmp = "./tmp/ssl/" . $this->domain;
+		$rawInfos =  file_get_contents($tmp);
+		
+	    if (preg_match("/Not After : (.*)/", $rawInfos, $matches)) {
+	    	$sslExpires = new \DateTime ($matches[1]);
+	    	$sslExpires->setTimezone(new \DateTimeZone('Europe/Paris'));
 	    }
-	    if (preg_match("/verify error:num=(.*):(.*)/", $this->rawInfos, $matches)) {
-			$this->error = $matches[2];
+	    if (preg_match("/verify error:num=(.*):(.*)/", $rawInfos, $matches)) {
+			$error = $matches[2];
 	    }
-	    if (preg_match("/Issuer: (C[\s]?=[\s]?([^,\n]*))?(, )?(O[\s]?=[\s]?([^,\n]*))?(, )?(CN[\s]?=[\s]?([^,\n]*))?\n/m", $this->rawInfos, $matches)) {
-		    $this->issuer = $matches[8];
+	    if (preg_match("/Issuer: (C[\s]?=[\s]?([^,\n]*))?(, )?(O[\s]?=[\s]?([^,\n]*))?(, )?(CN[\s]?=[\s]?([^,\n]*))?\n/m", $rawInfos, $matches)) {
+		    $issuer = $matches[8];
 	    }
+	    $remainingValidityDays = self::getRemainingValidityDays ($sslExpires);
 	    
-	    if ($this->issuer !== "Let's Encrypt Authority X3") {
+	    if ($this->website['ssl'] == 'n') {
 	    	$this->labelType = 'danger';
-	    	$this->labelString = "certificate not signed by let's encrypt";
+	    	$this->labelString = 'ssl disabled';
 	    }
-	    elseif ($this->getRemainingValidityDays() <= 0) {
+	    elseif (empty($rawInfos)) {
 	    	$this->labelType = 'danger';
-	    	$this->labelString = 'certificate expired ' . -$this->getRemainingValidityDays() . ' days ago';
+	    	$this->labelString = 'error getting infos';
 	    }
-	    elseif ($this->getRemainingValidityDays() < 29) {
-	    	$this->labelType = 'warning';
-	    	$this->labelString = 'certificate not renewed : <br/> ' . $this->getRemainingValidityDays() . ' days left';
+	    elseif (!empty($error)) {
+	    	$this->labelType = 'danger';
+	    	$this->labelString = $error;
 	    }
 	    else {
-	    	$this->labelType = 'success';
-	    	$this->labelString = 'OK';
+	    	if ($this->website['ssl_letsencrypt'] == 'n') {
+	    		$this->labelType = 'warning';
+	    		$this->labelString = "let's encrypt disabled";
+	    	}
+	    	if ($issuer !== "Let's Encrypt Authority X3") {
+	    		$this->labelType = 'danger';
+	    		$this->labelString = "certificate not signed by let's encrypt";
+	    	}
+	    	elseif ($remainingValidityDays <= 0) {
+	    		$this->labelType = 'danger';
+	    		$this->labelString = 'certificate expired ' . -$remainingValidityDays . ' days ago';
+	    	}
+	    	elseif ($remainingValidityDays < 29) {
+	    		$this->labelType = 'warning';
+	    		$this->labelString = 'certificate not renewed : <br/> ' . $remainingValidityDays . ' days left';
+	    	}
+	    	else {
+	    		$this->labelType = 'success';
+	    		$this->labelString = 'OK';
+	    	}
 	    }
-	    
-	    if ($this->labelType !== 'danger' && !empty($this->error)) {
-	    	$this->labelType = 'danger';
-	    	$this->labelString = $this->error;
-	    }
 	}
 	
-	
-	public function getSslExpires () {
-		return $this->sslExpires;
-	}
-	
-	public function getError () {
-		return $this->error;
-	}
-	
-	public function getIssuer () {
-	    return $this->issuer;
-	}
-	
-	
-	public function getRemainingValidityDays () {
-		if(!empty($this->getSslExpires())) {
+	private static function getRemainingValidityDays ($sslExpires) {
+		if(!empty($sslExpires)) {
 			$now = new \DateTime();
-		    $diff = $now->diff($this->getSslExpires());
-		    if(!$diff) vdd($this->getSslExpires());
+		    $diff = $now->diff($sslExpires);
+		    if(!$diff) vdd($sslExpires);
 		    $res = $diff->days;
 		    if ($diff->invert === 1) {
 		        $res = -$res; // expired cert
@@ -108,14 +89,5 @@ class SslInfos {
 			return null;
 		}
 	}
-	
-	
-	public function getLabelType () {
-		return $this->labelType;
-	}
-	
-	public function getLabelString () {
-	    return $this->labelString;
-	}
-	
+
 }

@@ -66,7 +66,9 @@ class Ctrl
 				$cmds["dns_$domain"] = $t->getCmd();
 			}
 			if ($f3->get('active_modules.ssl') === true) {
-				$cmds["ssl_$domain"] = \model\SslInfos::getOpensslCmd($domain);
+				$t = new \model\SslInfos ($domain, $server);
+				$tasks["ssl"][$domain] = $t;
+				$cmds["ssl_$domain"] = $t->getCmd();
 			}
 			if ($f3->get('active_modules.http') === true) {
 				$cmds["http_$domain"] = \model\HttpInfos::getCmd($domain);
@@ -94,8 +96,8 @@ class Ctrl
 			}
 			
 			if ($f3->get('active_modules.ssl') === true) {
-				$sslRawInfos = \model\SslInfos::readRawInfos($domain);
-				$website['sslInfos'] = new \model\SslInfos($website, $sslRawInfos);
+				$tasks["ssl"][$domain]->extractInfos();
+				$website['sslInfos'] = $tasks["ssl"][$domain];
 			}
 			if ($f3->get('active_modules.http') === true) {
 				$rawInfos = \model\HttpInfos::readInfos($domain);

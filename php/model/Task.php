@@ -16,6 +16,7 @@ abstract class Task {
 		$this->server = $server;
 	}
 	
+	
 	public abstract function getCmd () ;
 	
 	public static function wrapCli () {
@@ -24,6 +25,7 @@ abstract class Task {
 		$t = new static($domain, null);
 		$t->execCmd();
 	}
+	
 	
 	public abstract function execCmd () ;
 	
