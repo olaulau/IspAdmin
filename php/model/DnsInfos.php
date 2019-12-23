@@ -7,9 +7,8 @@ class DnsInfos extends Task {
 	public  function getCmd () {
 		$cmd = "php index.php dns $this->domain";
 		
-		$cache = new \PhpFileCacheBis(); ///////////////
-		$key = "dns_$this->domain";
-		if (! $cache->isExpired($key)) {
+		$cache = \Cache::instance();
+		if($cache->exists("dns_$this->domain") !== false) {
 			$cmd = "# $cmd";
 		}
 		
@@ -18,39 +17,41 @@ class DnsInfos extends Task {
 	
 	
 	public function execCmd () {
+		$f3 = \Base::instance();
 		putenv('RES_OPTIONS=retrans:1 retry:1 timeout:1 attempts:1');
 		$response = gethostbyname($this->domain);
 		
-		$cache = new \PhpFileCacheBis();
 		$key = "dns_$this->domain";
-		$cache->store($key, $response, 600);
+		$cache = \Cache::instance();
+		$cache->set($key, $response, $f3->get("cache.dns"));
 	}
 	
 	
 	public function extractInfos () {
-		$cache = new \PhpFileCacheBis(); ////////////////////////
 		$key = "dns_$this->domain";
-		$dnsRawInfos = $cache->retrieve($key);
-		if(isset($dnsRawInfos->body->errors)) {
-			$cache->eraseKey($key);
-			$dnsRawInfos =  null;
+		
+		$cache = \Cache::instance();
+		$rawInfos = $cache->get($key);
+		if(isset($rawInfos->body->errors)) {
+			$cache->clear($key);
+			$rawInfos =  null;
 		}
 		
 		$this->labelType = 'success';
 		$this->labelString = 'OK';
 		
-		if ($this->server["server"]["ip_address"] !== $dnsRawInfos) {
+		if ($this->server["server"]["ip_address"] !== $rawInfos) {
 			// if resolved ip address isn't the IP of the server hosting the website
 			$this->labelType = 'danger';
 			
-			if (empty($dnsRawInfos)) {
+			if (empty($rawInfos)) {
 				$this->labelString = "DNS resolution failed";
 			}
-			elseif ($this->domain === $dnsRawInfos) {
+			elseif ($this->domain === $rawInfos) {
 				$this->labelString = "domain doesn't exist in DNS";
 			}
 			else {
-				$this->labelString = "DNS doesn't resolve to server IP : <br/> " . $this->server["server"]["ip_address"] . " !== " . $dnsRawInfos;
+				$this->labelString = "DNS doesn't resolve to server IP : <br/> " . $this->server["server"]["ip_address"] . " !== " . $rawInfos;
 			}
 		}
 	}

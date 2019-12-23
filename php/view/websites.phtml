@@ -89,7 +89,7 @@
 				if ($active_modules['whois'] === true ) {
 					//TODO convert to use methods
 					?>
-					<td class="table-<?= $website['whoisInfos']['labelType'] ?>"><?= nl2br($website['whoisInfos']['labelString']) ?></td>
+					<td class="table-<?= $website['whoisInfos']->getLabelType() ?>"><?= nl2br($website['whoisInfos']->getLabelString()) ?></td>
 					<?php
 				}
 				?>

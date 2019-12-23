@@ -2,7 +2,7 @@
 
 namespace model;
 
-class Whois extends Task {
+class WhoisInfos extends Task {
 	
 	public function getCmd () {
 		$cmd = "php index.php whois $this->domain";
@@ -29,7 +29,6 @@ class Whois extends Task {
 		}
 		$cache = \Cache::instance();
 		$cache->set("whois_$this->domain", $response, $f3->get("cache.whois"));
-		$response = $cache->get("whois_$this->domain");
 	}
 	
 	
@@ -38,31 +37,26 @@ class Whois extends Task {
 		
 		$cache = \Cache::instance();
 		if($cache->exists("whois_$this->domain") === false) {
-			$res = [ //TODO convert to use properties
-				'labelType' => 'warning',
-				'labelString' => 'WHOIS error',
-			];
-			return $res;
+			$this->labelType = 'warning';
+			$this->labelString = 'WHOIS error';
 		}
 		$rawInfos = $cache->get("whois_$this->domain");
 		
-		$res = [
-			'labelType' => 'success',
-			'labelString' => 'OK',
-		];
+		$this->labelType = 'success';
+		$this->labelString = 'OK';
+		
 		$actual_ns = $rawInfos->getNameServers();
 		$good_ns = $f3->get('tech.dns.nameservers');
 		if (!empty (array_diff($actual_ns , $good_ns)) || !empty (array_diff($good_ns, $actual_ns))) {
 			// if domain nameservers aren't exactly those in config
-			$res['labelType'] = 'warning';
+			$this->labelType = 'warning';
 			if (count($ns) === 0) {
-				$res['labelString'] = "WHOIS failed";
+				$this->labelString = "WHOIS failed";
 			}
 			else {
-				$res['labelString'] = 'bad name servers :'.PHP_EOL . implode(', ', $ns);
+				$this->labelString = 'bad name servers :'.PHP_EOL . implode(', ', $ns);
 			}
 		}
-		return $res;
 	}
 	
 }

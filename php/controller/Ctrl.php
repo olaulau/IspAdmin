@@ -55,7 +55,7 @@ class Ctrl
 			$server = $servers[$website["ispconfigInfos"]["server_id"]];
 			$parents[$domain] = \model\DnsInfos::getParent($domain);
 			if ($f3->get('active_modules.whois') === true) {
-				$t = new \model\Whois ($parents[$domain], $server);
+				$t = new \model\WhoisInfos ($parents[$domain], $server);
 				$tasks["whois"][$parents[$domain]] = $t;
 				$cmds["whois_$parents[$domain]"] = $t->getCmd();
 				//TODO do not recreate things if parents domain has already been done
@@ -84,7 +84,8 @@ class Ctrl
 			$server = $servers[$website["ispconfigInfos"]["server_id"]];
 			
 		    if ($f3->get('active_modules.whois') === true) {
-		    	$website['whoisInfos'] = $tasks["whois"][$parents[$domain]]->extractInfos();
+		    	$tasks["whois"][$parents[$domain]]->extractInfos();
+		    	$website['whoisInfos'] = $tasks["whois"][$parents[$domain]];
 		    }
 		    
 			if ($f3->get('active_modules.dns') === true) {
