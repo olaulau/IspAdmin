@@ -38,7 +38,7 @@ class Whois extends Task {
 		
 		$cache = \Cache::instance();
 		if($cache->exists("whois_$this->domain") === false) {
-			$res = [
+			$res = [ //TODO convert to use properties
 				'labelType' => 'warning',
 				'labelString' => 'WHOIS error',
 			];
@@ -63,13 +63,6 @@ class Whois extends Task {
 			}
 		}
 		return $res;
-	}
-	
-	
-	public static function getParent ($domain) {
-		preg_match('/(([^.]+\.)*)([^.]+\.[^.]+)/', $domain, $matches);
-		$parent_domain = $matches[3];
-		return $parent_domain;
 	}
 	
 }

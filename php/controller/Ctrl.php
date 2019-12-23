@@ -58,9 +58,12 @@ class Ctrl
 				$t = new \model\Whois ($parents[$domain], $server);
 				$tasks["whois"][$parents[$domain]] = $t;
 				$cmds["whois_$parents[$domain]"] = $t->getCmd();
+				//TODO do not recreate things if parents domain has already been done
 			}
 			if ($f3->get('active_modules.dns') === true) {
-				$cmds["lookup_$domain"] = \model\DnsInfos::getLookupCmd($domain);
+				$t = new \model\DnsInfos ($domain, $server);
+				$tasks["dns"][$domain] = $t;
+				$cmds["dns_$domain"] = $t->getCmd();
 			}
 			if ($f3->get('active_modules.ssl') === true) {
 				$cmds["ssl_$domain"] = \model\SslInfos::getOpensslCmd($domain);
@@ -85,10 +88,8 @@ class Ctrl
 		    }
 		    
 			if ($f3->get('active_modules.dns') === true) {
-			     $dnsRawInfos = \model\DnsInfos::readLookupInfos($domain);
-			     $dnsInfos = new \model\DnsInfos();
-			     $dnsInfos->extractInfos($server, $dnsRawInfos);
-			     $website['dnsInfos'] = $dnsInfos;
+			     $tasks["dns"][$domain]->extractInfos();
+			     $website['dnsInfos'] = $tasks["dns"][$domain];
 			}
 			
 			if ($f3->get('active_modules.ssl') === true) {

@@ -1,24 +1,14 @@
 <?php
+
 namespace model;
 
-class DnsInfos {
+class DnsInfos extends Task {
 	
-	private $labelType;
-	private $labelString;
-	
-	
-	public static function getParent ($domain) {
-		preg_match('/(([^.]+\.)*)([^.]+\.[^.]+)/', $domain, $matches);
-		$parent_domain = $matches[3];
-		return $parent_domain;
-	}
-	
-	
-	public static function getLookupCmd ($domain) {
-		$cmd = "php index.php lookup $domain";
+	public  function getCmd () {
+		$cmd = "php index.php dns $this->domain";
 		
-		$cache = new \PhpFileCacheBis();
-		$key = "lookup_$domain";
+		$cache = new \PhpFileCacheBis(); ///////////////
+		$key = "dns_$this->domain";
 		if (! $cache->isExpired($key)) {
 			$cmd = "# $cmd";
 		}
@@ -26,25 +16,30 @@ class DnsInfos {
 		return $cmd;
 	}
 	
-	public static function readLookupInfos($domain) {
+	
+	public function execCmd () {
+		putenv('RES_OPTIONS=retrans:1 retry:1 timeout:1 attempts:1');
+		$response = gethostbyname($this->domain);
+		
 		$cache = new \PhpFileCacheBis();
-		$key = "lookup_$domain";
-		$infos = $cache->retrieve($key);
-		if(isset($infos->body->errors)) {
-			$cache->eraseKey($key);
-			return null;
-		}
-		return $infos;
+		$key = "dns_$this->domain";
+		$cache->store($key, $response, 600);
 	}
 	
 	
-	public function extractInfos ($server, $dnsRawInfos) {
-		$f3 = \Base::instance();
+	public function extractInfos () {
+		$cache = new \PhpFileCacheBis(); ////////////////////////
+		$key = "dns_$this->domain";
+		$dnsRawInfos = $cache->retrieve($key);
+		if(isset($dnsRawInfos->body->errors)) {
+			$cache->eraseKey($key);
+			$dnsRawInfos =  null;
+		}
 		
 		$this->labelType = 'success';
 		$this->labelString = 'OK';
 		
-		if ($server["server"]["ip_address"] !== $dnsRawInfos) {
+		if ($this->server["server"]["ip_address"] !== $dnsRawInfos) {
 			// if resolved ip address isn't the IP of the server hosting the website
 			$this->labelType = 'danger';
 			
@@ -55,18 +50,16 @@ class DnsInfos {
 				$this->labelString = "domain doesn't exist in DNS";
 			}
 			else {
-			    $this->labelString = "DNS doesn't resolve to server IP : <br/> " . $server["server"]["ip_address"] . " !== " . $dnsRawInfos;
+				$this->labelString = "DNS doesn't resolve to server IP : <br/> " . $this->server["server"]["ip_address"] . " !== " . $dnsRawInfos;
 			}
 		}
 	}
 	
 	
-	public function getLabelType () {
-		return $this->labelType;
-	}
-	
-	public function getLabelString () {
-	    return $this->labelString;
+	public static function getParent ($domain) {
+		preg_match('/(([^.]+\.)*)([^.]+\.[^.]+)/', $domain, $matches);
+		$parent_domain = $matches[3];
+		return $parent_domain;
 	}
 	
 }
