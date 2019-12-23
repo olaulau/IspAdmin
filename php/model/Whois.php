@@ -4,59 +4,47 @@ namespace model;
 
 class Whois extends Task {
 	
-// 	public $ns;
-	
-	
-	public static function getParent ($domain) {
-		preg_match('/(([^.]+\.)*)([^.]+\.[^.]+)/', $domain, $matches);
-		$parent_domain = $matches[3];
-		return $parent_domain;
-	}
-	
-	
-	public static function getcmd ($domain) {
-		$cmd = "php index.php whois $domain";
+	public function getCmd () {
+		$cmd = "php index.php whois $this->domain";
 		
 		$cache = \Cache::instance();
-		if($cache->exists("whois_$domain") !== false) {
-// 			$cmd = "# $cmd";
+		if($cache->exists("whois_$this->domain") !== false) {
+			$cmd = "# $cmd";
 		}
 		
 		return $cmd;
 	}
 	
 	
-	public static function execCmd () {
+	public function execCmd () {
 		$f3 = \Base::instance();
 		$logger = $f3->get('logger');
 		
-		$domain = $f3->get('PARAMS.domain');
-		
 		$whois = \Iodev\Whois\Whois::create(new \Iodev\Whois\Loaders\SocketLoader(10)); // 10 sec timeout
-		$response = $whois->loadDomainInfo($domain);
+		$response = $whois->loadDomainInfo($this->domain);
 		
 		if (empty($response)) {
 		    $logger->write("no response from whois");
 		    return;
 		}
 		$cache = \Cache::instance();
-		$cache->set("whois_$domain", $response, 60*60*24*2);
-		$response = $cache->get("whois_$domain");
+		$cache->set("whois_$this->domain", $response, $f3->get("cache.whois"));
+		$response = $cache->get("whois_$this->domain");
 	}
 	
 	
-	public static function extractInfos ($domain, $server) {
+	public function extractInfos () {
 		$f3 = \Base::instance();
 		
 		$cache = \Cache::instance();
-		if($cache->exists("whois_$domain") === false) {
+		if($cache->exists("whois_$this->domain") === false) {
 			$res = [
 				'labelType' => 'warning',
 				'labelString' => 'WHOIS error',
 			];
 			return $res;
 		}
-		$rawInfos = $cache->get("whois_$domain");
+		$rawInfos = $cache->get("whois_$this->domain");
 		
 		$res = [
 			'labelType' => 'success',
@@ -75,6 +63,13 @@ class Whois extends Task {
 			}
 		}
 		return $res;
+	}
+	
+	
+	public static function getParent ($domain) {
+		preg_match('/(([^.]+\.)*)([^.]+\.[^.]+)/', $domain, $matches);
+		$parent_domain = $matches[3];
+		return $parent_domain;
 	}
 	
 }

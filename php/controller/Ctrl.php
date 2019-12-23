@@ -29,8 +29,6 @@ class Ctrl
 	{
 		$f3 = \Base::instance();
 		
-		$stats = [];
-		
 		// get servers and websites list
 		$cache = new \PhpFileCacheBis();
 		list($servers, $websites) = $cache->refreshIfExpired("IspGetInfos", function () {
@@ -48,15 +46,18 @@ class Ctrl
 				}
 			} , "toto" );
 		}
-// 		var_dump($websites); die;
 		
 		// get infos (by running external processes)
 		$cmds = [];
+		$tasks = [];
+		$parents = [];
 		foreach ($websites as $domain => $website) {
-			$parentDomain = \model\DnsInfos::getParent($domain);
-			
+			$server = $servers[$website["ispconfigInfos"]["server_id"]];
+			$parents[$domain] = \model\DnsInfos::getParent($domain);
 			if ($f3->get('active_modules.whois') === true) {
-				$cmds["whois_$parentDomain"] = \model\Whois::getcmd($parentDomain);
+				$t = new \model\Whois ($parents[$domain], $server);
+				$tasks["whois"][$parents[$domain]] = $t;
+				$cmds["whois_$parents[$domain]"] = $t->getCmd();
 			}
 			if ($f3->get('active_modules.dns') === true) {
 				$cmds["lookup_$domain"] = \model\DnsInfos::getLookupCmd($domain);
@@ -69,17 +70,18 @@ class Ctrl
 			}
 		}
 // 		vdd($cmds);
+		$stats = [];
 		$stats['total_cmds'] = count($cmds);
 		execMultipleProcesses($cmds, true, true);
 		$stats['executed_cmds'] = count($cmds);
 // 		vdd($cmds);
 		
+		// extract infos
 		foreach ($websites as $domain => &$website) {
 			$server = $servers[$website["ispconfigInfos"]["server_id"]];
-			$parentDomain = \model\DnsInfos::getParent($domain);
 			
 		    if ($f3->get('active_modules.whois') === true) {
-		        $website['whoisInfos'] = \model\Whois::extractInfos($parentDomain, $server);
+		    	$website['whoisInfos'] = $tasks["whois"][$parents[$domain]]->extractInfos();
 		    }
 		    
 			if ($f3->get('active_modules.dns') === true) {
