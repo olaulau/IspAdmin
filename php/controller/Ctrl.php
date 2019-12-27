@@ -72,7 +72,9 @@ class Ctrl
 				$cmds["ssl_$domain"] = $t->getCmd();
 			}
 			if ($f3->get('active_modules.http') === true) {
-				$cmds["http_$domain"] = \model\HttpInfos::getCmd($domain);
+				$t = new \model\HttpInfos ($domain, $server);
+				$tasks["http"][$domain] = $t;
+				$cmds["http_$domain"] = $t->getCmd();
 			}
 		}
 // 		vdd($cmds);
@@ -97,12 +99,12 @@ class Ctrl
 			}
 			
 			if ($f3->get('active_modules.ssl') === true) {
-				$tasks["ssl"][$domain]->extractInfos($website['ispconfigInfos']); ///////////////////
+				$tasks["ssl"][$domain]->extractInfos($website['ispconfigInfos']);
 				$website['sslInfos'] = $tasks["ssl"][$domain];
 			}
 			if ($f3->get('active_modules.http') === true) {
-				$rawInfos = \model\HttpInfos::readInfos($domain);
-				$website['httpInfos'] = new \model\HttpInfos($website, $rawInfos);
+				$tasks["http"][$domain]->extractInfos($website['ispconfigInfos']);
+				$website['httpInfos'] = $tasks["http"][$domain];
 			}
 		}
 		unset($website);

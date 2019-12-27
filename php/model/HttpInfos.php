@@ -1,69 +1,53 @@
 <?php
 namespace model;
 
-class HttpInfos {
+class HttpInfos extends Task {
 	
-	private $domain;
-	private $rawInfos;
-	private $status;
-	private $labelType;
-	private $labelString;
-	
-	function __construct ($website, $rawInfos) {
-		$this->domain = $website['domain'];
-		$this->rawInfos = $rawInfos;
-		$this->extractInfos();
-	}
-	
-	
-	public static function getCmd ($domain) {
-		$cmd = "php index.php curl $domain";
+	public function getCmd () {
+		$cmd = "php index.php http $this->domain";
 		
 		$cache = new \PhpFileCacheBis();
-		if (! $cache->isExpired("curl_$domain")) {
+		if (! $cache->isExpired("http_$this->domain")) {
 			$cmd = "# $cmd";
 		}
 		
 		return $cmd;
 	}
 	
-	public static function readInfos($domain) {
+	
+	public function execCmd () {
+		$f3 = \Base::instance();
+		$this->domain = $f3->get('PARAMS.domain');
+		
+		$response = shell_exec("curl -L -s -o /dev/null -X GET -w '%{http_code}' $this->domain");
 		$cache = new \PhpFileCacheBis();
-		$infos = $cache->retrieve("curl_$domain");
-		if(isset($infos->body->errors)) {
-			$cache->eraseKey("curl_$domain");
-			return null;
-		}
-		return $infos;
+		$cache->store("http_$this->domain", $response, 60);
 	}
 	
 	
-	public function extractInfos () {
-		$this->status = $this->rawInfos;
+	public function extractInfos ($ispconfigInfos) {
+		$cache = new \PhpFileCacheBis();
+		$rawInfos = $cache->retrieve("http_$this->domain");
+		if(isset($rawInfos->body->errors)) {
+			$cache->eraseKey("http_$this->domain");
+			$rawInfos = null;
+		}
+		
 		$this->labelType = 'success';
 		$this->labelString = 'OK';
 		
-		if (empty (intval($this->status))) {
+		if (empty (intval($rawInfos))) {
 			$this->labelType = 'danger';
 			$this->labelString = "http query failed";
 		}
-		elseif ($this->status >= 500) {
+		elseif ($rawInfos >= 500) {
 			$this->labelType = 'danger';
-			$this->labelString = "server side error : <br/> " . $this->status;
+			$this->labelString = "server side error : <br/> " . $rawInfos;
 		}
-		elseif ($this->status >= 400) {
+		elseif ($rawInfos >= 400) {
 			$this->labelType = 'warning';
-			$this->labelString = "client side error : <br/> " . $this->status;
+			$this->labelString = "client side error : <br/> " . $rawInfos;
 		}
-	}
-	
-	
-	public function getLabelType () {
-		return $this->labelType;
-	}
-	
-	public function getLabelString () {
-	    return $this->labelString;
 	}
 	
 }
