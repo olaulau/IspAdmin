@@ -3,28 +3,39 @@ namespace model;
 
 class SslInfos extends Task {
 	
-	public function getCmd () {
-		$tmp = "./tmp/ssl/" . $this->domain;
-		$cmd = "rm -f $tmp && echo | openssl s_client -showcerts -servername $this->domain -connect $this->domain:443 2>> $tmp | openssl x509 -inform pem -noout -text >> $tmp 2>&1";
-		return $cmd; //TODO use a php cli script to put into cache ?
+	public  function getCmd () {
+		$cmd = "php index.php ssl $this->domain";
+		
+		$cache = \Cache::instance();
+		if($cache->exists("ssl_$this->domain") !== false) {
+			$cmd = "# $cmd";
+		}
+		
+		return $cmd;
 	}
 	
 	
 	public function execCmd () {
-		//  nothing to do, cmd is external (openssl)
-		return;
+		$f3 = \Base::instance();
+		
+		$cmd = "rm -f $tmp && echo | openssl s_client -showcerts -servername $this->domain -connect $this->domain:443 2>&1 | openssl x509 -inform pem -noout -text 2>&1";
+		exec($cmd, $output, $return_var);
+		$response = \implode(PHP_EOL, $output);
+		
+		$key = "ssl_$this->domain";
+		$cache = \Cache::instance();
+		$cache->set($key, $response, $f3->get("cache.ssl"));
 	}
 	
 	
-	public function readInfos() {
-		$tmp = "./tmp/ssl/" . $this->domain;
-		return file_get_contents($tmp);
-	}
-	
-	
-	public function extractInfos () {
-		$tmp = "./tmp/ssl/" . $this->domain;
-		$rawInfos =  file_get_contents($tmp);
+	public function extractInfos ($ispconfigInfos) {
+		$key = "ssl_$this->domain";
+		$cache = \Cache::instance();
+		if($cache->exists($key) === false) {
+			$this->labelType = 'warning';
+			$this->labelString = 'SSL error';
+		}
+		$rawInfos = $cache->get($key);
 		
 	    if (preg_match("/Not After : (.*)/", $rawInfos, $matches)) {
 	    	$sslExpires = new \DateTime ($matches[1]);
@@ -38,7 +49,7 @@ class SslInfos extends Task {
 	    }
 	    $remainingValidityDays = self::getRemainingValidityDays ($sslExpires);
 	    
-	    if ($this->website['ssl'] == 'n') {
+	    if ($ispconfigInfos['ssl'] == 'n') {
 	    	$this->labelType = 'danger';
 	    	$this->labelString = 'ssl disabled';
 	    }
@@ -51,7 +62,7 @@ class SslInfos extends Task {
 	    	$this->labelString = $error;
 	    }
 	    else {
-	    	if ($this->website['ssl_letsencrypt'] == 'n') {
+	    	if ($ispconfigInfos['ssl_letsencrypt'] == 'n') {
 	    		$this->labelType = 'warning';
 	    		$this->labelString = "let's encrypt disabled";
 	    	}

@@ -2,4 +2,7 @@
 	- change cache system which is very slow
 - get supported PHP versions from official site, and cache response for a while
 - domains : hierarchical view (subdomains under parent domain)
+	- whois is common to parent domain : merge cell vertically
 - associated domains:  auto www, alias, subdomains
+- DNS : if whois NS are good, check in Isp DNS if data are present and correct. then we can detect a propagation warning
+- Whois : check on OVH account if data are correctly set. then we can detect a propagation warning

@@ -9,9 +9,6 @@
 /cache/*
 !/cache/.gitkeep
 
-/tmp/ssl/*
-!/tmp/ssl/.gitkeep
-
 /tmp/cache/*
 !/tmp/cache/.gitkeep
 

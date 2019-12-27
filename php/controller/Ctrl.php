@@ -44,8 +44,9 @@ class Ctrl
 				if (strpos($key, $filter) === false) {
 					unset ($websites[$key]); // dev test by filtering domain
 				}
-			} , "toto" );
+			} , $f3->get('debug.websites_filter') );
 		}
+// 		var_dump($websites); die;
 		
 		// get infos (by running external processes)
 		$cmds = [];
@@ -86,17 +87,17 @@ class Ctrl
 			$server = $servers[$website["ispconfigInfos"]["server_id"]];
 			
 		    if ($f3->get('active_modules.whois') === true) {
-		    	$tasks["whois"][$parents[$domain]]->extractInfos();
+		    	$tasks["whois"][$parents[$domain]]->extractInfos($website['ispconfigInfos']);
 		    	$website['whoisInfos'] = $tasks["whois"][$parents[$domain]];
 		    }
 		    
 			if ($f3->get('active_modules.dns') === true) {
-			     $tasks["dns"][$domain]->extractInfos();
+				$tasks["dns"][$domain]->extractInfos($website['ispconfigInfos']);
 			     $website['dnsInfos'] = $tasks["dns"][$domain];
 			}
 			
 			if ($f3->get('active_modules.ssl') === true) {
-				$tasks["ssl"][$domain]->extractInfos();
+				$tasks["ssl"][$domain]->extractInfos($website['ispconfigInfos']); ///////////////////
 				$website['sslInfos'] = $tasks["ssl"][$domain];
 			}
 			if ($f3->get('active_modules.http') === true) {

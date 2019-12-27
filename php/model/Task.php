@@ -29,7 +29,7 @@ abstract class Task {
 	
 	public abstract function execCmd () ;
 	
-	public abstract function extractInfos () ;
+	public abstract function extractInfos ($ispconfigInfos) ;
 	
 	
 	public function getLabelType () {

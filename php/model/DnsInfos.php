@@ -27,7 +27,7 @@ class DnsInfos extends Task {
 	}
 	
 	
-	public function extractInfos () {
+	public function extractInfos ($ispconfigInfos) {
 		$key = "dns_$this->domain";
 		
 		$cache = \Cache::instance();
