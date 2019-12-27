@@ -30,11 +30,14 @@ class Ctrl
 		$f3 = \Base::instance();
 		
 		// get servers and websites list
-		$cache = new \PhpFileCacheBis();
-		list($servers, $websites) = $cache->refreshIfExpired("IspGetInfos", function () {
-			return \IspConfig::IspGetInfos ();
-		}, 10);
-		unset($cache);
+		$cache = \Cache::instance();
+		$key = "ispconfig";
+		if ($cache->exists($key, $ispconfigRawinfos) === false) {
+			$ispconfigRawinfos = \IspConfig::IspGetInfos ();;
+			$cache->set($key, $ispconfigRawinfos, $f3->get("cache.ispconfig"));
+		}
+		list($servers, $websites) = $ispconfigRawinfos;
+
 		if(!empty($f3->get('debug.websites_max_number'))) {
 			$websites = array_slice($websites, 0, $f3->get('debug.websites_max_number')); // dev test with few domains
 		}

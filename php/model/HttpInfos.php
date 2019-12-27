@@ -6,8 +6,9 @@ class HttpInfos extends Task {
 	public function getCmd () {
 		$cmd = "php index.php http $this->domain";
 		
-		$cache = new \PhpFileCacheBis();
-		if (! $cache->isExpired("http_$this->domain")) {
+		$key = "http_$this->domain";
+		$cache = \Cache::instance();
+		if ($cache->exists("http_$this->domain")) {
 			$cmd = "# $cmd";
 		}
 		
@@ -20,16 +21,16 @@ class HttpInfos extends Task {
 		$this->domain = $f3->get('PARAMS.domain');
 		
 		$response = shell_exec("curl -L -s -o /dev/null -X GET -w '%{http_code}' $this->domain");
-		$cache = new \PhpFileCacheBis();
-		$cache->store("http_$this->domain", $response, 60);
+		$cache = \Cache::instance();
+		$cache->set("http_$this->domain", $response, $f3->get("cache.http"));
 	}
 	
 	
 	public function extractInfos ($ispconfigInfos) {
-		$cache = new \PhpFileCacheBis();
-		$rawInfos = $cache->retrieve("http_$this->domain");
+		$cache = \Cache::instance();
+		$rawInfos = $cache->get("http_$this->domain");
 		if(isset($rawInfos->body->errors)) {
-			$cache->eraseKey("http_$this->domain");
+			$cache->clear("http_$this->domain");
 			$rawInfos = null;
 		}
 		
