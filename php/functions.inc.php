@@ -31,7 +31,7 @@ function datetime_format($d) {
 
 
 function sort2dArray (&$table, $column, $reverse=false) {
-	usort($table, function($a, $b) use ($column, $reverse) {
+	uasort($table, function($a, $b) use ($column, $reverse) {
 		if($reverse)
 			return $b[$column] <=> $a[$column];
 		else

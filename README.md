@@ -20,4 +20,7 @@ cd conf
 cp 	tech.dist.ini tech.ini
 vim tech.ini ## fill in values
 cd ..
+
+crontab -e
+	php index.php ssl_auto_renew
 ```

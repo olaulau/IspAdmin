@@ -70,8 +70,8 @@ class IspConfig {
 	}
 	
 	
-	public static function IspUpdateWebsite ($session_id, $website) {
-		$result = \IspConfig::restCall('sites_web_domain_update', array('session_id' => $session_id, 'client_id' => null, 'primary_id' => $website['domain_id'], 'params' => $website));
+	public static function IspUpdateWebsite ($session_id, $ispconfigInfos) {
+		$result = \IspConfig::restCall('sites_web_domain_update', array('session_id' => $session_id, 'client_id' => null, 'primary_id' => $ispconfigInfos['domain_id'], 'params' => $ispconfigInfos));
 		if(!$result)
 		    die("error");
 		$res = json_decode($result, true)['response'];

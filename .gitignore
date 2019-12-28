@@ -6,9 +6,6 @@
 
 /conf/tech.ini
 
-/cache/*
-!/cache/.gitkeep
-
 /tmp/cache/*
 !/tmp/cache/.gitkeep
 

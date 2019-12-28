@@ -7,7 +7,6 @@
 	],
 	"require" : {
 		"olaulau/htmlskel": "dev-master",
-		"wruczek/php-file-cache": "^0.0.4",
 		"bcosca/fatfree": "^3.6",
 		"io-developer/php-whois": "^3.4"
 	}

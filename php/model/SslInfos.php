@@ -3,6 +3,13 @@ namespace model;
 
 class SslInfos extends Task {
 	
+	private $remainingValidityDays;
+	
+	public function getRemainingValidityDays () {
+		return $this->remainingValidityDays;
+	}
+	
+	
 	public  function getCmd () {
 		$cmd = "php index.php ssl $this->domain";
 		
@@ -47,7 +54,7 @@ class SslInfos extends Task {
 	    if (preg_match("/Issuer: (C[\s]?=[\s]?([^,\n]*))?(, )?(O[\s]?=[\s]?([^,\n]*))?(, )?(CN[\s]?=[\s]?([^,\n]*))?\n/m", $rawInfos, $matches)) {
 		    $issuer = $matches[8];
 	    }
-	    $remainingValidityDays = self::getRemainingValidityDays ($sslExpires);
+	    $this->remainingValidityDays = self::calculateRemainingValidityDays ($sslExpires);
 	    
 	    if ($ispconfigInfos['ssl'] == 'n') {
 	    	$this->labelType = 'danger';
@@ -70,13 +77,13 @@ class SslInfos extends Task {
 	    		$this->labelType = 'danger';
 	    		$this->labelString = "certificate not signed by let's encrypt";
 	    	}
-	    	elseif ($remainingValidityDays <= 0) {
+	    	elseif ($this->remainingValidityDays <= 0) {
 	    		$this->labelType = 'danger';
-	    		$this->labelString = 'certificate expired ' . -$remainingValidityDays . ' days ago';
+	    		$this->labelString = 'certificate expired ' . -$this->remainingValidityDays . ' days ago';
 	    	}
-	    	elseif ($remainingValidityDays < 29) {
+	    	elseif ($this->remainingValidityDays < 29) {
 	    		$this->labelType = 'warning';
-	    		$this->labelString = 'certificate not renewed : <br/> ' . $remainingValidityDays . ' days left';
+	    		$this->labelString = 'certificate not renewed : <br/> ' . $this->remainingValidityDays . ' days left';
 	    	}
 	    	else {
 	    		$this->labelType = 'success';
@@ -85,7 +92,7 @@ class SslInfos extends Task {
 	    }
 	}
 	
-	private static function getRemainingValidityDays ($sslExpires) {
+	private static function calculateRemainingValidityDays ($sslExpires) {
 		if(!empty($sslExpires)) {
 			$now = new \DateTime();
 		    $diff = $now->diff($sslExpires);
