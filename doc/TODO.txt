@@ -1,8 +1,36 @@
-- fat free framework
-	- change cache system which is very slow
+- Task class 
+	- decompose read and extract methods
+	- create Php task (without external command)
+
 - get supported PHP versions from official site, and cache response for a while
 - domains : hierarchical view (subdomains under parent domain)
 	- whois is common to parent domain : merge cell vertically
 - associated domains:  auto www, alias, subdomains
 - DNS : if whois NS are good, check in Isp DNS if data are present and correct. then we can detect a propagation warning
 - Whois : check on OVH account if data are correctly set. then we can detect a propagation warning
+
+- website creation
+	FORM
+	- domain
+	- email
+	- www
+	- DB
+	- wordpress
+	
+	OVH
+		- buy domain (if needed)
+		- change servernames, empty zone
+	IspConfig
+		- create DNS zone
+		- create website, with a shell user
+			- backup monthly, 2
+			- adjust auto www
+			- remove error doc
+			- activate stats
+			- choose php version
+		- create database, with a DB user
+		- when DNS seems to be propagated
+			- ssl + letsencrypt (should fail !)
+			- adjust auto https
+			- install wordpress
+			- send email saying finished
