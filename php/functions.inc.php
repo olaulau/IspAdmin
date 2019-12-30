@@ -30,6 +30,12 @@ function datetime_format($d) {
 }
 
 
+/**
+ * sort a 2D array by a column
+ * @param array $table
+ * @param string $column
+ * @param boolean $reverse
+ */
 function sort2dArray (&$table, $column, $reverse=false) {
 	uasort($table, function($a, $b) use ($column, $reverse) {
 		if($reverse)
@@ -37,6 +43,26 @@ function sort2dArray (&$table, $column, $reverse=false) {
 		else
 			return $a[$column] <=> $b[$column];
 	});
+}
+
+
+/**
+ * make groups grom a 2D array
+ * @param array $table
+ * @param string $column
+ * @return array
+ */
+function group2dArray ($table, $column) {
+	foreach ($table as $key => $row) {
+		$group = $row[$column];
+		unset($row[$column]);
+		$res[$group][$key] = $row;
+	}
+	foreach ($res as $group_name => $group) {
+		ksort($group);
+	}
+	ksort($res);
+	return $res;
 }
 
 

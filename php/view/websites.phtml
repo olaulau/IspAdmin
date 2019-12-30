@@ -17,6 +17,7 @@ use model\DnsInfos;
 
 <!-- Custom styles for this template -->
 <link href="css/sticky-footer-navbar.css" rel="stylesheet">
+<link href="css/index.css" rel="stylesheet">
 </head>
 
 <body>
@@ -42,7 +43,7 @@ use model\DnsInfos;
 	<table class="table table-sm table-bordered ">
 		<thead class="thead-dark">
 			<tr>
-				<th>Domain</th>
+				<th>2LD</th>
 				<th>FQDN</th>
 				<?php
 				if ($active_modules['whois'] === true) {
@@ -83,69 +84,88 @@ use model\DnsInfos;
 		</thead>
 		<tbody class="table-hover">
 			<?php
-			foreach ($websites as $domain => $website) {
-				?>
-				<tr>
-				<td>
-					<a href="https://<?= $parents[$domain] ?>/"><?= $parents[$domain] ?></a>
-				</td>
-				<td class="<?= $website["ispconfigInfos"]['active']==='n' ? 'table-danger' : '' ?>">
-					<a href="https://<?= $domain ?>/"><?= $domain ?></a>
-				</td>
+			foreach ($websites as $parent => $group) {
+				foreach ($group as $domain => $website) {
+					?>
+					<tr>
+					<?php
+					if ($currentParent !== $parent) {
+						?>
+						<td rowspan="<?=count($group)?>" style="vertical-align: middle;">
+							<a href="https://<?= $parent ?>/"><?= $parent ?></a>
+						</td>
+						<?php
+					}
+					?>
+					<td class="<?= $website["ispconfigInfos"]['active']==='n' ? 'table-danger' : '' ?>">
+						<a href="https://<?= $domain ?>/"><?= $domain ?></a>
+					</td>
+					<?php
+					if ($website["ispconfigInfos"]['active']==='y') {
+						?>
+						<?php
+						if ($active_modules['whois'] === true ) {
+							//TODO convert to use methods
+							?>
+							<td class="table-<?= $website['whoisInfos']->getLabelType() ?>"><?= nl2br($website['whoisInfos']->getLabelString()) ?></td>
+							<?php
+						}
+						?>
+						<?php
+						if ($active_modules['dns'] === true) {
+							?>
+							<td class="table-<?= $website['dnsInfos']->getLabelType() ?>"><?= nl2br($website['dnsInfos']->getLabelString()) ?></td>
+							<?php
+						}
+						?>
+						<?php
+						if ($active_modules['ssl'] === true) {
+							?>
+							<td class="table-<?= $website['sslInfos']->getLabelType() ?>"><?= $website['sslInfos']->getLabelString() ?></td>
+							<?php
+						}
+						?>
+						<?php
+						if ($active_modules['http'] === true) {
+							?>
+							<td class="table-<?= $website['httpInfos']->getLabelType() ?>"><?= $website['httpInfos']->getLabelString() ?></td>
+							<?php
+						}
+						?>
+						<?php
+						if ($active_modules['php'] === true) {
+							?>
+							<td class="<?= !empty($website['phpInfos']['label_type']) ? 'table-'.$website['phpInfos']['label_type'] : '' ?>"> <?= $website['phpInfos']['label_string'] ?> </td>
+							<?php
+						}
+						?>
+						<?php
+					}
+					else {
+						?>
+						<td colspan="5">&nbsp;</td>
+						<?php
+					}
+					?>
+				</tr>
 				<?php
-				if ($website["ispconfigInfos"]['active']==='y') {
-					?>
-					<?php
-					if ($active_modules['whois'] === true ) {
-						//TODO convert to use methods
-						?>
-						<td class="table-<?= $website['whoisInfos']->getLabelType() ?>"><?= nl2br($website['whoisInfos']->getLabelString()) ?></td>
-						<?php
-					}
-					?>
-					<?php
-					if ($active_modules['dns'] === true) {
-						?>
-						<td class="table-<?= $website['dnsInfos']->getLabelType() ?>"><?= nl2br($website['dnsInfos']->getLabelString()) ?></td>
-						<?php
-					}
-					?>
-					<?php
-					if ($active_modules['ssl'] === true) {
-						?>
-						<td class="table-<?= $website['sslInfos']->getLabelType() ?>"><?= $website['sslInfos']->getLabelString() ?></td>
-						<?php
-					}
-					?>
-					<?php
-					if ($active_modules['http'] === true) {
-						?>
-						<td class="table-<?= $website['httpInfos']->getLabelType() ?>"><?= $website['httpInfos']->getLabelString() ?></td>
-						<?php
-					}
-					?>
-					<?php
-					if ($active_modules['php'] === true) {
-						?>
-						<td class="<?= !empty($website['phpInfos']['label_type']) ? 'table-'.$website['phpInfos']['label_type'] : '' ?>"> <?= $website['phpInfos']['label_string'] ?> </td>
-						<?php
-					}
-					?>
-					<?php
+					$currentParent = $parent;
 				}
-				else {
-					?>
-					<td colspan="5">&nbsp;</td>
-					<?php
-				}
-				?>
-			</tr>
-			<?php
 			}
 			?>
 			</tbody>
+			<thead class="thead-dark">
+				<tr>
+					<th><?= $stats["2LD_count"] ?></th>
+					<th><?= $stats["websites_count"] ?></th>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
 	</table>
-	<p style="text-align: right;"><b>Total : <?= count($websites) ?> websites</b></p>
 	</main>
 
 	<footer class="footer">

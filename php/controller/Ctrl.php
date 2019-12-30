@@ -51,39 +51,46 @@ class Ctrl
 		}
 // 		var_dump($websites); die;
 		
+		// group domains by 2LD
+		$stats = [];
+		$stats["websites_count"] = count($websites);
+		$websites = group2dArray($websites, "2LD");
+		$stats["2LD_count"] = count($websites);
+// 		var_dump($websites); die;
+		
 		// get infos (by running external processes)
 		$cmds = [];
 		$tasks = [];
-		$parents = [];
-		foreach ($websites as $domain => $website) {
-			$parents[$domain] = \model\DnsInfos::getParent($domain);
-			if ($website["ispconfigInfos"]['active']==='y') {
-				$server = $servers[$website["ispconfigInfos"]["server_id"]];
-				if ($f3->get('active_modules.whois') === true) {
-					$t = new \model\WhoisInfos ($parents[$domain], $server);
-					$tasks["whois"][$parents[$domain]] = $t;
-					$cmds["whois_$parents[$domain]"] = $t->getCmd();
-					//TODO do not recreate things if parents domain has already been done
-				}
-				if ($f3->get('active_modules.dns') === true) {
-					$t = new \model\DnsInfos ($domain, $server);
-					$tasks["dns"][$domain] = $t;
-					$cmds["dns_$domain"] = $t->getCmd();
-				}
-				if ($f3->get('active_modules.ssl') === true) {
-					$t = new \model\SslInfos ($domain, $server);
-					$tasks["ssl"][$domain] = $t;
-					$cmds["ssl_$domain"] = $t->getCmd();
-				}
-				if ($f3->get('active_modules.http') === true) {
-					$t = new \model\HttpInfos ($domain, $server);
-					$tasks["http"][$domain] = $t;
-					$cmds["http_$domain"] = $t->getCmd();
+		foreach ($websites as $parent => $group) {
+			foreach ($group as $domain => $website) {
+				if ($website["ispconfigInfos"]['active']==='y') {
+					$server = $servers[$website["ispconfigInfos"]["server_id"]];
+					if ($f3->get('active_modules.whois') === true) {
+						$t = new \model\WhoisInfos ($parent, $server);
+						$tasks["whois"][$parent] = $t;
+						$cmds["whois_$parent"] = $t->getCmd();
+						//TODO do not recreate things if parents domain has already been done
+					}
+					if ($f3->get('active_modules.dns') === true) {
+						$t = new \model\DnsInfos ($domain, $server);
+						$tasks["dns"][$domain] = $t;
+						$cmds["dns_$domain"] = $t->getCmd();
+					}
+					if ($f3->get('active_modules.ssl') === true) {
+						$t = new \model\SslInfos ($domain, $server);
+						$tasks["ssl"][$domain] = $t;
+						$cmds["ssl_$domain"] = $t->getCmd();
+					}
+					if ($f3->get('active_modules.http') === true) {
+						$t = new \model\HttpInfos ($domain, $server);
+						$tasks["http"][$domain] = $t;
+						$cmds["http_$domain"] = $t->getCmd();
+					}
 				}
 			}
 		}
 // 		vdd($cmds);
-		$stats = [];
+		
 		$stats['total_cmds'] = count($cmds);
 		execMultipleProcesses($cmds, true, true);
 		$stats['total_executed_cmds'] = count($cmds);
@@ -91,70 +98,71 @@ class Ctrl
 // 		vdd($cmds);
 		
 		// extract infos
-		foreach ($websites as $domain => &$website) {
-			if ($website["ispconfigInfos"]['active']==='y') {
-				$server = $servers[$website["ispconfigInfos"]["server_id"]];
-				
-			    if ($f3->get('active_modules.whois') === true) {
-			    	$tasks["whois"][$parents[$domain]]->extractInfos($website['ispconfigInfos']);
-			    	$website['whoisInfos'] = $tasks["whois"][$parents[$domain]];
-			    }
-			    
-				if ($f3->get('active_modules.dns') === true) {
-					$tasks["dns"][$domain]->extractInfos($website['ispconfigInfos']);
-				     $website['dnsInfos'] = $tasks["dns"][$domain];
+		foreach ($websites as $parent => &$group) {
+			foreach ($group as $domain => &$website) {
+				if ($website["ispconfigInfos"]['active']==='y') {
+					$server = $servers[$website["ispconfigInfos"]["server_id"]];
+					
+				    if ($f3->get('active_modules.whois') === true) {
+				    	$tasks["whois"][$parent]->extractInfos($website['ispconfigInfos']);
+				    	$website['whoisInfos'] = $tasks["whois"][$parent];
+				    }
+				    
+					if ($f3->get('active_modules.dns') === true) {
+						$tasks["dns"][$domain]->extractInfos($website['ispconfigInfos']);
+					     $website['dnsInfos'] = $tasks["dns"][$domain];
+					}
+					
+					if ($f3->get('active_modules.ssl') === true) {
+						$tasks["ssl"][$domain]->extractInfos($website['ispconfigInfos']);
+						$website['sslInfos'] = $tasks["ssl"][$domain];
+					}
+					if ($f3->get('active_modules.http') === true) {
+						$tasks["http"][$domain]->extractInfos($website['ispconfigInfos']);
+						$website['httpInfos'] = $tasks["http"][$domain];
+					}
 				}
-				
-				if ($f3->get('active_modules.ssl') === true) {
-					$tasks["ssl"][$domain]->extractInfos($website['ispconfigInfos']);
-					$website['sslInfos'] = $tasks["ssl"][$domain];
-				}
-				if ($f3->get('active_modules.http') === true) {
-					$tasks["http"][$domain]->extractInfos($website['ispconfigInfos']);
-					$website['httpInfos'] = $tasks["http"][$domain];
-				}
+				unset($website);
 			}
+			unset($group);
 		}
-		unset($website);
 		
 		
 		// get PHP infos
 		if ($f3->get('active_modules.php') === true) {
-			foreach ($websites as &$website) {
-				$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*:[^:]*:[^:]*:[^:]*$/";
-				$php = $website['ispconfigInfos']['fastcgi_php_version'];
-				if (!empty ($php) && preg_match($regex, $php, $matches)) {
-					$website['phpInfos']['label_string'] = $matches[1]; // alternative server PHP version
-				}
-				else {
-					$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
-					$php = $servers [$website['ispconfigInfos']['server_id']] ["web"] ["php_default_name"];
-					if (preg_match($regex, $php, $matches)) {
-						$website['phpInfos']['label_string'] = $matches[1]; // default server PHP version
+			foreach ($websites as $parent => &$group) {
+				foreach ($group as $domain => &$website) {
+					$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*:[^:]*:[^:]*:[^:]*$/";
+					$php = $website['ispconfigInfos']['fastcgi_php_version'];
+					if (!empty ($php) && preg_match($regex, $php, $matches)) {
+						$website['phpInfos']['label_string'] = $matches[1]; // alternative server PHP version
 					}
 					else {
-					    $website['phpInfos']['label_string'] = '??'; // unknown
+						$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
+						$php = $servers [$website['ispconfigInfos']['server_id']] ["web"] ["php_default_name"];
+						if (preg_match($regex, $php, $matches)) {
+							$website['phpInfos']['label_string'] = $matches[1]; // default server PHP version
+						}
+						else {
+						    $website['phpInfos']['label_string'] = '??'; // unknown
+						}
 					}
+					if ($website['phpInfos']['label_string'] < '7.0') { //TODO put into config, or fetch infos from php.net !
+						$website['phpInfos']['label_type'] = 'danger';
+					}
+					elseif ($website['phpInfos']['label_string'] < '7.2') { //TODO same
+						$website['phpInfos']['label_type'] = 'warning';
+					}
+					else {
+						$website['phpInfos']['label_type'] = 'success';
+					}
+					unset($website);
 				}
-				if ($website['phpInfos']['label_string'] < '7.0') { //TODO put into config, or fetch infos from php.net !
-					$website['phpInfos']['label_type'] = 'danger';
-				}
-				elseif ($website['phpInfos']['label_string'] < '7.2') { //TODO same
-					$website['phpInfos']['label_type'] = 'warning';
-				}
-				else {
-					$website['phpInfos']['label_type'] = 'success';
-				}
+				unset($group);
 			}
-			unset($website);
 		}
 // 		var_dump($websites); die;
 		
-		// sort table
-// 		sort2dArray ($websites, 'domain'); //TODO sort by status ?
-		ksort($websites);
-		
-		$f3->set('parents', $parents);
 		$f3->set('websites', $websites);
 		$f3->set('stats', $stats);
 		

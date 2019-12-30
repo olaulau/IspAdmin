@@ -1,5 +1,7 @@
 <?php
 
+use model\DnsInfos;
+
 class IspConfig {
 	
 	private static function restCall ($method, $data) {
@@ -54,8 +56,11 @@ class IspConfig {
 		    die("error");
 		$domain_record = json_decode($result, true)['response'];
 		$res = [];
-		foreach ($domain_record as $domain) {
-		    $res[$domain['domain']]['ispconfigInfos'] = $domain;
+		foreach ($domain_record as $ispinfo) {
+			$domain = $ispinfo['domain'];
+			$parent = DnsInfos::getParent($domain);
+			$res[$domain]['ispconfigInfos'] = $ispinfo;
+			$res[$domain]['2LD'] = $parent;
 		}
 		return $res;
 	}
