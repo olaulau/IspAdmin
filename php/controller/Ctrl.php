@@ -38,16 +38,16 @@ class Ctrl
 		}
 		list($servers, $websites) = $ispconfigRawinfos;
 
-		if(!empty($f3->get('debug.websites_max_number'))) {
-			$websites = array_slice($websites, 0, $f3->get('debug.websites_max_number')); // dev test with few domains
-		}
-		
 		if(!empty($f3->get('debug.websites_filter'))) {
 			array_walk ( $websites , function ( $value , $key , $filter ) use ( &$websites ) {
 				if (strpos($key, $filter) === false) {
 					unset ($websites[$key]); // dev test by filtering domain
 				}
 			} , $f3->get('debug.websites_filter') );
+		}
+		
+		if(!empty($f3->get('debug.websites_max_number'))) {
+			$websites = array_slice($websites, 0, $f3->get('debug.websites_max_number')); // dev test with few domains
 		}
 // 		var_dump($websites); die;
 		
@@ -56,58 +56,63 @@ class Ctrl
 		$tasks = [];
 		$parents = [];
 		foreach ($websites as $domain => $website) {
-			$server = $servers[$website["ispconfigInfos"]["server_id"]];
 			$parents[$domain] = \model\DnsInfos::getParent($domain);
-			if ($f3->get('active_modules.whois') === true) {
-				$t = new \model\WhoisInfos ($parents[$domain], $server);
-				$tasks["whois"][$parents[$domain]] = $t;
-				$cmds["whois_$parents[$domain]"] = $t->getCmd();
-				//TODO do not recreate things if parents domain has already been done
-			}
-			if ($f3->get('active_modules.dns') === true) {
-				$t = new \model\DnsInfos ($domain, $server);
-				$tasks["dns"][$domain] = $t;
-				$cmds["dns_$domain"] = $t->getCmd();
-			}
-			if ($f3->get('active_modules.ssl') === true) {
-				$t = new \model\SslInfos ($domain, $server);
-				$tasks["ssl"][$domain] = $t;
-				$cmds["ssl_$domain"] = $t->getCmd();
-			}
-			if ($f3->get('active_modules.http') === true) {
-				$t = new \model\HttpInfos ($domain, $server);
-				$tasks["http"][$domain] = $t;
-				$cmds["http_$domain"] = $t->getCmd();
+			if ($website["ispconfigInfos"]['active']==='y') {
+				$server = $servers[$website["ispconfigInfos"]["server_id"]];
+				if ($f3->get('active_modules.whois') === true) {
+					$t = new \model\WhoisInfos ($parents[$domain], $server);
+					$tasks["whois"][$parents[$domain]] = $t;
+					$cmds["whois_$parents[$domain]"] = $t->getCmd();
+					//TODO do not recreate things if parents domain has already been done
+				}
+				if ($f3->get('active_modules.dns') === true) {
+					$t = new \model\DnsInfos ($domain, $server);
+					$tasks["dns"][$domain] = $t;
+					$cmds["dns_$domain"] = $t->getCmd();
+				}
+				if ($f3->get('active_modules.ssl') === true) {
+					$t = new \model\SslInfos ($domain, $server);
+					$tasks["ssl"][$domain] = $t;
+					$cmds["ssl_$domain"] = $t->getCmd();
+				}
+				if ($f3->get('active_modules.http') === true) {
+					$t = new \model\HttpInfos ($domain, $server);
+					$tasks["http"][$domain] = $t;
+					$cmds["http_$domain"] = $t->getCmd();
+				}
 			}
 		}
 // 		vdd($cmds);
 		$stats = [];
 		$stats['total_cmds'] = count($cmds);
 		execMultipleProcesses($cmds, true, true);
-		$stats['executed_cmds'] = count($cmds);
+		$stats['total_executed_cmds'] = count($cmds);
+		$stats['executed_cmds'] = $cmds;
 // 		vdd($cmds);
 		
 		// extract infos
 		foreach ($websites as $domain => &$website) {
-			$server = $servers[$website["ispconfigInfos"]["server_id"]];
-			
-		    if ($f3->get('active_modules.whois') === true) {
-		    	$tasks["whois"][$parents[$domain]]->extractInfos($website['ispconfigInfos']);
-		    	$website['whoisInfos'] = $tasks["whois"][$parents[$domain]];
-		    }
-		    
-			if ($f3->get('active_modules.dns') === true) {
-				$tasks["dns"][$domain]->extractInfos($website['ispconfigInfos']);
-			     $website['dnsInfos'] = $tasks["dns"][$domain];
-			}
-			
-			if ($f3->get('active_modules.ssl') === true) {
-				$tasks["ssl"][$domain]->extractInfos($website['ispconfigInfos']);
-				$website['sslInfos'] = $tasks["ssl"][$domain];
-			}
-			if ($f3->get('active_modules.http') === true) {
-				$tasks["http"][$domain]->extractInfos($website['ispconfigInfos']);
-				$website['httpInfos'] = $tasks["http"][$domain];
+			if ($website["ispconfigInfos"]['active']==='y') {
+				$server = $servers[$website["ispconfigInfos"]["server_id"]];
+				
+			    if ($f3->get('active_modules.whois') === true) {
+			    	$tasks["whois"][$parents[$domain]]->extractInfos($website['ispconfigInfos']);
+			    	$website['whoisInfos'] = $tasks["whois"][$parents[$domain]];
+			    }
+			    
+				if ($f3->get('active_modules.dns') === true) {
+					$tasks["dns"][$domain]->extractInfos($website['ispconfigInfos']);
+				     $website['dnsInfos'] = $tasks["dns"][$domain];
+				}
+				
+				if ($f3->get('active_modules.ssl') === true) {
+					$tasks["ssl"][$domain]->extractInfos($website['ispconfigInfos']);
+					$website['sslInfos'] = $tasks["ssl"][$domain];
+				}
+				if ($f3->get('active_modules.http') === true) {
+					$tasks["http"][$domain]->extractInfos($website['ispconfigInfos']);
+					$website['httpInfos'] = $tasks["http"][$domain];
+				}
 			}
 		}
 		unset($website);
@@ -149,6 +154,7 @@ class Ctrl
 // 		sort2dArray ($websites, 'domain'); //TODO sort by status ?
 		ksort($websites);
 		
+		$f3->set('parents', $parents);
 		$f3->set('websites', $websites);
 		$f3->set('stats', $stats);
 		

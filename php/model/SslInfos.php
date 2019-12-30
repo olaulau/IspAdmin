@@ -63,6 +63,7 @@ class SslInfos extends Task {
 	    elseif (empty($rawInfos)) {
 	    	$this->labelType = 'danger';
 	    	$this->labelString = 'error getting infos';
+	    	$cache->clear($key);
 	    }
 	    elseif (!empty($error)) {
 	    	$this->labelType = 'danger';
@@ -75,7 +76,7 @@ class SslInfos extends Task {
 	    	}
 	    	if ($issuer !== "Let's Encrypt Authority X3") {
 	    		$this->labelType = 'danger';
-	    		$this->labelString = "certificate not signed by let's encrypt";
+	    		$this->labelString = "certificate not signed by let's encrypt ($issuer)";
 	    	}
 	    	elseif ($this->remainingValidityDays <= 0) {
 	    		$this->labelType = 'danger';

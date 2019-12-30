@@ -20,7 +20,7 @@ class HttpInfos extends Task {
 		$f3 = \Base::instance();
 		$this->domain = $f3->get('PARAMS.domain');
 		
-		$response = shell_exec("curl -L -s -o /dev/null -X GET -w '%{http_code}' $this->domain");
+		$response = shell_exec("curl --connect-timeout 2 --max-time 10 -L -s -o /dev/null -X GET -w '%{http_code}' $this->domain");
 		$cache = \Cache::instance();
 		$cache->set("http_$this->domain", $response, $f3->get("cache.http"));
 	}
@@ -38,6 +38,7 @@ class HttpInfos extends Task {
 		$this->labelString = 'OK';
 		
 		if (empty (intval($rawInfos))) {
+			$cache->clear("http_$this->domain");
 			$this->labelType = 'danger';
 			$this->labelString = "http query failed";
 		}

@@ -1,3 +1,6 @@
+<?php
+use model\DnsInfos;
+?>
 <!doctype html>
 <html lang="fr">
 <head>
@@ -40,6 +43,7 @@
 		<thead class="thead-dark">
 			<tr>
 				<th>Domain</th>
+				<th>FQDN</th>
 				<?php
 				if ($active_modules['whois'] === true) {
 					?>
@@ -82,59 +86,73 @@
 			foreach ($websites as $domain => $website) {
 				?>
 				<tr>
+				<td>
+					<a href="https://<?= $parents[$domain] ?>/"><?= $parents[$domain] ?></a>
+				</td>
 				<td class="<?= $website["ispconfigInfos"]['active']==='n' ? 'table-danger' : '' ?>">
 					<a href="https://<?= $domain ?>/"><?= $domain ?></a>
 				</td>
 				<?php
-				if ($active_modules['whois'] === true ) {
-					//TODO convert to use methods
+				if ($website["ispconfigInfos"]['active']==='y') {
 					?>
-					<td class="table-<?= $website['whoisInfos']->getLabelType() ?>"><?= nl2br($website['whoisInfos']->getLabelString()) ?></td>
+					<?php
+					if ($active_modules['whois'] === true ) {
+						//TODO convert to use methods
+						?>
+						<td class="table-<?= $website['whoisInfos']->getLabelType() ?>"><?= nl2br($website['whoisInfos']->getLabelString()) ?></td>
+						<?php
+					}
+					?>
+					<?php
+					if ($active_modules['dns'] === true) {
+						?>
+						<td class="table-<?= $website['dnsInfos']->getLabelType() ?>"><?= nl2br($website['dnsInfos']->getLabelString()) ?></td>
+						<?php
+					}
+					?>
+					<?php
+					if ($active_modules['ssl'] === true) {
+						?>
+						<td class="table-<?= $website['sslInfos']->getLabelType() ?>"><?= $website['sslInfos']->getLabelString() ?></td>
+						<?php
+					}
+					?>
+					<?php
+					if ($active_modules['http'] === true) {
+						?>
+						<td class="table-<?= $website['httpInfos']->getLabelType() ?>"><?= $website['httpInfos']->getLabelString() ?></td>
+						<?php
+					}
+					?>
+					<?php
+					if ($active_modules['php'] === true) {
+						?>
+						<td class="<?= !empty($website['phpInfos']['label_type']) ? 'table-'.$website['phpInfos']['label_type'] : '' ?>"> <?= $website['phpInfos']['label_string'] ?> </td>
+						<?php
+					}
+					?>
+					<?php
+				}
+				else {
+					?>
+					<td colspan="5">&nbsp;</td>
 					<?php
 				}
 				?>
-				<?php
-				if ($active_modules['dns'] === true) {
-					?>
-					<td class="table-<?= $website['dnsInfos']->getLabelType() ?>"><?= nl2br($website['dnsInfos']->getLabelString()) ?></td>
-					<?php
-				}
-				?>
-				<?php
-				if ($active_modules['ssl'] === true) {
-					?>
-					<td class="table-<?= $website['sslInfos']->getLabelType() ?>"><?= $website['sslInfos']->getLabelString() ?></td>
-					<?php
-				}
-				?>
-				<?php
-				if ($active_modules['http'] === true) {
-					?>
-					<td class="table-<?= $website['httpInfos']->getLabelType() ?>"><?= $website['httpInfos']->getLabelString() ?></td>
-					<?php
-				}
-				?>
-				<?php
-				if ($active_modules['php'] === true) {
-					?>
-					<td class="<?= !empty($website['phpInfos']['label_type']) ? 'table-'.$website['phpInfos']['label_type'] : '' ?>"> <?= $website['phpInfos']['label_string'] ?> </td>
-					<?php
-				}
-				?>
-				
 			</tr>
 			<?php
 			}
 			?>
 			</tbody>
 	</table>
+	<p style="text-align: right;"><b>Total : <?= count($websites) ?> websites</b></p>
 	</main>
 
 	<footer class="footer">
 		<div class="container">
 			<span class="text-muted">
 				<a href="https://www.github.com/olaulau/IspAdmin">IspAdmin</a> (c) <a href="https://www.github.com/olaulau">olaulau</a> - 
-				<?= $stats['executed_cmds'] ?> / <?= $stats['total_cmds'] ?> executed - 
+				<span title="<?= implode(PHP_EOL, $stats['executed_cmds']) ?>"><?= $stats['total_executed_cmds'] ?> / <?= $stats['total_cmds'] ?> executed</span> - 
 				generated in <?= $generation_time ?> ms
 			</span>
 		</div>
