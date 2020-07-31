@@ -5,7 +5,10 @@ namespace model;
 class DnsInfos extends Task {
 	
 	public  function getCmd () {
-		$cmd = "php index.php dns $this->domain";
+	    $f3 = \Base::instance();
+	    
+	    $php_binary = $f3->get("tech.PHP_BINARY");
+		$cmd = "$php_binary index.php dns $this->domain";
 		
 		$cache = \Cache::instance();
 		if($cache->exists("dns_$this->domain") !== false) {

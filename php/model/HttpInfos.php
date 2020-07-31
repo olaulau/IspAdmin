@@ -6,7 +6,7 @@ class HttpInfos extends Task {
 	public function getCmd () {
 	    $f3 = \Base::instance();
 	    
-	    $php_binary = $f3->get("PHP_BINARY");
+	    $php_binary = $f3->get("tech.PHP_BINARY");
 		$cmd = "$php_binary index.php http $this->domain";
 		
 		$key = "http_$this->domain";

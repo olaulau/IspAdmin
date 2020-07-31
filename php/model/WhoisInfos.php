@@ -5,8 +5,12 @@ namespace model;
 class WhoisInfos extends Task {
 	
 	public function getCmd () {
+	    $f3 = \Base::instance();
+	    
+	    $php_binary = $f3->get("tech.PHP_BINARY");
+	    
 		$key = "whois_$this->domain";
-		$cmd = "php index.php whois $this->domain";
+		$cmd = "$php_binary index.php whois $this->domain";
 		
 		$cache = \Cache::instance();
 		if($cache->exists($key) !== false) {
