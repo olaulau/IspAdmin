@@ -4,7 +4,10 @@ namespace model;
 class HttpInfos extends Task {
 	
 	public function getCmd () {
-		$cmd = "php index.php http $this->domain";
+	    $f3 = \Base::instance();
+	    
+	    $php_binary = $f3->get("PHP_BINARY");
+		$cmd = "$php_binary index.php http $this->domain";
 		
 		$key = "http_$this->domain";
 		$cache = \Cache::instance();
