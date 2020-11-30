@@ -129,6 +129,8 @@ class Ctrl
 		
 		
 		// get PHP infos
+		$min_version_security_support = $f3->get('php.min_version_security_support');
+		$min_version_active_support = $f3->get('php.min_version_active_support');
 		if ($f3->get('active_modules.php') === true) {
 			foreach ($websites as $parent => &$group) {
 				foreach ($group as $domain => &$website) {
@@ -147,10 +149,10 @@ class Ctrl
 						    $website['phpInfos']['label_string'] = '??'; // unknown
 						}
 					}
-					if ($website['phpInfos']['label_string'] < '7.0') { //TODO put into config, or fetch infos from php.net !
+					if ($website['phpInfos']['label_string'] < $min_version_security_support) { //TODO fetch infos from php.net !
 						$website['phpInfos']['label_type'] = 'danger';
 					}
-					elseif ($website['phpInfos']['label_string'] < '7.2') { //TODO same
+					elseif ($website['phpInfos']['label_string'] < $min_version_active_support) { //TODO same
 						$website['phpInfos']['label_type'] = 'warning';
 					}
 					else {
