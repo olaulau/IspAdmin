@@ -32,7 +32,7 @@ class Ctrl
 		// get servers and websites list
 		$cache = \Cache::instance();
 		$key = "ispconfig";
-		if ($cache->exists($key, $ispconfigRawinfos) === false) {
+		if ($cache->exists($key, $ispconfigRawinfos) === false) { //TODO count in stats
 			$ispconfigRawinfos = \IspConfig::IspGetInfos ();;
 			$cache->set($key, $ispconfigRawinfos, $f3->get("cache.ispconfig"));
 		}
@@ -129,34 +129,55 @@ class Ctrl
 		
 		
 		// get PHP infos
+		//TODO put in a separate class
 		$min_version_security_support = $f3->get('php.min_version_security_support');
 		$min_version_active_support = $f3->get('php.min_version_active_support');
 		if ($f3->get('active_modules.php') === true) {
 			foreach ($websites as $parent => &$group) {
 				foreach ($group as $domain => &$website) {
-					$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*:[^:]*:[^:]*:[^:]*$/";
-					$php = $website['ispconfigInfos']['fastcgi_php_version'];
-					if (!empty ($php) && preg_match($regex, $php, $matches)) {
-						$website['phpInfos']['label_string'] = $matches[1]; // alternative server PHP version
+					$php = $website['ispconfigInfos']['php'];
+					if ($php === "no") {
+					    $website['phpInfos']['label_string'] = "disabled";
+					    $website['phpInfos']['label_type'] = "warning";
+					}
+					elseif ($php === "fast-cgi") {
+					    $website['phpInfos']['label_string'] = "fast cgi should not work";
+					    $website['phpInfos']['label_type'] = "warning";
+					}
+					elseif ($php === "mod") {
+					    $website['phpInfos']['label_string'] = "apache mod isn't recomended";
+					    $website['phpInfos']['label_type'] = "warning";
+					}
+					elseif ($php === "php-fpm") {
+    					$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*:[^:]*:[^:]*:[^:]*$/";
+    					$fastcgi_php_version = $website['ispconfigInfos']['fastcgi_php_version'];
+    					if (!empty ($fastcgi_php_version) && preg_match($regex, $fastcgi_php_version, $matches)) {
+    						$website['phpInfos']['label_string'] = $matches[1]; // alternative server PHP version
+    					}
+    					else {
+    						$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
+    						$php_default_name = $servers [$website['ispconfigInfos']['server_id']] ["web"] ["php_default_name"];
+    						if (preg_match($regex, $php_default_name, $matches)) {
+    							$website['phpInfos']['label_string'] = $matches[1]; // default server PHP version
+    						}
+    						else {
+    						    $website['phpInfos']['label_string'] = '??'; // unknown
+    						}
+    					}
+    					if ($website['phpInfos']['label_string'] < $min_version_security_support) { //TODO fetch infos from php.net !
+    						$website['phpInfos']['label_type'] = 'danger';
+    					}
+    					elseif ($website['phpInfos']['label_string'] < $min_version_active_support) { //TODO same
+    						$website['phpInfos']['label_type'] = 'warning';
+    					}
+    					else {
+    						$website['phpInfos']['label_type'] = 'success';
+    					}
 					}
 					else {
-						$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
-						$php = $servers [$website['ispconfigInfos']['server_id']] ["web"] ["php_default_name"];
-						if (preg_match($regex, $php, $matches)) {
-							$website['phpInfos']['label_string'] = $matches[1]; // default server PHP version
-						}
-						else {
-						    $website['phpInfos']['label_string'] = '??'; // unknown
-						}
-					}
-					if ($website['phpInfos']['label_string'] < $min_version_security_support) { //TODO fetch infos from php.net !
-						$website['phpInfos']['label_type'] = 'danger';
-					}
-					elseif ($website['phpInfos']['label_string'] < $min_version_active_support) { //TODO same
-						$website['phpInfos']['label_type'] = 'warning';
-					}
-					else {
-						$website['phpInfos']['label_type'] = 'success';
+					    //unforeseen
+					    $website['phpInfos']['label_string'] = "error";
+					    $website['phpInfos']['label_type'] = "danger";
 					}
 					unset($website);
 				}
