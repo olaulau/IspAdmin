@@ -54,8 +54,8 @@ class SslInfos extends Task {
 	    if (preg_match("/verify error:num=(.*):(.*)/", $rawInfos, $matches)) {
 			$error = $matches[2];
 	    }
-	    if (preg_match("/Issuer: (C[\s]?=[\s]?([^,\n]*))?(, )?(O[\s]?=[\s]?([^,\n]*))?(, )?(CN[\s]?=[\s]?([^,\n]*))?\n/m", $rawInfos, $matches)) {
-		    $issuer = $matches[8];
+		if (preg_match("/Issuer: (C[\s]?=[\s]?([^,\n]*))?(, )?(O[\s]?=[\s]?([^,\n]*))?(, )?(CN[\s]?=[\s]?([^,\n]*))?\n/m", $rawInfos, $matches)) {
+		    $issuer = $matches[5];
 	    }
 	    $this->remainingValidityDays = self::calculateRemainingValidityDays ($sslExpires);
 	    
@@ -77,7 +77,7 @@ class SslInfos extends Task {
 	    		$this->labelType = 'warning';
 	    		$this->labelString = "let's encrypt disabled";
 	    	}
-	    	if ($issuer !== "Let's Encrypt Authority X3") {
+			if ($issuer !== "Let's Encrypt") {
 	    		$this->labelType = 'danger';
 	    		$this->labelString = "certificate not signed by let's encrypt ($issuer)";
 	    	}
