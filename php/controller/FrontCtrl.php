@@ -50,7 +50,7 @@ class FrontCtrl
 			$ispconfigRawinfos = \IspConfig::IspGetInfos ();;
 			$cache->set($key, $ispconfigRawinfos, $f3->get("cache.ispconfig"));
 		}
-		list($servers, $websites) = $ispconfigRawinfos;
+		list($servers, $websites, $phps) = $ispconfigRawinfos;
 
 		if(!empty($f3->get('debug.websites_filter'))) {
 			array_walk ( $websites , function ( $value , $key , $filter ) use ( &$websites ) {
@@ -159,17 +159,12 @@ class FrontCtrl
 					    $website['phpInfos']['label_type'] = "warning";
 					}
 					elseif ($php === "mod") {
-					    $website['phpInfos']['label_string'] = "apache mod isn't recomended";
+					    $website['phpInfos']['label_string'] = "apache mod isn't recommended";
 					    $website['phpInfos']['label_type'] = "warning";
 					}
 					elseif ($php === "php-fpm") {
-    					$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*:[^:]*:[^:]*:[^:]*$/";
-    					$fastcgi_php_version = $website['ispconfigInfos']['fastcgi_php_version'];
-    					if (!empty ($fastcgi_php_version) && preg_match($regex, $fastcgi_php_version, $matches)) {
-    						$website['phpInfos']['label_string'] = $matches[1]; // alternative server PHP version
-    					}
-    					else {
-    						$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
+						if ($website["ispconfigInfos"]["server_php_id"] == 0) { // default php version ?
+							$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
     						$php_default_name = $servers [$website['ispconfigInfos']['server_id']] ["web"] ["php_default_name"];
     						if (preg_match($regex, $php_default_name, $matches)) {
     							$website['phpInfos']['label_string'] = $matches[1]; // default server PHP version
@@ -177,7 +172,11 @@ class FrontCtrl
     						else {
     						    $website['phpInfos']['label_string'] = '??'; // unknown
     						}
-    					}
+						}
+						else {
+							$website['phpInfos']['label_string'] = $phps[ $website["ispconfigInfos"]["server_php_id"] ] ["name"];
+						}
+						
     					if ($website['phpInfos']['label_string'] < $min_version_security_support) { //TODO fetch infos from php.net !
     						$website['phpInfos']['label_type'] = 'danger';
     					}

@@ -84,12 +84,23 @@ class IspConfig {
 	}
 	
 	
+	public static function IspGetServersPhps($session_id) {
+		$result = \IspConfig::restCall('server_get_php_versions', ['session_id' => $session_id, 'server_id' => 1, "php" => "php-fpm", "get_full_data" => true]);
+		if(!$result)
+		    die("error");
+		$res = json_decode($result, true)['response'];
+		$res = array_column($res, null, "server_php_id");
+		return $res;
+	}
+	
+	
 	public static function IspGetInfos () {
 		$session_id = \IspConfig::IspLogin ();
 		$servers = \IspConfig::IspGetServersConfig($session_id);
 		$websites = \IspConfig::IspGetWebsites ($session_id);
+		$phps = \IspConfig::IspGetServersPhps ($session_id);
 		\IspConfig::IspLogout ($session_id);
-		return [$servers, $websites];
+		return [$servers, $websites, $phps];
 	}
 	
 }
