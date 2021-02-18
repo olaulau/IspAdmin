@@ -3,7 +3,7 @@ namespace controller;
 
 use model\DnsInfos;
 
-class Ctrl
+class FrontCtrl
 {
 	
 	private static $generation_start;
@@ -193,13 +193,14 @@ class Ctrl
 			}
 		}
 // 		var_dump($websites); die;
-		
 		$f3->set('websites', $websites);
-		$f3->set('stats', $stats);
 		
 		$generation_end = microtime(true);
 		$generation_time = number_format ( (($generation_end - self::$generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
-		$f3->set("generation_time", $generation_time);
+		$footer_additional_text = '
+				<span title="'.implode(PHP_EOL, $stats['executed_cmds']).'">'.$stats['total_executed_cmds'].' / '.$stats['total_cmds'].' executed</span> - 
+				generated in '.$generation_time .' ms';
+		$f3->set("footer_additional_text", $footer_additional_text);
 		
 		$PAGE = [
 			"name" => "websites",
