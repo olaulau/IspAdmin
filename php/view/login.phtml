@@ -1,0 +1,25 @@
+<?php require_once __DIR__ . "/head.inc.phtml"; ?>
+
+<body class="text-center">
+    
+<form class="form-signin" atction="" method="post">
+  <h1 class="h3 mb-3 font-weight-normal">Authentifiez-vous</h1>
+  <label for="user" class="sr-only">Identifiant</label>
+  <input type="text" id="user" name="user" class="form-control" placeholder="identifiant" required autofocus>
+  <label for="password" class="sr-only">Mot de passe</label>
+  <input type="password" id="password" name="password" class="form-control" placeholder="mot de passe" required>
+  <div class="checkbox mb-3">
+    <label>
+      <input type="checkbox" value="remember-me"> se souvenir de moi
+    </label>
+  </div>
+  <button class="btn btn-lg btn-primary btn-block" type="submit">s'identifier</button>
+  <p class="mt-5 mb-3 text-muted">&copy; 2017-2021</p>
+</form>
+
+
+    
+  </body>
+</html>
+
+<?php require_once __DIR__ . "/foot.inc.phtml"; ?>

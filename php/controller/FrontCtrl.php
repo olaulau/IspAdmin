@@ -6,14 +6,18 @@ use model\DnsInfos;
 class FrontCtrl
 {
 	
-	private static $generation_start;
-	
-	public static function beforeroute() {
-		self::$generation_start = microtime(true);
+	public static function beforeroute()
+	{
+		$f3 = \Base::instance();
+		
+		if(empty( $f3->get("SESSION.auth_user") )) {
+			$f3->reroute("/login");
+		}
 	}
 	
 	
-	public static function afterroute() {
+	public static function afterroute()
+	{
 		
 	}
 	
@@ -35,6 +39,8 @@ class FrontCtrl
 	
 	public static function GET_websites ()
 	{
+		$generation_start = microtime(true);
+		
 		$f3 = \Base::instance();
 		
 		// get servers and websites list
@@ -196,7 +202,7 @@ class FrontCtrl
 		$f3->set('websites', $websites);
 		
 		$generation_end = microtime(true);
-		$generation_time = number_format ( (($generation_end - self::$generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
+		$generation_time = number_format ( (($generation_end - $generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
 		$footer_additional_text = '
 				<span title="'.implode(PHP_EOL, $stats['executed_cmds']).'">'.$stats['total_executed_cmds'].' / '.$stats['total_cmds'].' executed</span> - 
 				generated in '.$generation_time .' ms';

@@ -12,5 +12,8 @@
 					<li class="nav-item <?= $PAGE["name"] === "emails" ? "active" : "" ?>"> <a class="nav-link" href="<?= $BASE ?>/emails"> E-mails </a> </li>
 				</ul>
 			</div>
-		</nav>
+			<ul class="navbar-nav px-3">
+				<li class="nav-item text-nowrap"> <a href="<?=$BASE?>/logout" class="nav-link" href="#"> déconnecter ( <?= $SESSION["auth_user"] ?> ) </a> </li>
+			</ul>
+	</nav>
 	</header>
