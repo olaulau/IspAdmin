@@ -100,6 +100,10 @@ class FrontCtrl
 						$tasks["http"][$domain] = $t;
 						$cmds["http_$domain"] = $t->getCmd();
 					}
+					if ($f3->get('active_modules.php') === true) {
+						$t = new \model\PhpInfos ($domain, $server, $website, $phps);
+						$tasks["php"][$domain] = $t;
+					}
 				}
 			}
 		}
@@ -135,68 +139,16 @@ class FrontCtrl
 						$tasks["http"][$domain]->extractInfos($website['ispconfigInfos']);
 						$website['httpInfos'] = $tasks["http"][$domain];
 					}
+					if ($f3->get('active_modules.php') === true) {
+						$tasks["php"][$domain]->extractInfos($website['ispconfigInfos']);
+						$website['phpInfos'] = $tasks["php"][$domain];
+					}
 				}
 				unset($website);
 			}
 			unset($group);
 		}
-		
-		
-		// get PHP infos
-		//TODO put in a separate class
-		$min_version_security_support = $f3->get('php.min_version_security_support');
-		$min_version_active_support = $f3->get('php.min_version_active_support');
-		if ($f3->get('active_modules.php') === true) {
-			foreach ($websites as $parent => &$group) {
-				foreach ($group as $domain => &$website) {
-					$php = $website['ispconfigInfos']['php'];
-					if ($php === "no") {
-					    $website['phpInfos']['label_string'] = "disabled";
-					    $website['phpInfos']['label_type'] = "warning";
-					}
-					elseif ($php === "fast-cgi") {
-					    $website['phpInfos']['label_string'] = "fast cgi should not work";
-					    $website['phpInfos']['label_type'] = "warning";
-					}
-					elseif ($php === "mod") {
-					    $website['phpInfos']['label_string'] = "apache mod isn't recommended";
-					    $website['phpInfos']['label_type'] = "warning";
-					}
-					elseif ($php === "php-fpm") {
-						if ($website["ispconfigInfos"]["server_php_id"] == 0) { // default php version ?
-							$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
-    						$php_default_name = $servers [$website['ispconfigInfos']['server_id']] ["web"] ["php_default_name"];
-    						if (preg_match($regex, $php_default_name, $matches)) {
-    							$website['phpInfos']['label_string'] = $matches[1]; // default server PHP version
-    						}
-    						else {
-    						    $website['phpInfos']['label_string'] = '??'; // unknown
-    						}
-						}
-						else {
-							$website['phpInfos']['label_string'] = $phps[ $website["ispconfigInfos"]["server_php_id"] ] ["name"];
-						}
-						
-    					if ($website['phpInfos']['label_string'] < $min_version_security_support) { //TODO fetch infos from php.net !
-    						$website['phpInfos']['label_type'] = 'danger';
-    					}
-    					elseif ($website['phpInfos']['label_string'] < $min_version_active_support) { //TODO same
-    						$website['phpInfos']['label_type'] = 'warning';
-    					}
-    					else {
-    						$website['phpInfos']['label_type'] = 'success';
-    					}
-					}
-					else {
-					    //unforeseen
-					    $website['phpInfos']['label_string'] = "error";
-					    $website['phpInfos']['label_type'] = "danger";
-					}
-					unset($website);
-				}
-				unset($group);
-			}
-		}
+
 // 		var_dump($websites); die;
 		$f3->set('websites', $websites);
 		

@@ -100,7 +100,7 @@
 						<?php
 						if ($active_modules['php'] === true) {
 							?>
-							<td class="<?= !empty($website['phpInfos']['label_type']) ? 'table-'.$website['phpInfos']['label_type'] : '' ?>"> <?= $website['phpInfos']['label_string'] ?> </td>
+							<td class="table-<?= $website['phpInfos']->getLabelType() ?>"><?= $website['phpInfos']->getLabelString() ?></td>
 							<?php
 						}
 						?>
