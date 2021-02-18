@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "bcosca/fatfree",
-            "version": "3.7.0",
+            "version": "3.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bcosca/fatfree.git",
-                "reference": "7bd8c57fad088e0ec4983a029f248b785d5e0aab"
+                "reference": "62f40d88994b99a51cfba5556931e80e1bb64a8c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bcosca/fatfree/zipball/7bd8c57fad088e0ec4983a029f248b785d5e0aab",
-                "reference": "7bd8c57fad088e0ec4983a029f248b785d5e0aab",
+                "url": "https://api.github.com/repos/bcosca/fatfree/zipball/62f40d88994b99a51cfba5556931e80e1bb64a8c",
+                "reference": "62f40d88994b99a51cfba5556931e80e1bb64a8c",
                 "shasum": ""
             },
             "require": {
@@ -35,20 +35,24 @@
             ],
             "description": "A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!",
             "homepage": "http://fatfreeframework.com/",
-            "time": "2019-11-26T16:18:40+00:00"
+            "support": {
+                "issues": "https://github.com/bcosca/fatfree/issues",
+                "source": "https://github.com/bcosca/fatfree/tree/3.7.3"
+            },
+            "time": "2020-12-13T12:52:53+00:00"
         },
         {
             "name": "components/jquery",
-            "version": "3.4.1",
+            "version": "3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/components/jquery.git",
-                "reference": "901828b7968b18319e377dc23d466f28426ee083"
+                "reference": "b33e8f0f9a1cb2ae390cf05d766a900b53d2125b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/components/jquery/zipball/901828b7968b18319e377dc23d466f28426ee083",
-                "reference": "901828b7968b18319e377dc23d466f28426ee083",
+                "url": "https://api.github.com/repos/components/jquery/zipball/b33e8f0f9a1cb2ae390cf05d766a900b53d2125b",
+                "reference": "b33e8f0f9a1cb2ae390cf05d766a900b53d2125b",
                 "shasum": ""
             },
             "type": "component",
@@ -77,7 +81,14 @@
             ],
             "description": "jQuery JavaScript Library",
             "homepage": "http://jquery.com",
-            "time": "2019-10-23T05:15:13+00:00"
+            "support": {
+                "forum": "http://forum.jquery.com",
+                "irc": "irc://irc.freenode.org/jquery",
+                "issues": "https://github.com/jquery/jquery/issues",
+                "source": "https://github.com/jquery/jquery",
+                "wiki": "http://docs.jquery.com/"
+            },
+            "time": "2020-05-05T13:21:02+00:00"
         },
         {
             "name": "components/jqueryui",
@@ -162,20 +173,24 @@
                 }
             ],
             "description": "jQuery UI is a curated set of user interface interactions, effects, widgets, and themes built on top of the jQuery JavaScript Library. Whether you're building highly interactive web applications or you just need to add a date picker to a form control, jQuery UI is the perfect choice.",
+            "support": {
+                "issues": "https://github.com/components/jqueryui/issues",
+                "source": "https://github.com/components/jqueryui/tree/master"
+            },
             "time": "2016-09-16T05:47:55+00:00"
         },
         {
             "name": "fortawesome/font-awesome",
-            "version": "5.12.0",
+            "version": "5.15.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/Font-Awesome.git",
-                "reference": "d8db3d032d22e7a5e21f3b40905b7867be19bb02"
+                "reference": "fcec2d1b01ff069ac10500ac42e4478d20d21f4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/d8db3d032d22e7a5e21f3b40905b7867be19bb02",
-                "reference": "d8db3d032d22e7a5e21f3b40905b7867be19bb02",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/fcec2d1b01ff069ac10500ac42e4478d20d21f4c",
+                "reference": "fcec2d1b01ff069ac10500ac42e4478d20d21f4c",
                 "shasum": ""
             },
             "type": "library",
@@ -225,20 +240,26 @@
                 "icon",
                 "svg"
             ],
-            "time": "2019-12-10T22:52:13+00:00"
+            "support": {
+                "docs": "http://fontawesome.com/how-to-use",
+                "email": "hello@fontawesome.com",
+                "issues": "https://github.com/FortAwesome/Font-Awesome/issues",
+                "source": "https://github.com/FortAwesome/Font-Awesome"
+            },
+            "time": "2021-01-13T20:23:11+00:00"
         },
         {
             "name": "io-developer/php-whois",
-            "version": "3.4.4",
+            "version": "3.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/io-developer/php-whois.git",
-                "reference": "a8599b38c43dba26ca1f49a5efb1857ea72935a0"
+                "reference": "0fddbb79bc26f0d97cf962f13c6e119a3fb3ff5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/io-developer/php-whois/zipball/a8599b38c43dba26ca1f49a5efb1857ea72935a0",
-                "reference": "a8599b38c43dba26ca1f49a5efb1857ea72935a0",
+                "url": "https://api.github.com/repos/io-developer/php-whois/zipball/0fddbb79bc26f0d97cf962f13c6e119a3fb3ff5a",
+                "reference": "0fddbb79bc26f0d97cf962f13c6e119a3fb3ff5a",
                 "shasum": ""
             },
             "require": {
@@ -282,7 +303,11 @@
                 "whois",
                 "црщшы"
             ],
-            "time": "2019-12-10T16:01:15+00:00"
+            "support": {
+                "issues": "https://github.com/io-developer/php-whois/issues",
+                "source": "https://github.com/io-developer/php-whois/tree/master"
+            },
+            "time": "2020-03-08T15:59:03+00:00"
         },
         {
             "name": "olaulau/htmlskel",
@@ -290,40 +315,41 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/olaulau/HtmlSkel.git",
-                "reference": "ba51cc8817632e67348a930758583cf3b24988ae"
+                "reference": "5497dcc47f8bc6db3b764934275b41263aea5161"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/olaulau/HtmlSkel/zipball/ba51cc8817632e67348a930758583cf3b24988ae",
-                "reference": "ba51cc8817632e67348a930758583cf3b24988ae",
+                "url": "https://api.github.com/repos/olaulau/HtmlSkel/zipball/5497dcc47f8bc6db3b764934275b41263aea5161",
+                "reference": "5497dcc47f8bc6db3b764934275b41263aea5161",
                 "shasum": ""
             },
             "require": {
-                "bcosca/fatfree": "^3.6",
-                "components/jquery": "^3.3",
-                "components/jqueryui": "^1.12",
-                "fortawesome/font-awesome": "^5.8",
-                "twbs/bootstrap": "^4.1"
+                "bcosca/fatfree": "^3",
+                "components/jquery": "^3",
+                "components/jqueryui": "^1",
+                "fortawesome/font-awesome": "^5",
+                "twbs/bootstrap": "^4"
             },
+            "default-branch": true,
             "type": "library",
             "support": {
                 "source": "https://github.com/olaulau/HtmlSkel/tree/master",
                 "issues": "https://github.com/olaulau/HtmlSkel/issues"
             },
-            "time": "2019-09-23T15:09:55+00:00"
+            "time": "2021-01-13T11:00:08+00:00"
         },
         {
             "name": "twbs/bootstrap",
-            "version": "v4.4.1",
+            "version": "v4.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twbs/bootstrap.git",
-                "reference": "dca1ab7d877bc4b664b43604657a2b5fbe2b4ecb"
+                "reference": "6ffb0b48e455430f8a5359ed689ad64c1143fac2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/dca1ab7d877bc4b664b43604657a2b5fbe2b4ecb",
-                "reference": "dca1ab7d877bc4b664b43604657a2b5fbe2b4ecb",
+                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/6ffb0b48e455430f8a5359ed689ad64c1143fac2",
+                "reference": "6ffb0b48e455430f8a5359ed689ad64c1143fac2",
                 "shasum": ""
             },
             "replace": {
@@ -361,7 +387,17 @@
                 "sass",
                 "web"
             ],
-            "time": "2019-11-28T12:59:49+00:00"
+            "support": {
+                "issues": "https://github.com/twbs/bootstrap/issues",
+                "source": "https://github.com/twbs/bootstrap/tree/v4.6.0"
+            },
+            "funding": [
+                {
+                    "url": "https://opencollective.com/bootstrap",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2021-01-19T16:16:38+00:00"
         }
     ],
     "packages-dev": [],
@@ -373,5 +409,6 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
 }

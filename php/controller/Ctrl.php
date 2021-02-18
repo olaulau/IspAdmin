@@ -20,6 +20,14 @@ class Ctrl
 	
 	public static function GET_index ()
 	{
+		$f3 = \Base::instance();
+		
+		$PAGE = [
+				"name" => "index",
+				"title" => "Isp Admin",
+		];
+		$f3->set("PAGE", $PAGE);
+		
 		$view = new \View();
 		echo $view->render('index.phtml');
 	}
@@ -193,8 +201,29 @@ class Ctrl
 		$generation_time = number_format ( (($generation_end - self::$generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
 		$f3->set("generation_time", $generation_time);
 		
+		$PAGE = [
+			"name" => "websites",
+			"title" => "Web Sites",
+		];
+		$f3->set("PAGE", $PAGE);
+		
 		$view = new \View();
 		echo $view->render('websites.phtml');
+	}
+	
+	
+	public static function GET_emails ()
+	{
+		$f3 = \Base::instance();
+		
+		$PAGE = [
+				"name" => "emails",
+				"title" => "E-mails",
+		];
+		$f3->set("PAGE", $PAGE);
+		
+		$view = new \View();
+		echo $view->render('emails.phtml');
 	}
 	
 }

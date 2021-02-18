@@ -1,42 +1,8 @@
-<?php
-use model\DnsInfos;
-?>
-<!doctype html>
-<html lang="fr">
-<head>
-<link rel="icon" href="data:;base64,iVBORw0KGgo=">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="">
-<meta name="author" content="">
+<?php require_once __DIR__ . "/head.inc.phtml"; ?>
 
-<title>Websites</title>
+<?php require_once __DIR__ . "/header.inc.phtml"; ?>
 
-<!-- Bootstrap core CSS -->
-<link href="vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Custom styles for this template -->
-<link href="css/sticky-footer-navbar.css" rel="stylesheet">
-<link href="css/index.css" rel="stylesheet">
-</head>
-
-<body>
-
-	<header>
-		<!-- Fixed navbar -->
-		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<a class="navbar-brand" href="<?= $BASE ?>/">IspAdmin</a>
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
-				aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-			<div class="collapse navbar-collapse" id="navbarCollapse">
-				<ul class="navbar-nav mr-auto">
-					<li class="nav-item active"><a class="nav-link" href="#"> Websites <span class="sr-only">(current)</span></a></li>
-				</ul>
-			</div>
-		</nav>
-	</header>
 
 	<!-- Begin page content -->
 	<main role="main" class="container">
@@ -168,20 +134,6 @@ use model\DnsInfos;
 	</table>
 	</main>
 
-	<footer class="footer">
-		<div class="container">
-			<span class="text-muted">
-				<a href="https://www.github.com/olaulau/IspAdmin">IspAdmin</a> (c) <a href="https://www.github.com/olaulau">olaulau</a> - 
-				<span title="<?= implode(PHP_EOL, $stats['executed_cmds']) ?>"><?= $stats['total_executed_cmds'] ?> / <?= $stats['total_cmds'] ?> executed</span> - 
-				generated in <?= $generation_time ?> ms
-			</span>
-		</div>
-	</footer>
+<?php require_once __DIR__ . "/footer.inc.phtml"; ?>
 
-	<!-- Bootstrap core JavaScript
-    ================================================== -->
-	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="vendor/components/jquery/jquery.min.js"></script>
-	<script src="vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
-</body>
-</html>
+<?php require_once __DIR__ . "/foot.inc.phtml"; ?>
