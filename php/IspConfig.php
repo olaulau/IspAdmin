@@ -84,13 +84,88 @@ class IspConfig {
 	}
 	
 	
-	public static function IspGetServersPhps($session_id) {
+	public static function IspGetServersPhps($session_id) { //TODO server id !!!
 		$result = \IspConfig::restCall('server_get_php_versions', ['session_id' => $session_id, 'server_id' => 1, "php" => "php-fpm", "get_full_data" => true]);
 		if(!$result)
 		    die("error");
 		$res = json_decode($result, true)['response'];
 		$res = array_column($res, null, "server_php_id");
 		return $res;
+	}
+	
+	
+	public static function IspGetMailUsers($session_id, $domain) {
+		$result = \IspConfig::restCall('mail_user_get', [ 'session_id' => $session_id, 'primary_id' => ["email" => "%@$domain"] ]);
+		if(!$result)
+		    die("error");
+		$res = json_decode($result, true)['response'];
+		$res = array_column($res, null, "mailuser_id");
+		return $res;
+	}
+	
+	public static function IspGetMailUser($session_id, $email) {
+		$result = \IspConfig::restCall('mail_user_get', [ 'session_id' => $session_id, 'primary_id' => ["email" => $email] ]);
+		if(!$result)
+			die("error");
+		$res = json_decode($result, true)['response'];
+		if(!empty($res))
+			return $res[0];
+		else
+			return null;
+	}
+	
+	public static function IspDeleteMailUser($session_id, $mail_user_id) {
+		$result = \IspConfig::restCall('mail_user_delete', [ 'session_id' => $session_id, 'primary_id' => $mail_user_id ]);
+		if(!$result)
+		    die("error");
+		$res = json_decode($result, true)['response'];
+		if($res !== 1) {
+			die("error deleting mail user id #$mail_user_id : $res");
+		}
+	}
+	
+	public static function IspAddMailUser($session_id, $server_id, $email, $password, $quota) {
+		$params = [
+				"server_id"	=> $server_id,
+				"email"		=> $email,
+				"login"		=> $email,
+				"password"	=> $password,
+				"quota"		=> $quota,
+				
+				"uid"		=> 5000,
+				"gid"		=> 5000,
+				"maildir"	=> "/var/vmail/domain/username", // TODO
+				"homedir"	=> "/var/vmail",
+				"custom_mailfilter" => "",
+				"move_junk" => "n",
+				"postfix" => "y",
+				"backup_interval" => "monthly", //TODO
+				"backup_copies" => 2, //TODO
+		];
+		$result = \IspConfig::restCall('mail_user_add', [ 'session_id' => $session_id, "client_id" => 0, 'params' => $params ]);
+		if(!$result)
+		    die("error");
+		$res = json_decode($result, true);
+		if($res["code"] !== "ok") {
+			die("error : ".$res["message"]);
+		}
+		$res = intval($res['response']);
+		return $res;
+	}
+	
+	public static function IspGetMailDomain($session_id, $domain) {
+		$result = \IspConfig::restCall('mail_domain_get_by_domain', [ 'session_id' => $session_id, 'domain' => $domain]);
+		if(!$result)
+			die("error");
+		$res = json_decode($result, true);
+		if($res["code"] !== "ok") {
+			die("error : ".$res["message"]);
+		}
+		$res = $res['response'];
+		if(!empty($res))
+			return $res[0];
+		else
+			return null;
 	}
 	
 	

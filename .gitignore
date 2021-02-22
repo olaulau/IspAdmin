@@ -11,3 +11,6 @@
 
 /tmp/log/*
 !/tmp/log/.gitkeep
+
+/tmp/uploads/*
+!/tmp/uploads/.gitkeep

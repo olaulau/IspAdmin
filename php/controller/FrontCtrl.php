@@ -47,7 +47,7 @@ class FrontCtrl
 		$cache = \Cache::instance();
 		$key = "ispconfig";
 		if ($cache->exists($key, $ispconfigRawinfos) === false) { //TODO count in stats
-			$ispconfigRawinfos = \IspConfig::IspGetInfos ();;
+			$ispconfigRawinfos = \IspConfig::IspGetInfos ();
 			$cache->set($key, $ispconfigRawinfos, $f3->get("cache.ispconfig"));
 		}
 		list($servers, $websites, $phps) = $ispconfigRawinfos;
@@ -173,6 +173,77 @@ class FrontCtrl
 	public static function GET_emails ()
 	{
 		$f3 = \Base::instance();
+		
+		$PAGE = [
+				"name" => "emails",
+				"title" => "E-mails",
+		];
+		$f3->set("PAGE", $PAGE);
+		
+		$view = new \View();
+		echo $view->render('emails.phtml');
+	}
+	
+	public static function POST_emails ()
+	{
+		$f3 = \Base::instance();
+		$web = \Web::instance();
+		
+		// receive upload file
+		$files = $web->receive(function($file, $formFieldName)
+			{
+				return true; // allows the file to be moved from php tmp dir to your defined upload dir
+			},
+			true);
+		if(empty($files)) {
+			die("no file uploaded");
+		}
+		
+		// check fields
+		if(empty($f3->get("POST.quota"))) {
+			die("parameter problem");
+		}
+		
+		$session_id = \IspConfig::IspLogin();
+		$mail_domain_server_id = [];
+		// uploaded file loop
+		foreach ($files as $file => $uploaded) {
+			if($uploaded === true) {
+				// row loop
+				$row = 1;
+				if (($handle = fopen($file, "r")) !== FALSE) {
+					while (($data = fgetcsv($handle)) !== FALSE) {
+						list($email, $password) = $data;
+						
+						// delete mail user
+						$mail_user = \IspConfig::IspGetMailUser($session_id, $email);
+						if(!empty($mail_user)) {
+							\IspConfig::IspDeleteMailUser($session_id, $mail_user["mailuser_id"]);
+						}
+						
+						// calculate domain
+						if(filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+							die("invalid email : $email");
+						}
+						$domain = explode("@", $email)[1];
+
+						// look for server hosting mail domain
+						if(empty($mail_domain_server_id[ $domain ])) {
+							$mail_domain = \IspConfig::IspGetMailDomain($session_id, $domain);
+							$mail_domain_server_id[ $domain ] = $mail_domain["server_id"];
+						}
+						
+						// create mailbox
+						$quota = $f3->get("POST.quota") * 1024 * 1024 * 1024; // GB -> Bytes
+						$mail_user_id = \IspConfig::IspAddMailUser($session_id, $mail_domain_server_id[ $domain ], $email, $password, $quota);
+						
+						$row++;
+					}
+					fclose($handle);
+					unlink($file);
+				}
+			}
+		}
 		
 		$PAGE = [
 				"name" => "emails",

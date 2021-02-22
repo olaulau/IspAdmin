@@ -5,7 +5,26 @@
 
 	<!-- Begin page content -->
 	<main role="main" class="container">
-		emails
+	
+		<h1> bulk mailbox creation </h1>
+		
+		<p>
+			If exists, delete existing mailbox. <br/>
+			Then create the mailbox with the specified quota.
+		</p>
+		
+		<form action="" method="post" enctype="multipart/form-data">
+			<div class="form-group">
+				<label for="file"> select a CSV file with (email + password) rows </label>
+				<input type="file" class="form-control-file" id="file" name="file" required>
+			</div>
+			<div class="form-group">
+				<label for="quota"> quota (GB) </label>
+				<input type="number" class="form-control-file" id="quota" name="quota" value="10" required>
+			</div>
+			<button type="submit" class="btn btn-primary"> Send </button>
+		</form>
+
 	</main>
 
 <?php require_once __DIR__ . "/footer.inc.phtml"; ?>
