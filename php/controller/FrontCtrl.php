@@ -200,12 +200,12 @@ class FrontCtrl
 		}
 		
 		// check fields
-		if(empty($f3->get("POST.quota"))) {
+		if(empty($f3->get("POST.quota")) || !is_numeric($f3->get("POST.quota"))) {
 			die("parameter problem");
 		}
 		
 		$session_id = \IspConfig::IspLogin();
-		$mail_domain_server_id = [];
+		$mail_domains = [];
 		// uploaded file loop
 		foreach ($files as $file => $uploaded) {
 			if($uploaded === true) {
@@ -225,17 +225,21 @@ class FrontCtrl
 						if(filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
 							die("invalid email : $email");
 						}
-						$domain = explode("@", $email)[1];
+						list($email_username, $email_domain) = explode("@", $email);
 
-						// look for server hosting mail domain
-						if(empty($mail_domain_server_id[ $domain ])) {
-							$mail_domain = \IspConfig::IspGetMailDomain($session_id, $domain);
-							$mail_domain_server_id[ $domain ] = $mail_domain["server_id"];
+						// look for server and client hosting mail domain (if not in cache)
+						if(empty($mail_domains[$email_domain])) {
+							$mail_domain = \IspConfig::IspGetMailDomain($session_id, $email_domain);
+							$client_id = \IspConfig::IspGetClientIdFomUserId($session_id, $mail_domain["sys_groupid"]);
+							$mail_domain["client_id"] = $client_id;
+							$mail_domains[$email_domain] = $mail_domain;
 						}
 						
 						// create mailbox
+						$server_id = $mail_domains[$email_domain]["server_id"];
+						$client_id = $mail_domains[$email_domain]["client_id"];
 						$quota = $f3->get("POST.quota") * 1024 * 1024 * 1024; // GB -> Bytes
-						$mail_user_id = \IspConfig::IspAddMailUser($session_id, $mail_domain_server_id[ $domain ], $email, $password, $quota);
+						$mail_user_id = \IspConfig::IspAddMailUser($session_id, $server_id, $client_id, $email, $password, $quota);
 						
 						$row++;
 					}

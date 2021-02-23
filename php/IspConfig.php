@@ -124,7 +124,8 @@ class IspConfig {
 		}
 	}
 	
-	public static function IspAddMailUser($session_id, $server_id, $email, $password, $quota) {
+	public static function IspAddMailUser($session_id, $server_id, $client_id, $email, $password, $quota) {
+		list($email_username, $email_domain) = explode("@", $email);
 		$params = [
 				"server_id"	=> $server_id,
 				"email"		=> $email,
@@ -134,7 +135,7 @@ class IspConfig {
 				
 				"uid"		=> 5000,
 				"gid"		=> 5000,
-				"maildir"	=> "/var/vmail/domain/username", // TODO
+				"maildir"	=> "/var/vmail/$email_domain/$email_username",
 				"homedir"	=> "/var/vmail",
 				"custom_mailfilter" => "",
 				"move_junk" => "n",
@@ -142,7 +143,7 @@ class IspConfig {
 				"backup_interval" => "monthly", //TODO
 				"backup_copies" => 2, //TODO
 		];
-		$result = \IspConfig::restCall('mail_user_add', [ 'session_id' => $session_id, "client_id" => 0, 'params' => $params ]);
+		$result = \IspConfig::restCall('mail_user_add', [ 'session_id' => $session_id, "client_id" => $client_id, 'params' => $params ]);
 		if(!$result)
 		    die("error");
 		$res = json_decode($result, true);
@@ -166,6 +167,19 @@ class IspConfig {
 			return $res[0];
 		else
 			return null;
+	}
+	
+	
+	public static function IspGetClientIdFomUserId($session_id, $sys_userid) {
+		$result = \IspConfig::restCall('client_get_id', [ 'session_id' => $session_id, 'sys_userid' => $sys_userid]);
+		if(!$result)
+			die("error");
+		$res = json_decode($result, true);
+		if($res["code"] !== "ok") {
+			die("error : ".$res["message"]);
+		}
+		$res['response'];
+		return $res['response'];
 	}
 	
 	
