@@ -203,6 +203,10 @@ class FrontCtrl
 		if(empty($f3->get("POST.quota")) || !is_numeric($f3->get("POST.quota"))) {
 			die("parameter problem");
 		}
+		$drop_existing_mailboxes = false;
+		if( !empty($f3->get("POST.drop")) && $f3->get("POST.drop") === "on" ) {
+			$drop_existing_mailboxes = true;
+		}
 		
 		$session_id = \IspConfig::IspLogin();
 		$mail_domains = [];
@@ -217,8 +221,14 @@ class FrontCtrl
 						
 						// delete mail user
 						$mail_user = \IspConfig::IspGetMailUser($session_id, $email);
-						if(!empty($mail_user)) {
-							\IspConfig::IspDeleteMailUser($session_id, $mail_user["mailuser_id"]);
+						if(!empty($mail_user)) { // existing email
+							if($drop_existing_mailboxes === true) {
+								\IspConfig::IspDeleteMailUser($session_id, $mail_user["mailuser_id"]);
+							}
+							else {
+								continue; // can't recreate an existing mailbox
+								//TODO count stats
+							}
 						}
 						
 						// calculate domain
@@ -247,16 +257,13 @@ class FrontCtrl
 					unlink($file);
 				}
 			}
+			else {
+				die("error in upload");
+			}
 		}
 		
-		$PAGE = [
-				"name" => "emails",
-				"title" => "E-mails",
-		];
-		$f3->set("PAGE", $PAGE);
-		
-		$view = new \View();
-		echo $view->render('emails.phtml');
+		//TODO put result in session flash message and redirect to emails urls (GET)
+		$f3->reroute("/emails");
 	}
 	
 }
