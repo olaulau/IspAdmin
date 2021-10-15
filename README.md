@@ -10,6 +10,10 @@ IspConfig additionnal admin features
 
 ![websites](doc/websites.png)
 
+## prerequisite
+- must create a remote user in IspConfig panel under "System > Remote users"
+- requires php-intl installed before executing 'composer install'
+
 ## installation
 ```
 git clone https://github.com/olaulau/IspAdmin
