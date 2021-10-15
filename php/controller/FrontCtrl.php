@@ -184,6 +184,7 @@ class FrontCtrl
 		echo $view->render('emails.phtml');
 	}
 	
+	
 	public static function POST_emails ()
 	{
 		$f3 = \Base::instance();
@@ -264,6 +265,21 @@ class FrontCtrl
 		
 		//TODO put result in session flash message and redirect to emails urls (GET)
 		$f3->reroute("/emails");
+	}
+	
+
+	public static function GET_domains ()
+	{
+		$f3 = \Base::instance();
+		
+		$PAGE = [
+				"name" => "domains",
+				"title" => "DNS",
+		];
+		$f3->set("PAGE", $PAGE);
+		
+		$view = new \View();
+		echo $view->render('domains.phtml');
 	}
 	
 }
