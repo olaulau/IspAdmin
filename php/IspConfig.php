@@ -7,54 +7,52 @@ class IspConfig {
 	private static function restCall ($method, $data) {
 		$f3 = \Base::instance();
 		
-		if(!is_array($data)) return false;
+		if(!is_array($data))
+			return false;
 		$json = json_encode($data);
 		
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_POST, 1);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $json);
-		
 		curl_setopt($curl, CURLOPT_URL, $f3->get('tech.ispconfig.rest.url') . '?' . $method);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		
 		$result = curl_exec($curl);
 		if ($result === FALSE)
-			echo curl_errno($curl) . ' : ' . curl_error($curl) . '<br/>';
+			die( "error : " . curl_errno($curl) . ' : ' . curl_error($curl) . '<br/>' );
 		curl_close($curl);
 		
-		return $result;
+		try {
+			$res = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+		}
+		catch(JsonException $ex) {
+			die("json decode error $ex->code : $ex->message");
+		}
+		return $res["response"];
 	}
 	
 	
 	public static function IspLogin () {
 		$f3 = \Base::instance();
 		
-		$result = \IspConfig::restCall('login', array('username' => $f3->get('tech.ispconfig.rest.user'), 'password' => $f3->get('tech.ispconfig.rest.password'), 'client_login' => false));
-		if($result) {
-			$data = json_decode($result, true);
-			if(!$data)
-			    return false;
-			return $data['response'];
+		$data = \IspConfig::restCall('login', ['username' => $f3->get('tech.ispconfig.rest.user'), 'password' => $f3->get('tech.ispconfig.rest.password'), 'client_login' => false]);
+		if($data === false) {
+			die("IspConfig login failed");
 		}
-		else {
-			return false;
-		}
+		return $data;
 	}
 	
 	
 	public static function IspLogout ($session_id) {
 		// logout
-		$result = \IspConfig::restCall('logout', array('session_id' => $session_id));
+		$result = \IspConfig::restCall('logout', ['session_id' => $session_id]);
 		if(!$result)
-		    print "Could not get logout result\n";
+		    die("Could not get logout result\n");
 	}
 	
 	
 	public static function IspGetWebsites ($session_id) {
-		$result = \IspConfig::restCall('sites_web_domain_get', array('session_id' => $session_id, 'primary_id' => ['type' => 'vhost'])); //TODO handle type=alias
-		if(!$result)
-		    die("error");
-		$domain_record = json_decode($result, true)['response'];
+		$domain_record = \IspConfig::restCall('sites_web_domain_get', ['session_id' => $session_id, 'primary_id' => ['type' => 'vhost']]); //TODO handle type=alias
 		$res = [];
 		foreach ($domain_record as $ispinfo) {
 			$domain = $ispinfo['domain'];
@@ -66,63 +64,49 @@ class IspConfig {
 	}
 	
 	
-	public static function IspGetServersConfig($session_id) {
-		$result = \IspConfig::restCall('server_get', array('session_id' => $session_id, 'server_id' => []));
-		if(!$result)
-		    die("error");
-		$res = json_decode($result, true)['response'];
+	public static function IspUpdateWebsite ($session_id, $ispconfigInfos) {
+		$res = \IspConfig::restCall('sites_web_domain_update', ['session_id' => $session_id, 'client_id' => null, 'primary_id' => $ispconfigInfos['domain_id'], 'params' => $ispconfigInfos]);
 		return $res;
 	}
 	
 	
-	public static function IspUpdateWebsite ($session_id, $ispconfigInfos) {
-		$result = \IspConfig::restCall('sites_web_domain_update', array('session_id' => $session_id, 'client_id' => null, 'primary_id' => $ispconfigInfos['domain_id'], 'params' => $ispconfigInfos));
-		if(!$result)
-		    die("error");
-		$res = json_decode($result, true)['response'];
+	public static function IspGetServersConfig($session_id) {
+		$res = \IspConfig::restCall('server_get', ['session_id' => $session_id, 'server_id' => []]);
 		return $res;
 	}
 	
 	
 	public static function IspGetServersPhps($session_id) { //TODO server id !!!
-		$result = \IspConfig::restCall('server_get_php_versions', ['session_id' => $session_id, 'server_id' => 1, "php" => "php-fpm", "get_full_data" => true]);
-		if(!$result)
-		    die("error");
-		$res = json_decode($result, true)['response'];
+		$res = \IspConfig::restCall('server_get_php_versions', ['session_id' => $session_id, 'server_id' => 1, "php" => "php-fpm", "get_full_data" => true]);
 		$res = array_column($res, null, "server_php_id");
 		return $res;
 	}
 	
 	
 	public static function IspGetMailUsers($session_id, $domain) {
-		$result = \IspConfig::restCall('mail_user_get', [ 'session_id' => $session_id, 'primary_id' => ["email" => "%@$domain"] ]);
-		if(!$result)
-		    die("error");
-		$res = json_decode($result, true)['response'];
+		$res = \IspConfig::restCall('mail_user_get', [ 'session_id' => $session_id, 'primary_id' => ["email" => "%@$domain"] ]);
 		$res = array_column($res, null, "mailuser_id");
 		return $res;
 	}
 	
+	
 	public static function IspGetMailUser($session_id, $email) {
-		$result = \IspConfig::restCall('mail_user_get', [ 'session_id' => $session_id, 'primary_id' => ["email" => $email] ]);
-		if(!$result)
-			die("error");
-		$res = json_decode($result, true)['response'];
+		$res = \IspConfig::restCall('mail_user_get', [ 'session_id' => $session_id, 'primary_id' => ["email" => $email] ]);
 		if(!empty($res))
 			return $res[0];
 		else
 			return null;
 	}
 	
+	
 	public static function IspDeleteMailUser($session_id, $mail_user_id) {
-		$result = \IspConfig::restCall('mail_user_delete', [ 'session_id' => $session_id, 'primary_id' => $mail_user_id ]);
-		if(!$result)
-		    die("error");
-		$res = json_decode($result, true)['response'];
+		$res = \IspConfig::restCall('mail_user_delete', [ 'session_id' => $session_id, 'primary_id' => $mail_user_id ]);
 		if($res !== 1) {
 			die("error deleting mail user id #$mail_user_id : $res");
 		}
+		//TODO return something ?
 	}
+	
 	
 	public static function IspAddMailUser($session_id, $server_id, $client_id, $email, $password, $quota) {
 		list($email_username, $email_domain) = explode("@", $email);
@@ -143,26 +127,14 @@ class IspConfig {
 				"backup_interval" => "monthly", //TODO
 				"backup_copies" => 2, //TODO
 		];
-		$result = \IspConfig::restCall('mail_user_add', [ 'session_id' => $session_id, "client_id" => $client_id, 'params' => $params ]);
-		if(!$result)
-		    die("error");
-		$res = json_decode($result, true);
-		if($res["code"] !== "ok") {
-			die("error : ".$res["message"]);
-		}
-		$res = intval($res['response']);
+		$res = \IspConfig::restCall('mail_user_add', [ 'session_id' => $session_id, "client_id" => $client_id, 'params' => $params ]);
+		$res = intval($res);
 		return $res;
 	}
 	
+	
 	public static function IspGetMailDomain($session_id, $domain) {
-		$result = \IspConfig::restCall('mail_domain_get_by_domain', [ 'session_id' => $session_id, 'domain' => $domain]);
-		if(!$result)
-			die("error");
-		$res = json_decode($result, true);
-		if($res["code"] !== "ok") {
-			die("error : ".$res["message"]);
-		}
-		$res = $res['response'];
+		$res = \IspConfig::restCall('mail_domain_get_by_domain', [ 'session_id' => $session_id, 'domain' => $domain]);
 		if(!empty($res))
 			return $res[0];
 		else
@@ -171,15 +143,8 @@ class IspConfig {
 	
 	
 	public static function IspGetClientIdFomUserId($session_id, $sys_userid) {
-		$result = \IspConfig::restCall('client_get_id', [ 'session_id' => $session_id, 'sys_userid' => $sys_userid]);
-		if(!$result)
-			die("error");
-		$res = json_decode($result, true);
-		if($res["code"] !== "ok") {
-			die("error : ".$res["message"]);
-		}
-		$res['response'];
-		return $res['response'];
+		$res = \IspConfig::restCall('client_get_id', [ 'session_id' => $session_id, 'sys_userid' => $sys_userid]);
+		return $res;
 	}
 	
 	
@@ -190,6 +155,13 @@ class IspConfig {
 		$phps = \IspConfig::IspGetServersPhps ($session_id);
 		\IspConfig::IspLogout ($session_id);
 		return [$servers, $websites, $phps];
+	}
+	
+	
+	public static function IspGetDomains () {
+		$session_id = \IspConfig::IspLogin ();
+		$result = \IspConfig::restCall( 'dns_zone_get', ['session_id' => $session_id, 'primary_id' => []] );
+		return $result;
 	}
 	
 }

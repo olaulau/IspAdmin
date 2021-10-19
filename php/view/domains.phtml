@@ -15,9 +15,17 @@
 		<tbody class="table-hover">
 		</tbody>
 		<thead class="thead-dark">
+		<?php
+		foreach($domains as $domain) {
+			?>
 			<tr>
-				
+				<td><?= $domain["origin"]?></td>
+				<td></td>
 			</tr>
+				
+			<?php
+		}
+		?>
 		</thead>
 	</table>
 	</main>

@@ -148,7 +148,6 @@ class FrontCtrl
 			}
 			unset($group);
 		}
-
 // 		var_dump($websites); die;
 		$f3->set('websites', $websites);
 		
@@ -277,6 +276,10 @@ class FrontCtrl
 				"title" => "DNS",
 		];
 		$f3->set("PAGE", $PAGE);
+		
+		$domains = \IspConfig::IspGetDomains();
+// 		var_dump($domains); die;
+		$f3->set("domains", $domains);
 		
 		$view = new \View();
 		echo $view->render('domains.phtml');
