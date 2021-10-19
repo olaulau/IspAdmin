@@ -5,29 +5,32 @@
 
 	<!-- Begin page content -->
 	<main role="main" class="container">
-	<table class="table table-sm table-bordered ">
-		<thead class="thead-dark">
-			<tr>
-				<th>2LD</th>
-				<th>FQDN</th>
-			</tr>
-		</thead>
-		<tbody class="table-hover">
-		</tbody>
-		<thead class="thead-dark">
-		<?php
-		foreach($domains as $domain) {
-			?>
-			<tr>
-				<td><?= $domain["origin"]?></td>
-				<td></td>
-			</tr>
-				
+		<table class="table table-sm table-bordered ">
+			<thead class="thead-dark">
+				<tr>
+					<th>domain</th>
+					<th>type</th>
+					<th>name</th>
+					<th>data</th>
+				</tr>
+			</thead>
+			<tbody class="table-hover">
 			<?php
-		}
-		?>
-		</thead>
-	</table>
+			foreach($domain_entries as $domain_entry) {
+				?>
+				<tr>
+					<td><?= $domain_entry["domain"]?></td>
+					<td><?= $domain_entry["type"]?></td>
+					<td><?= $domain_entry["name"]?></td>
+					<td><?= $domain_entry["data"]?></td>
+				</tr>
+				<?php
+			}
+			?>
+			</tbody>
+			<thead class="thead-dark">
+			</thead>
+		</table>
 	</main>
 
 <?php require_once __DIR__ . "/footer.inc.phtml"; ?>

@@ -116,7 +116,6 @@ class IspConfig {
 				"login"		=> $email,
 				"password"	=> $password,
 				"quota"		=> $quota,
-				
 				"uid"		=> 5000,
 				"gid"		=> 5000,
 				"maildir"	=> "/var/vmail/$email_domain/$email_username",
@@ -163,5 +162,17 @@ class IspConfig {
 		$result = \IspConfig::restCall( 'dns_zone_get', ['session_id' => $session_id, 'primary_id' => []] );
 		return $result;
 	}
+	
+	
+	public static function IspGetDomainEntries ($domain_id) {
+		$session_id = \IspConfig::IspLogin ();
+		$result = \IspConfig::restCall( 'dns_a_get', ['session_id' => $session_id, 'primary_id' => []] );
+		
+// 		$columns = array_column($array, 'name');
+// 		array_multisort($columns, SORT_ASC, $array);
+		
+		return $result;
+	}
+	
 	
 }

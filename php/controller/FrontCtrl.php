@@ -278,8 +278,27 @@ class FrontCtrl
 		$f3->set("PAGE", $PAGE);
 		
 		$domains = \IspConfig::IspGetDomains();
+		$domains =  array_combine( array_column($domains, "id"), $domains ); // index by id
 // 		var_dump($domains); die;
 		$f3->set("domains", $domains);
+		
+		$domain_entries = \IspConfig::IspGetDomainEntries(0);
+		// convert zone id to domain name
+		foreach ($domain_entries as &$domain_entry) {
+			if(!empty($domain_entry["zone"]) && !empty($domains[$domain_entry["zone"]]))
+				$domain_entry ["domain"] = $domains[ $domain_entry["zone"] ] [ "origin" ];
+			else
+				$domain_entry ["domain"] = "";
+		}
+		
+		// order by domain; type, name
+		array_multisort(
+				array_column($domain_entries, 'domain'), SORT_ASC,
+				array_column($domain_entries, 'type'), SORT_ASC,
+				array_column($domain_entries, 'name'), SORT_ASC,
+				$domain_entries);
+// 		var_dump($domain_entries); die;
+		$f3->set("domain_entries", $domain_entries);
 		
 		$view = new \View();
 		echo $view->render('domains.phtml');
