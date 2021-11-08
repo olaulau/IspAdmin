@@ -164,12 +164,9 @@ class IspConfig {
 	}
 	
 	
-	public static function IspGetDomainEntries ($domain_id) {
+	public static function IspGetDomainEntries () {
 		$session_id = \IspConfig::IspLogin ();
 		$result = \IspConfig::restCall( 'dns_a_get', ['session_id' => $session_id, 'primary_id' => []] );
-		
-// 		$columns = array_column($array, 'name');
-// 		array_multisort($columns, SORT_ASC, $array);
 		
 		return $result;
 	}

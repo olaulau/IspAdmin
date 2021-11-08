@@ -27,8 +27,8 @@ class FrontCtrl
 		$f3 = \Base::instance();
 		
 		$PAGE = [
-				"name" => "index",
-				"title" => "Isp Admin",
+			"name" => "index",
+			"title" => "Isp Admin",
 		];
 		$f3->set("PAGE", $PAGE);
 		
@@ -174,8 +174,8 @@ class FrontCtrl
 		$f3 = \Base::instance();
 		
 		$PAGE = [
-				"name" => "emails",
-				"title" => "E-mails",
+			"name" => "emails",
+			"title" => "E-mails",
 		];
 		$f3->set("PAGE", $PAGE);
 		
@@ -272,17 +272,16 @@ class FrontCtrl
 		$f3 = \Base::instance();
 		
 		$PAGE = [
-				"name" => "domains",
-				"title" => "DNS",
+			"name" => "domains",
+			"title" => "DNS",
 		];
 		$f3->set("PAGE", $PAGE);
 		
 		$domains = \IspConfig::IspGetDomains();
 		$domains =  array_combine( array_column($domains, "id"), $domains ); // index by id
-// 		var_dump($domains); die;
 		$f3->set("domains", $domains);
 		
-		$domain_entries = \IspConfig::IspGetDomainEntries(0);
+		$domain_entries = \IspConfig::IspGetDomainEntries();
 		// convert zone id to domain name
 		foreach ($domain_entries as &$domain_entry) {
 			if(!empty($domain_entry["zone"]) && !empty($domains[$domain_entry["zone"]]))
@@ -291,13 +290,45 @@ class FrontCtrl
 				$domain_entry ["domain"] = "";
 		}
 		
+		// filter according to form text fields
+		$domain = $_GET["domain"];
+		$type = $_GET["type"];
+		$name = $_GET["name"];
+		$data = $_GET["data"];
+		$domain_entries = array_filter(
+			$domain_entries,
+			function($domain_entry) use ($domain, $type, $name, $data) {
+				if(!empty($domain)) {
+					if (strpos($domain_entry["domain"], $domain) === FALSE) {
+						return FALSE;
+					}
+				}
+				if(!empty($type)) {
+					if (strpos($domain_entry["type"], $type) === FALSE) {
+						return FALSE;
+					}
+				}
+				if(!empty($name)) {
+					if (strpos($domain_entry["name"], $name) === FALSE) {
+						return FALSE;
+					}
+				}
+				if(!empty($data)) {
+					if (strpos($domain_entry["data"], $data) === FALSE) {
+						return FALSE;
+					}
+				}
+				return TRUE;
+			}
+		);
+		
 		// order by domain; type, name
 		array_multisort(
-				array_column($domain_entries, 'domain'), SORT_ASC,
-				array_column($domain_entries, 'type'), SORT_ASC,
-				array_column($domain_entries, 'name'), SORT_ASC,
-				$domain_entries);
-// 		var_dump($domain_entries); die;
+			array_column($domain_entries, 'domain'), SORT_ASC,
+			array_column($domain_entries, 'type'), SORT_ASC,
+			array_column($domain_entries, 'name'), SORT_ASC,
+			$domain_entries
+		);
 		$f3->set("domain_entries", $domain_entries);
 		
 		$view = new \View();

@@ -5,13 +5,27 @@
 
 	<!-- Begin page content -->
 	<main role="main" class="container">
-		<table class="table table-sm table-bordered ">
+		<table class="table table-sm table-bordered">
 			<thead class="thead-dark">
 				<tr>
-					<th>domain</th>
-					<th>type</th>
-					<th>name</th>
-					<th>data</th>
+					<th> &nbsp; </th>
+					<th> domain </th>
+					<th> type </th>
+					<th> name </th>
+					<th> data </th>
+					<th> &nbsp; </th>
+				</tr>
+			</thead>
+			<thead class="thead-light">
+				<tr>
+					<form action="" method="get">
+						<th> <i class="fas fa-filter"></i> </th>
+						<th> <input type="text" class="w-100" id="domain" name="domain" value="<?= $GET["domain"] ?? "" ?>" placeholder="domain">  </th>
+						<th> <input type="text" class="w-100" id="type" name="type" value="<?= $GET["type"] ?? "" ?>" placeholder="type"> </th>
+						<th> <input type="text" class="w-100" id="name" name="name" value="<?= $GET["name"] ?? "" ?>" placeholder="name"> </th>
+						<th> <input type="text" class="w-100" id="data" name="data" value="<?= $GET["data"] ?? "" ?>" placeholder="data"> </th>
+						<th> &nbsp; <input type="submit" class="d-none" /> </th>
+					</form>
 				</tr>
 			</thead>
 			<tbody class="table-hover">
@@ -19,16 +33,24 @@
 			foreach($domain_entries as $domain_entry) {
 				?>
 				<tr>
-					<td><?= $domain_entry["domain"]?></td>
-					<td><?= $domain_entry["type"]?></td>
-					<td><?= $domain_entry["name"]?></td>
-					<td><?= $domain_entry["data"]?></td>
+					<td> &nbsp; </td>
+					<td> <?= $domain_entry["domain"]?> </td>
+					<td> <?= $domain_entry["type"]?> </td>
+					<td> <?= $domain_entry["name"]?> </td>
+					<td class="truncate"> <?= $domain_entry["data"]?> </td>
+					<td> &nbsp; </td>
 				</tr>
 				<?php
 			}
 			?>
 			</tbody>
-			<thead class="thead-dark">
+			<thead class="thead-light">
+					<th> &nbsp; </th>
+					<th> &nbsp; </th>
+					<th> &nbsp; </th>
+					<th> &nbsp; </th>
+					<th> &nbsp; </th>
+					<th> &nbsp; </th>
 			</thead>
 		</table>
 	</main>
