@@ -8,12 +8,12 @@
 		<table class="table table-sm table-bordered">
 			<thead class="thead-dark">
 				<tr>
-					<th> &nbsp; </th>
+					<th> <input type="checkbox" id="" name=""> </th>
 					<th> domain </th>
 					<th> type </th>
 					<th> name </th>
 					<th> data </th>
-					<th> &nbsp; </th>
+					<th> actions </th>
 				</tr>
 			</thead>
 			<thead class="thead-light">
@@ -33,7 +33,7 @@
 			foreach($domain_entries as $domain_entry) {
 				?>
 				<tr>
-					<td> &nbsp; </td>
+					<td> <input type="checkbox" id="" name=""> </td>
 					<td> <?= $domain_entry["domain"]?> </td>
 					<td> <?= $domain_entry["type"]?> </td>
 					<td> <?= $domain_entry["name"]?> </td>
@@ -45,12 +45,12 @@
 			?>
 			</tbody>
 			<thead class="thead-light">
+					<th> <span id="selected-count"> 0 </span> </th>
 					<th> &nbsp; </th>
 					<th> &nbsp; </th>
 					<th> &nbsp; </th>
 					<th> &nbsp; </th>
-					<th> &nbsp; </th>
-					<th> &nbsp; </th>
+					<th> TOTAL : <?= count($domain_entries) ?> </th>
 			</thead>
 		</table>
 	</main>

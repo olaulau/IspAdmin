@@ -291,30 +291,26 @@ class FrontCtrl
 		}
 		
 		// filter according to form text fields
-		$domain = $_GET["domain"];
-		$type = $_GET["type"];
-		$name = $_GET["name"];
-		$data = $_GET["data"];
 		$domain_entries = array_filter(
 			$domain_entries,
-			function($domain_entry) use ($domain, $type, $name, $data) {
-				if(!empty($domain)) {
-					if (strpos($domain_entry["domain"], $domain) === FALSE) {
+			function($domain_entry) {
+				if(!empty($_GET["domain"])) {
+					if (strpos($domain_entry["domain"], $_GET["domain"]) === FALSE) {
 						return FALSE;
 					}
 				}
-				if(!empty($type)) {
-					if (strpos($domain_entry["type"], $type) === FALSE) {
+				if(!empty($_GET["type"])) {
+					if (strpos($domain_entry["type"], $_GET["type"]) === FALSE) {
 						return FALSE;
 					}
 				}
-				if(!empty($name)) {
-					if (strpos($domain_entry["name"], $name) === FALSE) {
+				if(!empty($_GET["name"])) {
+					if (strpos($domain_entry["name"], $_GET["name"]) === FALSE) {
 						return FALSE;
 					}
 				}
-				if(!empty($data)) {
-					if (strpos($domain_entry["data"], $data) === FALSE) {
+				if(!empty($_GET["data"])) {
+					if (strpos($domain_entry["data"], $_GET["data"]) === FALSE) {
 						return FALSE;
 					}
 				}
