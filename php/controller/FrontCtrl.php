@@ -50,8 +50,10 @@ class FrontCtrl
 			$ispconfigRawinfos = \IspConfig::IspGetInfos ();
 			$cache->set($key, $ispconfigRawinfos, $f3->get("cache.ispconfig"));
 		}
+		global $servers;
 		list($servers, $websites, $phps) = $ispconfigRawinfos;
 
+		// filter domains (dev tests)
 		if(!empty($f3->get('debug.websites_filter'))) {
 			array_walk ( $websites , function ( $value , $key , $filter ) use ( &$websites ) {
 				if (strpos($key, $filter) === false) {
@@ -59,7 +61,6 @@ class FrontCtrl
 				}
 			} , $f3->get('debug.websites_filter') );
 		}
-		
 		if(!empty($f3->get('debug.websites_max_number'))) {
 			$websites = array_slice($websites, 0, $f3->get('debug.websites_max_number')); // dev test with few domains
 		}
@@ -113,6 +114,7 @@ class FrontCtrl
 		execMultipleProcesses($cmds, true, true);
 		$stats['total_executed_cmds'] = count($cmds);
 		$stats['executed_cmds'] = $cmds;
+		$f3->set('stats', $stats);
 // 		vdd($cmds);
 		
 		// extract infos
@@ -240,7 +242,7 @@ class FrontCtrl
 						// look for server and client hosting mail domain (if not in cache)
 						if(empty($mail_domains[$email_domain])) {
 							$mail_domain = \IspConfig::IspGetMailDomain($session_id, $email_domain);
-							$client_id = \IspConfig::IspGetClientIdFomUserId($session_id, $mail_domain["sys_groupid"]);
+							$client_id = \IspConfig::IspGetClientIdFromUserId($session_id, $mail_domain["sys_groupid"]);
 							$mail_domain["client_id"] = $client_id;
 							$mail_domains[$email_domain] = $mail_domain;
 						}
@@ -289,6 +291,7 @@ class FrontCtrl
 			else
 				$domain_entry ["domain"] = "";
 		}
+		$stats ["total"] = count($domain_entries);
 		
 		// filter according to form text fields
 		$domain_entries = array_filter(
@@ -317,6 +320,8 @@ class FrontCtrl
 				return TRUE;
 			}
 		);
+		$stats ["nb"] = count($domain_entries);
+		$f3->set("stats", $stats);
 		
 		// order by domain; type, name
 		array_multisort(
@@ -326,9 +331,36 @@ class FrontCtrl
 			$domain_entries
 		);
 		$f3->set("domain_entries", $domain_entries);
-		
+
 		$view = new \View();
 		echo $view->render('domains.phtml');
+	}
+	
+	
+	public static function POST_domain () {
+		$f3 = \Base::instance();
+		
+		$domain_entry_id = $f3->get("PARAMS.id");
+		$data = $f3->get("POST.data");
+		$result = \IspConfig::IspSetDomainEntry($domain_entry_id, $data);
+		var_dump($result);
+		die;
+	}
+	
+	
+	public static function POST_domains_bulk_edit () {
+		$f3 = \Base::instance();
+		
+		//TODO check only A entries
+		
+		$post = $f3->get("POST");
+		$data = $post ["data"];
+
+		foreach ($post["domain_entry"] as $domain_entry_id => $on) {
+			$result = \IspConfig::IspSetDomainEntry($domain_entry_id, $data);
+		}
+		
+		$f3->reroute($f3->get('SERVER.HTTP_REFERER'));
 	}
 	
 }

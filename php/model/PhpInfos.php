@@ -26,17 +26,13 @@ class PhpInfos extends Task {
 	
 	
 	public function extractInfos ($ispconfigInfos) {
+		global $servers;
 		$f3 = \Base::instance();
-		
-		$this->labelType = 'success';
-		$this->labelString = 'OK';
 		
 		$min_version_security_support = $f3->get('php.min_version_security_support');
 		$min_version_active_support = $f3->get('php.min_version_active_support');
 		
-		$website = $this->website; //////////
-		
-		$php = $website['ispconfigInfos']['php'];
+		$php = $this->website['ispconfigInfos']['php'];
 		if ($php === "no")
 		{
 			$this->labelString = "disabled";
@@ -52,12 +48,13 @@ class PhpInfos extends Task {
 			$this->labelString = "apache mod isn't recommended";
 			$this->labelType = "warning";
 		}
+		
 		elseif ($php === "php-fpm")
 		{
-			if ($website["ispconfigInfos"]["server_php_id"] == 0)
+			if ($this->website["ispconfigInfos"]["server_php_id"] == 0)
 			{ // default php version ?
 				$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
-				$php_default_name = $servers[$website['ispconfigInfos']['server_id']]["web"]["php_default_name"];
+				$php_default_name = $servers[$this->website['ispconfigInfos']['server_id']]["web"]["php_default_name"];
 				if (preg_match($regex, $php_default_name, $matches))
 				{
 					$this->labelString = $matches[1]; // default server PHP version
@@ -65,28 +62,40 @@ class PhpInfos extends Task {
 				else
 				{
 					$this->labelString = '??'; // unknown
+					$this->labelType = "danger";
 				}
 			}
 			else
 			{
-				$this->labelString = $this->phps[$website["ispconfigInfos"]["server_php_id"]]["name"];
+				$server_php_id = $this->website["ispconfigInfos"]["server_php_id"];
+				if(isset($this->phps[$server_php_id])) {
+					$php = $this->phps[$server_php_id];
+					$this->labelString = $php["name"];
+				}
+				else {
+					$this->labelString = "???"; // PHP version not found
+					$this->labelType = "danger";
+				}
 			}
 
-			if ($this->labelString < $min_version_security_support)
-			{ // TODO fetch infos from php.net !
-				$this->labelType = 'danger';
-			}
-			elseif ($this->labelString < $min_version_active_support)
-			{ // TODO same
-				$this->labelType = 'warning';
-			}
-			else
-			{
-				$this->labelType = 'success';
+			if(empty($this->labelType)) {
+				if ($this->labelString < $min_version_security_support)
+				{ // TODO fetch infos from php.net !
+					$this->labelType = 'danger';
+				}
+				elseif ($this->labelString < $min_version_active_support)
+				{ // TODO same
+					$this->labelType = 'warning';
+				}
+				else
+				{
+					$this->labelType = 'success';
+				}
 			}
 		}
-		else
-		{ // unforeseen
+		
+		else // unforeseen
+		{
 			$this->labelString = "error";
 			$this->labelType = "danger";
 		}

@@ -51,6 +51,10 @@ class SslInfos extends Task {
 	    	$sslExpires = new \DateTime ($matches[1]);
 	    	$sslExpires->setTimezone(new \DateTimeZone('Europe/Paris'));
 	    }
+	    else {
+	    	$this->labelType = "warning";
+	    	$this->labelString = "couldn't find expiration infos";
+	    }
 	    if (preg_match("/verify error:num=(.*):(.*)/", $rawInfos, $matches)) {
 			$error = $matches[2];
 	    }

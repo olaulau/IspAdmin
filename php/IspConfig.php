@@ -26,7 +26,8 @@ class IspConfig {
 			$res = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
 		}
 		catch(JsonException $ex) {
-			die("json decode error $ex->code : $ex->message");
+			var_dump($result); die;
+			die("json decode error " . $ex->getCode() . " : " . $ex->getMessage() . PHP_EOL . $ex->getTraceAsString());
 		}
 		return $res["response"];
 	}
@@ -35,7 +36,11 @@ class IspConfig {
 	public static function IspLogin () {
 		$f3 = \Base::instance();
 		
-		$data = \IspConfig::restCall('login', ['username' => $f3->get('tech.ispconfig.rest.user'), 'password' => $f3->get('tech.ispconfig.rest.password'), 'client_login' => false]);
+		$data = \IspConfig::restCall('login', [
+			'username' => $f3->get('tech.ispconfig.rest.user'),
+			'password' => $f3->get('tech.ispconfig.rest.password'),
+			'client_login' => false,
+		]);
 		if($data === false) {
 			die("IspConfig login failed");
 		}
@@ -52,7 +57,10 @@ class IspConfig {
 	
 	
 	public static function IspGetWebsites ($session_id) {
-		$domain_record = \IspConfig::restCall('sites_web_domain_get', ['session_id' => $session_id, 'primary_id' => ['type' => 'vhost']]); //TODO handle type=alias
+		$domain_record = \IspConfig::restCall('sites_web_domain_get', [
+			'session_id' => $session_id,
+			'primary_id' => ['type' => 'vhost'],
+		]); //TODO handle type=alias
 		$res = [];
 		foreach ($domain_record as $ispinfo) {
 			$domain = $ispinfo['domain'];
@@ -65,33 +73,53 @@ class IspConfig {
 	
 	
 	public static function IspUpdateWebsite ($session_id, $ispconfigInfos) {
-		$res = \IspConfig::restCall('sites_web_domain_update', ['session_id' => $session_id, 'client_id' => null, 'primary_id' => $ispconfigInfos['domain_id'], 'params' => $ispconfigInfos]);
+		$res = \IspConfig::restCall('sites_web_domain_update', [
+			'session_id' => $session_id,
+			'client_id' => null,
+			'primary_id' => $ispconfigInfos['domain_id'],
+			'params' => $ispconfigInfos
+		]);
 		return $res;
 	}
 	
 	
 	public static function IspGetServersConfig($session_id) {
-		$res = \IspConfig::restCall('server_get', ['session_id' => $session_id, 'server_id' => []]);
+		$res = \IspConfig::restCall('server_get', [
+			'session_id' => $session_id,
+			'server_id' => [],
+		]);
 		return $res;
 	}
 	
 	
 	public static function IspGetServersPhps($session_id) { //TODO server id !!!
-		$res = \IspConfig::restCall('server_get_php_versions', ['session_id' => $session_id, 'server_id' => 1, "php" => "php-fpm", "get_full_data" => true]);
+		$res = \IspConfig::restCall('server_get_php_versions', [
+			'session_id' => $session_id,
+			'server_id' => 1,
+			"php" => "php-fpm",
+			"get_full_data" => true,
+		
+		]);
 		$res = array_column($res, null, "server_php_id");
 		return $res;
 	}
 	
 	
 	public static function IspGetMailUsers($session_id, $domain) {
-		$res = \IspConfig::restCall('mail_user_get', [ 'session_id' => $session_id, 'primary_id' => ["email" => "%@$domain"] ]);
+		$res = \IspConfig::restCall('mail_user_get', [
+			'session_id' => $session_id,
+			'primary_id' => ["email" => "%@$domain"],
+		]);
 		$res = array_column($res, null, "mailuser_id");
 		return $res;
 	}
 	
 	
 	public static function IspGetMailUser($session_id, $email) {
-		$res = \IspConfig::restCall('mail_user_get', [ 'session_id' => $session_id, 'primary_id' => ["email" => $email] ]);
+		$res = \IspConfig::restCall('mail_user_get', [
+			'session_id' => $session_id,
+			'primary_id' => ["email" => $email],
+		]);
 		if(!empty($res))
 			return $res[0];
 		else
@@ -100,7 +128,10 @@ class IspConfig {
 	
 	
 	public static function IspDeleteMailUser($session_id, $mail_user_id) {
-		$res = \IspConfig::restCall('mail_user_delete', [ 'session_id' => $session_id, 'primary_id' => $mail_user_id ]);
+		$res = \IspConfig::restCall('mail_user_delete', [
+			'session_id' => $session_id,
+			'primary_id' => $mail_user_id,
+		]);
 		if($res !== 1) {
 			die("error deleting mail user id #$mail_user_id : $res");
 		}
@@ -133,7 +164,10 @@ class IspConfig {
 	
 	
 	public static function IspGetMailDomain($session_id, $domain) {
-		$res = \IspConfig::restCall('mail_domain_get_by_domain', [ 'session_id' => $session_id, 'domain' => $domain]);
+		$res = \IspConfig::restCall('mail_domain_get_by_domain', [
+			'session_id' => $session_id,
+			'domain' => $domain,
+		]);
 		if(!empty($res))
 			return $res[0];
 		else
@@ -141,8 +175,11 @@ class IspConfig {
 	}
 	
 	
-	public static function IspGetClientIdFomUserId($session_id, $sys_userid) {
-		$res = \IspConfig::restCall('client_get_id', [ 'session_id' => $session_id, 'sys_userid' => $sys_userid]);
+	public static function IspGetClientIdFromUserId($session_id, $sys_userid) {
+		$res = \IspConfig::restCall('client_get_id', [
+			'session_id' => $session_id,
+			'sys_userid' => $sys_userid,
+		]);
 		return $res;
 	}
 	
@@ -159,17 +196,40 @@ class IspConfig {
 	
 	public static function IspGetDomains () {
 		$session_id = \IspConfig::IspLogin ();
-		$result = \IspConfig::restCall( 'dns_zone_get', ['session_id' => $session_id, 'primary_id' => []] );
+		$result = \IspConfig::restCall( 'dns_zone_get', [
+			'session_id' => $session_id,
+			'primary_id' => [],
+		]);
 		return $result;
 	}
 	
 	
 	public static function IspGetDomainEntries () {
 		$session_id = \IspConfig::IspLogin ();
-		$result = \IspConfig::restCall( 'dns_a_get', ['session_id' => $session_id, 'primary_id' => []] );
-		
+		$result = \IspConfig::restCall( 'dns_a_get', [
+			'session_id' => $session_id,
+			'primary_id' => [],
+		]);
 		return $result;
 	}
 	
+	
+	public static function IspSetDomainEntry ($domain_entry_id, $data) {
+		$session_id = \IspConfig::IspLogin ();
+		
+		$dns_entry = \IspConfig::restCall( 'dns_a_get', [
+			'session_id' => $session_id,
+			'primary_id' => $domain_entry_id,
+		]);
+		$dns_entry["data"] = $data;
+		
+		$result = \IspConfig::restCall( 'dns_a_update', [
+			'session_id' => $session_id,
+			'client_id' => null,
+			'primary_id' => $domain_entry_id,
+			'params' => $dns_entry,
+		] );
+		return $result;
+	}
 	
 }

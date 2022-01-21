@@ -6,7 +6,7 @@
 	<!-- Begin page content -->
 	<main role="main" class="container">
 	<table class="table table-sm table-bordered ">
-		<thead class="thead-dark">
+		<thead class="table-dark">
 			<tr>
 				<th>2LD</th>
 				<th>FQDN</th>
@@ -54,7 +54,7 @@
 					?>
 					<tr>
 					<?php
-					if ($currentParent !== $parent) {
+					if (empty($currentParent) || $currentParent !== $parent) {
 						?>
 						<td rowspan="<?=count($group)?>" style="vertical-align: middle;">
 							<a href="https://<?= $parent ?>/"><?= $parent ?></a>
@@ -119,7 +119,7 @@
 			}
 			?>
 			</tbody>
-			<thead class="thead-dark">
+			<thead class="table-dark">
 				<tr>
 					<th><?= $stats["2LD_count"] ?></th>
 					<th><?= $stats["websites_count"] ?></th>

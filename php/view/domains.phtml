@@ -5,8 +5,8 @@
 
 	<!-- Begin page content -->
 	<main role="main" class="container">
-		<table class="table table-sm table-bordered">
-			<thead class="thead-dark">
+		<table class="table table-sm table-bordered table-hover">
+			<thead class="table-dark">
 				<tr>
 					<th> <input type="checkbox" id="all_domain_entries" name="all_domain_entries"> </th>
 					<th> domain </th>
@@ -16,7 +16,7 @@
 					<th> actions </th>
 				</tr>
 			</thead>
-			<thead class="thead-light">
+			<thead class="table-secondary">
 				<tr>
 					<form action="" method="get">
 						<th> <i class="fas fa-filter"></i> </th>
@@ -28,30 +28,35 @@
 					</form>
 				</tr>
 			</thead>
-			<tbody class="table-hover">
-			<?php
-			foreach($domain_entries as $domain_entry) {
-				?>
-				<tr>
-					<td> <input type="checkbox" id="domain_entry[<?= $domain_entry["id"]?>]" name="domain_entry[<?= $domain_entry["id"]?>]"> </td>
-					<td><?= $domain_entry["domain"]?></td>
-					<td><?= $domain_entry["type"]?></td>
-					<td><?= $domain_entry["name"]?></td>
-					<td class="truncate"><?= $domain_entry["data"]?></td>
-					<td> &nbsp; </td>
-				</tr>
+			<form action="<?= $BASE ?>/domains/bulk_edit" method="post">
+				<tbody class="">
 				<?php
-			}
-			?>
-			</tbody>
-			<thead class="thead-light">
-					<th> <span id="selected-count"> 0 </span> </th>
-					<th> TOTAL : <?= count($domain_entries) ?> </th>
-					<th> &nbsp; </th>
-					<th> &nbsp; </th>
-					<th> &nbsp; </th>
-					<th> actions </th>
-			</thead>
+				foreach($domain_entries as $domain_entry) {
+					?>
+					<tr>
+						<td> <input type="checkbox" id="domain_entry[<?= $domain_entry["id"]?>]" name="domain_entry[<?= $domain_entry["id"]?>]" data-id = "<?= $domain_entry["id"]?>"> </td>
+						<td><?= $domain_entry["domain"]?></td>
+						<td><?= $domain_entry["type"]?></td>
+						<td><?= $domain_entry["name"]?></td>
+						<td class="truncate"><?= $domain_entry["data"]?></td>
+						<td> &nbsp; </td>
+					</tr>
+					<?php
+				}
+				?>
+				</tbody>
+				<thead class="table-secondary">
+						<th> <span id="selected-count"> 0 </span> </th>
+						<th> FILTERED : <?= $stats ["nb"] ?> </th>
+						<th> TOTAL : <?= $stats ["total"] ?> </th>
+						<th> &nbsp; </th>
+						<th>
+							<input type="text" id="" class="" name="data" value="" placeholder="data">
+							<button id="bulk_edit_data" class="btn btn-primary">modifier</button>
+						</th>
+						<th> actions </th>
+				</thead>
+				</form>
 		</table>
 	</main>
 
