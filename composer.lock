@@ -250,16 +250,16 @@
         },
         {
             "name": "io-developer/php-whois",
-            "version": "4.1.5",
+            "version": "4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/io-developer/php-whois.git",
-                "reference": "2f102901ef29ec71c0c2da5198fecb1bb1aced6e"
+                "reference": "7798aec47cd7c3469eef621d2019905f6bdab208"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/io-developer/php-whois/zipball/2f102901ef29ec71c0c2da5198fecb1bb1aced6e",
-                "reference": "2f102901ef29ec71c0c2da5198fecb1bb1aced6e",
+                "url": "https://api.github.com/repos/io-developer/php-whois/zipball/7798aec47cd7c3469eef621d2019905f6bdab208",
+                "reference": "7798aec47cd7c3469eef621d2019905f6bdab208",
                 "shasum": ""
             },
             "require": {
@@ -306,9 +306,9 @@
             ],
             "support": {
                 "issues": "https://github.com/io-developer/php-whois/issues",
-                "source": "https://github.com/io-developer/php-whois/tree/4.1.5"
+                "source": "https://github.com/io-developer/php-whois/tree/4.1.6"
             },
-            "time": "2022-01-18T10:03:59+00:00"
+            "time": "2022-01-24T15:56:05+00:00"
         },
         {
             "name": "olaulau/htmlskel",
