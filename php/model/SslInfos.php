@@ -28,7 +28,7 @@ class SslInfos extends Task {
 	public function execCmd () {
 		$f3 = \Base::instance();
 		
-		$cmd = "rm -f $tmp && echo | openssl s_client -showcerts -servername $this->domain -connect $this->domain:443 2>&1 | openssl x509 -inform pem -noout -text 2>&1";
+		$cmd = "openssl s_client -showcerts -servername $this->domain -connect $this->domain:443 2>&1 | openssl x509 -inform pem -noout -text 2>&1";
 		exec($cmd, $output, $return_var);
 		$response = \implode(PHP_EOL, $output);
 		
@@ -54,6 +54,7 @@ class SslInfos extends Task {
 	    else {
 	    	$this->labelType = "warning";
 	    	$this->labelString = "couldn't find expiration infos";
+			return;
 	    }
 	    if (preg_match("/verify error:num=(.*):(.*)/", $rawInfos, $matches)) {
 			$error = $matches[2];
