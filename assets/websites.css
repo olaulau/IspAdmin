@@ -3,6 +3,14 @@ th {
 }
 
 .table-danger {
-    background-color: #FFAAAA !important;
+    background-color: #FF9999 !important;
 	font-weight: bold;
+}
+
+.table-warning {
+  background-color: #ffd966 !important;
+}
+
+.table-success {
+  background-color: #99FF99 !important;
 }
