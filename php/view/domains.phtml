@@ -4,56 +4,55 @@
 <?php require_once __DIR__ . "/header.inc.phtml"; ?>
 
 	<!-- Begin page content -->
-	<main role="main" class="container">
+	<main role="main" class="container-fluid">
 		<table class="table table-sm table-bordered table-hover">
 			<thead class="table-dark">
 				<tr>
-					<th> <input type="checkbox" id="all_domain_entries" name="all_domain_entries"> </th>
-					<th> domain </th>
-					<th> type </th>
-					<th> name </th>
-					<th> data </th>
-					<th> actions </th>
+					<th class="col" style="width: 2rem;"><input type="checkbox" id="all_domain_entries" name="all_domain_entries"></th>
+					<th class="col">domain</th>
+					<th class="col" style="width: 5rem;">type</th>
+					<th class="col">name</th>
+					<th class="col">data</th>
 				</tr>
 			</thead>
+			
 			<thead class="table-secondary">
 				<tr>
 					<form action="" method="get">
-						<th> <i class="fas fa-filter"></i> </th>
-						<th> <input type="text" class="w-100" id="domain" name="domain" value="<?= $GET["domain"] ?? "" ?>" placeholder="domain">  </th>
-						<th> <input type="text" class="w-100" id="type" name="type" value="<?= $GET["type"] ?? "" ?>" placeholder="type"> </th>
-						<th> <input type="text" class="w-100" id="name" name="name" value="<?= $GET["name"] ?? "" ?>" placeholder="name"> </th>
-						<th> <input type="text" class="w-100" id="data" name="data" value="<?= $GET["data"] ?? "" ?>" placeholder="data"> </th>
-						<th> &nbsp; <input type="submit" class="d-none" /> </th>
+						<th class="col"><button type="submit" class="btn p-0"> <i class="fas fa-filter"></i></button></th>
+						<th class="col"><input type="text" class="w-100" id="domain" name="domain" value="<?= $GET["domain"] ?? "" ?>" placeholder="domain"></th>
+						<th class="col"><input type="text" class="w-100" id="type" name="type" value="<?= $GET["type"] ?? "" ?>" placeholder="type"></th>
+						<th class="col"><input type="text" class="w-100" id="name" name="name" value="<?= $GET["name"] ?? "" ?>" placeholder="name"></th>
+						<th class="col"><input type="text" class="w-100" id="data" name="data" value="<?= $GET["data"] ?? "" ?>" placeholder="data"></th>
 					</form>
 				</tr>
 			</thead>
+			
 			<form action="<?= $BASE ?>/domains/bulk_edit" method="post">
 				<tbody class="">
 				<?php
 				foreach($domain_entries as $domain_entry) {
 					?>
 					<tr>
-						<td> <input type="checkbox" id="domain_entry[<?= $domain_entry["id"]?>]" name="domain_entry[<?= $domain_entry["id"]?>]" data-id = "<?= $domain_entry["id"]?>"> </td>
-						<td><?= $domain_entry["domain"]?></td>
-						<td><?= $domain_entry["type"]?></td>
-						<td><?= $domain_entry["name"]?></td>
-						<td class="truncate"><?= $domain_entry["data"]?></td>
-						<td> &nbsp; </td>
+						<td class="col"><input type="checkbox" id="domain_entry[<?= $domain_entry["id"]?>]" name="domain_entry[<?= $domain_entry["id"]?>]" data-id = "<?= $domain_entry["id"]?>"></td>
+						<td class="col"><?= $domain_entry["domain"]?></td>
+						<td class="col"><?= $domain_entry["type"]?></td>
+						<td class="col"><?= $domain_entry["name"]?></td>
+						<td class="col" title="<?= $domain_entry["data"]?>"><?= $domain_entry["data"]?></td>
 					</tr>
 					<?php
 				}
 				?>
 				</tbody>
+				
 				<thead class="table-secondary">
-						<th> <span id="selected-count"> 0 </span> </th>
-						<th> FILTERED : <?= $stats ["nb"] ?> </th>
-						<th> TOTAL : <?= $stats ["total"] ?> </th>
-						<th> <input type="text" id="" class="" name="name" value="" placeholder="name"> </th>
-						<th> <input type="text" id="" class="" name="data" value="" placeholder="data"> </th>
-						<th> <button id="bulk_edit" class="btn btn-primary" name="action" value="edit">modifier</button> </th>
+					<th class="col"><span id="selected-count" title="selected"> 0 </span></th>
+					<th class="col">FILTERED : <?= $stats ["nb"] ?> / <?= $stats ["total"] ?></th>
+					<th class="col text-end" class=""> <button id="bulk_edit" class="btn btn-primary" name="action" value="edit">modifier</button></th>
+					<th class="col"><input type="text" id="edit_name" class="w-100" name="name" value="" placeholder="name"></th>
+					<th class="col"><input type="text" id="edit_data" class="w-100" name="data" value="" placeholder="data"></th>
 				</thead>
-				</form>
+			</form>
 		</table>
 	</main>
 

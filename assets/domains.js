@@ -15,10 +15,10 @@ $(function() {
 		var nb = $("input[type=checkbox][id^=domain_entry]:checked").length;
 		$("#selected-count").html(nb);
 		if (nb > 0) {
-			$("#bulk_edit").attr("disabled", false);
+			$("#bulk_edit,#edit_name,#edit_data").attr("disabled", false);
 		}
 		else {
-			$("#bulk_edit").attr("disabled", true);
+			$("#bulk_edit,#edit_name,#edit_data").attr("disabled", true);
 		}
 	}
 

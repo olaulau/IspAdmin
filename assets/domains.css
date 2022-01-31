@@ -1,4 +1,8 @@
 
+.container-fluid {
+	padding-top: 4rem;
+}
+
 .truncate {
 	max-width: 100px;
 	word-wrap: break-word;

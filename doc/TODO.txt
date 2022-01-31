@@ -44,5 +44,7 @@
 		- action = edit_data : check same data
 		- update based on type
 			- don't get entry, get via param
-			- refacto (A / PTR)
 		- can't have same domain + type + name, so edit_name can only bulk update if domains are differents
+	- filter fields
+		- type : dropdown
+		- other : autocomplete
