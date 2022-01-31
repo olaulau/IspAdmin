@@ -250,5 +250,34 @@ class IspConfig {
 		] );
 		return $result;
 	}
+
+	
+	public static function IspSetDomainParams ($domain_entry_id, $name, $data) {
+		$session_id = \IspConfig::IspLogin ();
+		
+		$dns_entry = \IspConfig::restCall( 'dns_a_get', [
+			'session_id' => $session_id,
+			'primary_id' => $domain_entry_id,
+		]);
+		
+		if(!empty($name) && empty($data)) { // set name
+			$dns_entry["name"] = $name;
+		}
+		elseif(empty($name) && !empty($data)) { // set data
+			$dns_entry["data"] = $data;
+		}
+		else {
+			throw new \Exception("bad name / data parameters");
+		}
+		
+		//TODO handle others type of entry
+		$result = \IspConfig::restCall( 'dns_a_update', [
+			'session_id' => $session_id,
+			'client_id' => null,
+			'primary_id' => $domain_entry_id,
+			'params' => $dns_entry,
+		] );
+		return $result;
+	}
 	
 }

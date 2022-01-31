@@ -1,8 +1,8 @@
-$(function () {
-	
+$(function() {
+
 	// checkboxes
-	$("input[type=checkbox][id^=domain_entry]").change( function () {
-		if($(this).is(':checked')) {
+	$("input[type=checkbox][id^=domain_entry]").change(function() {
+		if ($(this).is(':checked')) {
 			$(this).parents("tr").addClass("table-active");
 		}
 		else {
@@ -10,21 +10,21 @@ $(function () {
 		}
 		update_selected_count();
 	});
-	
-	function update_selected_count () {
+
+	function update_selected_count() {
 		var nb = $("input[type=checkbox][id^=domain_entry]:checked").length;
 		$("#selected-count").html(nb);
-		if(nb > 0) {
-			$("#bulk_edit_data").attr("disabled", false);
+		if (nb > 0) {
+			$("#bulk_edit").attr("disabled", false);
 		}
 		else {
-			$("#bulk_edit_data").attr("disabled", true);
+			$("#bulk_edit").attr("disabled", true);
 		}
 	}
-	
-	
+
+
 	// global checkbox
-	$("input[type=checkbox][id=all_domain_entries]").change( function () {
+	$("input[type=checkbox][id=all_domain_entries]").change(function() {
 		var is_checked = $(this).prop("checked");
 		var checkboxes = $("input[type=checkbox][id^=domain_entry]");
 		checkboxes.each(function() {
@@ -33,22 +33,8 @@ $(function () {
 		});
 	});
 
-	
-	// bulk edit data
-	$("#bulk_edit_data").click( function () {
-		var checked = $("input[type=checkbox][id^=domain_entry]:checked");
-		//////////////////////
-		
-		
-		return;
-		checked.each(function() {
-			var domain_id = $(this).attr("data-id");
-			$.post( "./domain/" + domain_id, {data: "4.4.4.4"} ); ////////////// TODO make UI
-		})
-	});
-	
-	
+
 	// init
-	update_selected_count ();
-	
+	update_selected_count();
+
 });

@@ -343,22 +343,15 @@ class FrontCtrl
 		$post = $f3->get("POST");
 		$action = $post ["action"];
 		
-		if($action === "edit_data") {
+		if($action === "edit") {
 			$data = $post ["data"];
-	
-			foreach ($post["domain_entry"] as $domain_entry_id => $on) {
-				$result = \IspConfig::IspSetDomainAData($domain_entry_id, $data);
-			}
-			//TODO check same type and data
-			//TODO check type = A
-		}
-		if($action === "edit_name") {
 			$name = $post ["name"];
 	
 			foreach ($post["domain_entry"] as $domain_entry_id => $on) {
-				$result = \IspConfig::IspSetDomainAName($domain_entry_id, $name);
+				$result = \IspConfig::IspSetDomainParams ($domain_entry_id, $name, $data);
 			}
-			//TODO check same type and name
+			
+			//TODO check same type and data / name
 			//TODO check type = A
 		}
 		else {
