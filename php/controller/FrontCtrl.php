@@ -337,27 +337,32 @@ class FrontCtrl
 	}
 	
 	
-	public static function POST_domain () {
-		$f3 = \Base::instance();
-		
-		$domain_entry_id = $f3->get("PARAMS.id");
-		$data = $f3->get("POST.data");
-		$result = \IspConfig::IspSetDomainEntry($domain_entry_id, $data);
-		var_dump($result);
-		die;
-	}
-	
-	
 	public static function POST_domains_bulk_edit () {
 		$f3 = \Base::instance();
 		
-		//TODO check only A entries
-		
 		$post = $f3->get("POST");
-		$data = $post ["data"];
-
-		foreach ($post["domain_entry"] as $domain_entry_id => $on) {
-			$result = \IspConfig::IspSetDomainEntry($domain_entry_id, $data);
+		$action = $post ["action"];
+		
+		if($action === "edit_data") {
+			$data = $post ["data"];
+	
+			foreach ($post["domain_entry"] as $domain_entry_id => $on) {
+				$result = \IspConfig::IspSetDomainAData($domain_entry_id, $data);
+			}
+			//TODO check same type and data
+			//TODO check type = A
+		}
+		if($action === "edit_name") {
+			$name = $post ["name"];
+	
+			foreach ($post["domain_entry"] as $domain_entry_id => $on) {
+				$result = \IspConfig::IspSetDomainAName($domain_entry_id, $name);
+			}
+			//TODO check same type and name
+			//TODO check type = A
+		}
+		else {
+			throw new \Exception("unsupported action : " . $action);
 		}
 		
 		$f3->reroute($f3->get('SERVER.HTTP_REFERER'));

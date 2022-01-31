@@ -214,7 +214,7 @@ class IspConfig {
 	}
 	
 	
-	public static function IspSetDomainEntry ($domain_entry_id, $data) {
+	public static function IspSetDomainAData ($domain_entry_id, $data) {
 		$session_id = \IspConfig::IspLogin ();
 		
 		$dns_entry = \IspConfig::restCall( 'dns_a_get', [
@@ -222,6 +222,25 @@ class IspConfig {
 			'primary_id' => $domain_entry_id,
 		]);
 		$dns_entry["data"] = $data;
+		
+		$result = \IspConfig::restCall( 'dns_a_update', [
+			'session_id' => $session_id,
+			'client_id' => null,
+			'primary_id' => $domain_entry_id,
+			'params' => $dns_entry,
+		] );
+		return $result;
+	}
+	
+	
+	public static function IspSetDomainAName ($domain_entry_id, $name) {
+		$session_id = \IspConfig::IspLogin ();
+		
+		$dns_entry = \IspConfig::restCall( 'dns_a_get', [
+			'session_id' => $session_id,
+			'primary_id' => $domain_entry_id,
+		]);
+		$dns_entry["name"] = $name;
 		
 		$result = \IspConfig::restCall( 'dns_a_update', [
 			'session_id' => $session_id,

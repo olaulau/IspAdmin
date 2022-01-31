@@ -49,10 +49,13 @@
 						<th> <span id="selected-count"> 0 </span> </th>
 						<th> FILTERED : <?= $stats ["nb"] ?> </th>
 						<th> TOTAL : <?= $stats ["total"] ?> </th>
-						<th> &nbsp; </th>
+						<th>
+							<input type="text" id="" class="" name="name" value="" placeholder="name">
+							<button id="bulk_edit_data" class="btn btn-primary" name="action" value="edit_name">modifier</button>
+						</th>
 						<th>
 							<input type="text" id="" class="" name="data" value="" placeholder="data">
-							<button id="bulk_edit_data" class="btn btn-primary">modifier</button>
+							<button id="bulk_edit_data" class="btn btn-primary" name="action" value="edit_data">modifier</button>
 						</th>
 						<th> actions </th>
 				</thead>
