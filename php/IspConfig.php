@@ -270,8 +270,7 @@ class IspConfig {
 			throw new \Exception("bad name / data parameters");
 		}
 		
-		//TODO handle others type of entry
-		$result = \IspConfig::restCall( 'dns_a_update', [
+		$result = \IspConfig::restCall( "dns_" . strtolower($dns_entry["type"]) . "_update", [
 			'session_id' => $session_id,
 			'client_id' => null,
 			'primary_id' => $domain_entry_id,
