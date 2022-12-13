@@ -8,16 +8,46 @@
     "packages": [
         {
             "name": "bcosca/fatfree",
-            "version": "3.7.3",
+            "version": "3.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bcosca/fatfree.git",
-                "reference": "62f40d88994b99a51cfba5556931e80e1bb64a8c"
+                "reference": "3f7741b671accd3aa6d38461203ae5c07e39d58d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bcosca/fatfree/zipball/62f40d88994b99a51cfba5556931e80e1bb64a8c",
-                "reference": "62f40d88994b99a51cfba5556931e80e1bb64a8c",
+                "url": "https://api.github.com/repos/bcosca/fatfree/zipball/3f7741b671accd3aa6d38461203ae5c07e39d58d",
+                "reference": "3f7741b671accd3aa6d38461203ae5c07e39d58d",
+                "shasum": ""
+            },
+            "require": {
+                "bcosca/fatfree-core": "^3.8"
+            },
+            "type": "project",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "description": "A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!",
+            "homepage": "http://fatfreeframework.com/",
+            "support": {
+                "issues": "https://github.com/bcosca/fatfree/issues",
+                "source": "https://github.com/bcosca/fatfree/tree/3.8.1"
+            },
+            "time": "2022-11-04T23:22:40+00:00"
+        },
+        {
+            "name": "bcosca/fatfree-core",
+            "version": "3.8.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/f3-factory/fatfree-core.git",
+                "reference": "f6ea45472f55a1ecabd4ced74cb56f0efd6af34e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/f3-factory/fatfree-core/zipball/f6ea45472f55a1ecabd4ced74cb56f0efd6af34e",
+                "reference": "f6ea45472f55a1ecabd4ced74cb56f0efd6af34e",
                 "shasum": ""
             },
             "require": {
@@ -25,8 +55,8 @@
             },
             "type": "library",
             "autoload": {
-                "files": [
-                    "lib/base.php"
+                "classmap": [
+                    "."
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -36,10 +66,10 @@
             "description": "A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!",
             "homepage": "http://fatfreeframework.com/",
             "support": {
-                "issues": "https://github.com/bcosca/fatfree/issues",
-                "source": "https://github.com/bcosca/fatfree/tree/3.7.3"
+                "issues": "https://github.com/f3-factory/fatfree-core/issues",
+                "source": "https://github.com/f3-factory/fatfree-core/tree/3.8.1"
             },
-            "time": "2020-12-13T12:52:53+00:00"
+            "time": "2022-11-04T23:15:19+00:00"
         },
         {
             "name": "components/jquery",
@@ -181,16 +211,16 @@
         },
         {
             "name": "fortawesome/font-awesome",
-            "version": "5.15.4",
+            "version": "6.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/Font-Awesome.git",
-                "reference": "7d3d774145ac38663f6d1effc6def0334b68ab7e"
+                "reference": "96cafbd73ec4339b8c73c36673ce1518db82cc5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/7d3d774145ac38663f6d1effc6def0334b68ab7e",
-                "reference": "7d3d774145ac38663f6d1effc6def0334b68ab7e",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/96cafbd73ec4339b8c73c36673ce1518db82cc5c",
+                "reference": "96cafbd73ec4339b8c73c36673ce1518db82cc5c",
                 "shasum": ""
             },
             "type": "library",
@@ -202,32 +232,8 @@
             ],
             "authors": [
                 {
-                    "name": "Travis Chase",
-                    "homepage": "http://twitter.com/supercodepoet"
-                },
-                {
-                    "name": "Dave Gandy",
-                    "homepage": "http://twitter.com/davegandy"
-                },
-                {
-                    "name": "Rob Madole",
-                    "homepage": "http://twitter.com/robmadole"
-                },
-                {
-                    "name": "Jory Raphael",
-                    "homepage": "http://twitter.com/sensibleworld"
-                },
-                {
-                    "name": "Geremia Taglialatela",
-                    "homepage": "http://twitter.com/gtagliala"
-                },
-                {
-                    "name": "Brian Talbot",
-                    "homepage": "http://twitter.com/talbs"
-                },
-                {
-                    "name": "Mike Wilkerson",
-                    "homepage": "http://twitter.com/mw77"
+                    "name": "The Font Awesome Team",
+                    "homepage": "https://github.com/orgs/FortAwesome/people"
                 }
             ],
             "description": "The iconic font, CSS, and SVG framework",
@@ -241,25 +247,25 @@
                 "svg"
             ],
             "support": {
-                "docs": "http://fontawesome.com/how-to-use",
+                "docs": "http://fontawesome.com/docs",
                 "email": "hello@fontawesome.com",
                 "issues": "https://github.com/FortAwesome/Font-Awesome/issues",
                 "source": "https://github.com/FortAwesome/Font-Awesome"
             },
-            "time": "2021-08-04T19:09:22+00:00"
+            "time": "2022-11-15T18:34:54+00:00"
         },
         {
             "name": "io-developer/php-whois",
-            "version": "4.1.6",
+            "version": "4.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/io-developer/php-whois.git",
-                "reference": "7798aec47cd7c3469eef621d2019905f6bdab208"
+                "reference": "6c6cd1d7392d76ba18752cf37227433b50b0bac9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/io-developer/php-whois/zipball/7798aec47cd7c3469eef621d2019905f6bdab208",
-                "reference": "7798aec47cd7c3469eef621d2019905f6bdab208",
+                "url": "https://api.github.com/repos/io-developer/php-whois/zipball/6c6cd1d7392d76ba18752cf37227433b50b0bac9",
+                "reference": "6c6cd1d7392d76ba18752cf37227433b50b0bac9",
                 "shasum": ""
             },
             "require": {
@@ -306,9 +312,9 @@
             ],
             "support": {
                 "issues": "https://github.com/io-developer/php-whois/issues",
-                "source": "https://github.com/io-developer/php-whois/tree/4.1.6"
+                "source": "https://github.com/io-developer/php-whois/tree/4.1.7"
             },
-            "time": "2022-01-24T15:56:05+00:00"
+            "time": "2022-06-14T10:29:24+00:00"
         },
         {
             "name": "olaulau/htmlskel",
@@ -316,19 +322,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/olaulau/HtmlSkel.git",
-                "reference": "577bddc5f7e082e97f6612c44d3acb0b829c0fad"
+                "reference": "0b2d32b9ce03abc71b8abbea36a4619bbd358ba6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/olaulau/HtmlSkel/zipball/577bddc5f7e082e97f6612c44d3acb0b829c0fad",
-                "reference": "577bddc5f7e082e97f6612c44d3acb0b829c0fad",
+                "url": "https://api.github.com/repos/olaulau/HtmlSkel/zipball/0b2d32b9ce03abc71b8abbea36a4619bbd358ba6",
+                "reference": "0b2d32b9ce03abc71b8abbea36a4619bbd358ba6",
                 "shasum": ""
             },
             "require": {
                 "bcosca/fatfree": "^3",
                 "components/jquery": "^3",
                 "components/jqueryui": "^1",
-                "fortawesome/font-awesome": "^5",
+                "fortawesome/font-awesome": "^6",
                 "twbs/bootstrap": "^5"
             },
             "default-branch": true,
@@ -337,20 +343,20 @@
                 "source": "https://github.com/olaulau/HtmlSkel/tree/master",
                 "issues": "https://github.com/olaulau/HtmlSkel/issues"
             },
-            "time": "2021-11-08T10:15:29+00:00"
+            "time": "2022-04-21T16:17:41+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.24.0",
+            "version": "v1.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "0abb51d2f102e00a4eefcf46ba7fec406d245825"
+                "reference": "8ad114f6b39e2c98a8b0e3bd907732c207c2b534"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/0abb51d2f102e00a4eefcf46ba7fec406d245825",
-                "reference": "0abb51d2f102e00a4eefcf46ba7fec406d245825",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/8ad114f6b39e2c98a8b0e3bd907732c207c2b534",
+                "reference": "8ad114f6b39e2c98a8b0e3bd907732c207c2b534",
                 "shasum": ""
             },
             "require": {
@@ -365,7 +371,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.23-dev"
+                    "dev-main": "1.27-dev"
                 },
                 "thanks": {
                     "name": "symfony/polyfill",
@@ -373,12 +379,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Mbstring\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Mbstring\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -404,7 +410,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.24.0"
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.27.0"
             },
             "funding": [
                 {
@@ -420,7 +426,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-30T18:21:41+00:00"
+            "time": "2022-11-03T14:55:06+00:00"
         },
         {
             "name": "true/punycode",
@@ -470,20 +476,21 @@
                 "issues": "https://github.com/true/php-punycode/issues",
                 "source": "https://github.com/true/php-punycode/tree/master"
             },
+            "abandoned": true,
             "time": "2016-11-16T10:37:54+00:00"
         },
         {
             "name": "twbs/bootstrap",
-            "version": "v5.1.3",
+            "version": "v5.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twbs/bootstrap.git",
-                "reference": "1a6fdfae6be09b09eaced8f0e442ca6f7680a61e"
+                "reference": "cb021439c683d9805e2864c58095b92d405e9b11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/1a6fdfae6be09b09eaced8f0e442ca6f7680a61e",
-                "reference": "1a6fdfae6be09b09eaced8f0e442ca6f7680a61e",
+                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/cb021439c683d9805e2864c58095b92d405e9b11",
+                "reference": "cb021439c683d9805e2864c58095b92d405e9b11",
                 "shasum": ""
             },
             "replace": {
@@ -518,9 +525,9 @@
             ],
             "support": {
                 "issues": "https://github.com/twbs/bootstrap/issues",
-                "source": "https://github.com/twbs/bootstrap/tree/v5.1.3"
+                "source": "https://github.com/twbs/bootstrap/tree/v5.2.3"
             },
-            "time": "2021-10-09T06:43:19+00:00"
+            "time": "2022-11-21T18:19:01+00:00"
         }
     ],
     "packages-dev": [],
@@ -533,5 +540,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
