@@ -6,13 +6,22 @@ IspConfig additionnal admin features
     - DNS (resolved address correspond to webstite's server's address configured  
     - SSL (certificate is still valid, comes from let's encrypt)  
     - HTTP (website's home page respond with a valid status)  
-    - PHP (version choosen is stilll supported)  
+    - PHP (version choosen is still supported)  
   
 ![websites](doc/websites.png)
+
+- E-mails
+	- mailbox bolk creation
+	
+- DNS
+	- list all DNS entries, with filtering options
+	- multi-entry select
+	- bulk change name / data of selected entries
   
-## prerequisite
-- must create a remote user in IspConfig panel under "System > Remote users"  
-- requires php-intl installed before executing 'composer install'  
+## requirements
+- PHP 8.x (8.3 compatible)
+	- php-intl
+- create an IspConfig remote user in the panel : "System > Remote users"  
   
 ## installation
 ```

@@ -1,19 +1,23 @@
 <?php
 namespace controller;
 
+
 class Cli
 {
 	
-	public static function beforeroute() {
+	public static function beforeroute()
+	{
 		
 	}
 	
 	
-	public static function afterroute() {
+	public static function afterroute()
+	{
 		
 	}
 	
 	
+	//TODO really usefull ?
 	public static function ssl_auto_renew ()
 	{
 		$f3 = \Base::instance();
@@ -22,7 +26,7 @@ class Cli
 		$cache = \Cache::instance();
 		$key = "ispconfig";
 		if ($cache->exists($key, $ispconfigRawinfos) === false) {
-			$ispconfigRawinfos = \IspConfig::IspGetInfos ();;
+			$ispconfigRawinfos = \IspConfig::IspGetInfos ();
 			$cache->set($key, $ispconfigRawinfos, $f3->get("cache.ispconfig"));
 		}
 		list($servers, $websites) = $ispconfigRawinfos;
@@ -38,7 +42,7 @@ class Cli
 				}
 			} , $f3->get('debug.websites_filter') );
 		}
-		// 		var_dump($websites); die;
+		// var_dump($websites); die;
 		
 		
 		// get SSLinfos (by running external processes)
@@ -52,12 +56,12 @@ class Cli
 				$cmds["ssl_$domain"] = $t->getCmd();
 			}
 		}
-		// 		vdd($cmds);
+		// vdd($cmds);
 		execMultipleProcesses($cmds, true, true);
-		// 		vdd($cmds);
+		// vdd($cmds);
 		
 		
-		// add ssl remaining validity days with  direct access for auto sort
+		// add ssl remaining validity days with direct access for auto sort
 		foreach ($websites as $domain => &$website) {
 			/* @var \model\SslInfos $sslInfos */
 			$sslInfos = $tasks["ssl"][$domain];
@@ -70,13 +74,12 @@ class Cli
 		
 		
 		// vdd($websites);
+		$session_id = \IspConfig::IspLogin ();
 		foreach ($websites as $domain => &$website) {
 			if ($website['ispconfigInfos']['ssl'] === 'y' && $website['ispconfigInfos']['ssl_letsencrypt'] === 'y') {
 				if ($website['sslRemainingValidityDays'] !== null && $website['sslRemainingValidityDays'] < 30) {
 					echo $domain . " : " . $website['sslRemainingValidityDays'] . " days left " . PHP_EOL;
-					
 					// renew
-					$session_id = \IspConfig::IspLogin ();
 					$website['ispconfigInfos']['ssl_letsencrypt'] = 'n';
 					\IspConfig::IspUpdateWebsite($session_id, $website['ispconfigInfos']);
 					$website['ispconfigInfos']['ssl_letsencrypt'] = 'y';
