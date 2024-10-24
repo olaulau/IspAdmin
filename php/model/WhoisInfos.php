@@ -1,6 +1,7 @@
 <?php
 namespace model;
 
+use Iodev\Whois\Factory;
 
 class WhoisInfos extends Task {
 	
@@ -26,7 +27,7 @@ class WhoisInfos extends Task {
 		$f3 = \Base::instance();
 		$logger = $f3->get('logger');
 		
-		$whois = \Iodev\Whois\Whois::create(new \Iodev\Whois\Loaders\SocketLoader(10)); // 10 sec timeout
+		$whois = Factory::get()->createWhois(new \Iodev\Whois\Loaders\SocketLoader(10)); // 10 sec timeout
 		$response = $whois->loadDomainInfo($this->domain);
 		
 		if (empty($response)) {
