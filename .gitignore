@@ -1,16 +1,9 @@
-/.buildpath
-/.project
-/.settings/
-
 /vendor/
-
 /conf/tech.ini
 
 /tmp/cache/*
 !/tmp/cache/.gitkeep
-
 /tmp/log/*
 !/tmp/log/.gitkeep
-
 /tmp/uploads/*
 !/tmp/uploads/.gitkeep

@@ -1,7 +1,6 @@
 <?php
 namespace controller;
 
-use model\DnsInfos;
 
 class FrontCtrl
 {
@@ -79,31 +78,33 @@ class FrontCtrl
 		foreach ($websites as $parent => $group) {
 			foreach ($group as $domain => $website) {
 				if ($website["ispconfigInfos"]['active']==='y') {
-					$server = $servers[$website["ispconfigInfos"]["server_id"]];
-					if ($f3->get('active_modules.whois') === true) {
-						$t = new \model\WhoisInfos ($parent, $server);
-						$tasks["whois"][$parent] = $t;
-						$cmds["whois_$parent"] = $t->getCmd();
-						//TODO do not recreate things if parents domain has already been done
-					}
-					if ($f3->get('active_modules.dns') === true) {
-						$t = new \model\DnsInfos ($domain, $server);
-						$tasks["dns"][$domain] = $t;
-						$cmds["dns_$domain"] = $t->getCmd();
-					}
-					if ($f3->get('active_modules.ssl') === true) {
-						$t = new \model\SslInfos ($domain, $server);
-						$tasks["ssl"][$domain] = $t;
-						$cmds["ssl_$domain"] = $t->getCmd();
-					}
-					if ($f3->get('active_modules.http') === true) {
-						$t = new \model\HttpInfos ($domain, $server);
-						$tasks["http"][$domain] = $t;
-						$cmds["http_$domain"] = $t->getCmd();
-					}
-					if ($f3->get('active_modules.php') === true) {
-						$t = new \model\PhpInfos ($domain, $server, $website, $phps);
-						$tasks["php"][$domain] = $t;
+					if(!empty($servers[$website["ispconfigInfos"]["server_id"]])) {
+						$server = $servers[$website["ispconfigInfos"]["server_id"]];
+						if ($f3->get('active_modules.whois') === true) {
+							$t = new \model\WhoisInfos ($parent, $server);
+							$tasks["whois"][$parent] = $t;
+							$cmds["whois_$parent"] = $t->getCmd();
+							//TODO do not recreate things if parents domain has already been done
+						}
+						if ($f3->get('active_modules.dns') === true) {
+							$t = new \model\DnsInfos ($domain, $server);
+							$tasks["dns"][$domain] = $t;
+							$cmds["dns_$domain"] = $t->getCmd();
+						}
+						if ($f3->get('active_modules.ssl') === true) {
+							$t = new \model\SslInfos ($domain, $server);
+							$tasks["ssl"][$domain] = $t;
+							$cmds["ssl_$domain"] = $t->getCmd();
+						}
+						if ($f3->get('active_modules.http') === true) {
+							$t = new \model\HttpInfos ($domain, $server);
+							$tasks["http"][$domain] = $t;
+							$cmds["http_$domain"] = $t->getCmd();
+						}
+						if ($f3->get('active_modules.php') === true) {
+							$t = new \model\PhpInfos ($domain, $server, $website, $phps);
+							$tasks["php"][$domain] = $t;
+						}
 					}
 				}
 			}
@@ -121,29 +122,30 @@ class FrontCtrl
 		foreach ($websites as $parent => &$group) {
 			foreach ($group as $domain => &$website) {
 				if ($website["ispconfigInfos"]['active']==='y') {
-					$server = $servers[$website["ispconfigInfos"]["server_id"]];
-					
-				    if ($f3->get('active_modules.whois') === true) {
-				    	$tasks["whois"][$parent]->extractInfos($website['ispconfigInfos']);
-				    	$website['whoisInfos'] = $tasks["whois"][$parent];
-				    }
-				    
-					if ($f3->get('active_modules.dns') === true) {
-						$tasks["dns"][$domain]->extractInfos($website['ispconfigInfos']);
-					     $website['dnsInfos'] = $tasks["dns"][$domain];
-					}
-					
-					if ($f3->get('active_modules.ssl') === true) {
-						$tasks["ssl"][$domain]->extractInfos($website['ispconfigInfos']);
-						$website['sslInfos'] = $tasks["ssl"][$domain];
-					}
-					if ($f3->get('active_modules.http') === true) {
-						$tasks["http"][$domain]->extractInfos($website['ispconfigInfos']);
-						$website['httpInfos'] = $tasks["http"][$domain];
-					}
-					if ($f3->get('active_modules.php') === true) {
-						$tasks["php"][$domain]->extractInfos($website['ispconfigInfos']);
-						$website['phpInfos'] = $tasks["php"][$domain];
+					if(!empty($servers[$website["ispconfigInfos"]["server_id"]])) {
+						$server = $servers[$website["ispconfigInfos"]["server_id"]]; //TODO useless
+						if ($f3->get('active_modules.whois') === true) {
+							$tasks["whois"][$parent]->extractInfos($website['ispconfigInfos']);
+							$website['whoisInfos'] = $tasks["whois"][$parent];
+						}
+						
+						if ($f3->get('active_modules.dns') === true) {
+							$tasks["dns"][$domain]->extractInfos($website['ispconfigInfos']);
+							 $website['dnsInfos'] = $tasks["dns"][$domain];
+						}
+						
+						if ($f3->get('active_modules.ssl') === true) {
+							$tasks["ssl"][$domain]->extractInfos($website['ispconfigInfos']);
+							$website['sslInfos'] = $tasks["ssl"][$domain];
+						}
+						if ($f3->get('active_modules.http') === true) {
+							$tasks["http"][$domain]->extractInfos($website['ispconfigInfos']);
+							$website['httpInfos'] = $tasks["http"][$domain];
+						}
+						if ($f3->get('active_modules.php') === true) {
+							$tasks["php"][$domain]->extractInfos($website['ispconfigInfos']);
+							$website['phpInfos'] = $tasks["php"][$domain];
+						}
 					}
 				}
 				unset($website);

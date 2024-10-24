@@ -1,6 +1,6 @@
 <?php
-
 namespace model;
+
 
 class PhpInfos extends Task {
 	
