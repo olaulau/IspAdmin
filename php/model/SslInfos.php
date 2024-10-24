@@ -1,6 +1,7 @@
 <?php
 namespace model;
 
+
 class SslInfos extends Task {
 	
 	private $remainingValidityDays;
@@ -10,10 +11,10 @@ class SslInfos extends Task {
 	}
 	
 	
-	public  function getCmd () {
-	    $f3 = \Base::instance();
-	    
-	    $php_binary = $f3->get("tech.PHP_BINARY");
+	public function getCmd () {
+		$f3 = \Base::instance();
+		
+		$php_binary = $f3->get("tech.PHP_BINARY");
 		$cmd = "$php_binary index.php ssl $this->domain";
 		
 		$cache = \Cache::instance();
@@ -47,70 +48,76 @@ class SslInfos extends Task {
 		}
 		$rawInfos = $cache->get($key);
 		
-	    if (preg_match("/Not After : (.*)/", $rawInfos, $matches)) {
-	    	$sslExpires = new \DateTime ($matches[1]);
-	    	$sslExpires->setTimezone(new \DateTimeZone('Europe/Paris'));
-	    }
-	    else {
-	    	$this->labelType = "warning";
-	    	$this->labelString = "couldn't find expiration infos";
+		if (preg_match("/Not After : (.*)/", $rawInfos, $matches)) {
+			$sslExpires = new \DateTime ($matches[1]);
+			$sslExpires->setTimezone(new \DateTimeZone('Europe/Paris'));
+		}
+		else {
+			$this->labelType = "warning";
+			$this->labelString = "??";
+			$this->labelTitle = "couldn't find expiration infos";
 			return;
-	    }
-	    if (preg_match("/verify error:num=(.*):(.*)/", $rawInfos, $matches)) {
+		}
+		if (preg_match("/verify error:num=(.*):(.*)/", $rawInfos, $matches)) {
 			$error = $matches[2];
-	    }
+		}
 		if (preg_match("/Issuer: (C[\s]?=[\s]?([^,\n]*))?(, )?(O[\s]?=[\s]?([^,\n]*))?(, )?(CN[\s]?=[\s]?([^,\n]*))?\n/m", $rawInfos, $matches)) {
-		    $issuer = $matches[5];
-	    }
-	    $this->remainingValidityDays = self::calculateRemainingValidityDays ($sslExpires);
-	    
-	    if ($ispconfigInfos['ssl'] == 'n') {
-	    	$this->labelType = 'danger';
-	    	$this->labelString = 'ssl disabled';
-	    }
-	    elseif (empty($rawInfos)) {
-	    	$this->labelType = 'danger';
-	    	$this->labelString = 'error getting infos';
-	    	$cache->clear($key);
-	    }
-	    elseif (!empty($error)) {
-	    	$this->labelType = 'danger';
-	    	$this->labelString = $error;
-	    }
-	    else {
-	    	if ($ispconfigInfos['ssl_letsencrypt'] == 'n') {
-	    		$this->labelType = 'warning';
-	    		$this->labelString = "let's encrypt disabled";
-	    	}
+			$issuer = $matches[5];
+		}
+		$this->remainingValidityDays = self::calculateRemainingValidityDays ($sslExpires);
+		
+		if ($ispconfigInfos['ssl'] == 'n') {
+			$this->labelType = 'danger';
+			$this->labelString = 'disabled';
+			$this->labelTitle = 'ssl disabled';
+		}
+		elseif (empty($rawInfos)) {
+			$this->labelType = 'danger';
+			$this->labelString = 'error getting infos';
+			$cache->clear($key);
+		}
+		elseif (!empty($error)) {
+			$this->labelType = 'danger';
+			$this->labelString = $error;
+		}
+		else {
+			if ($ispconfigInfos['ssl_letsencrypt'] == 'n') {
+				$this->labelType = 'warning';
+				$this->labelString = "disabled";
+				$this->labelTitle = "let's encrypt disabled";
+			}
 			if ($issuer !== "Let's Encrypt") {
-	    		$this->labelType = 'danger';
-	    		$this->labelString = "certificate not signed by let's encrypt ($issuer)";
-	    	}
-	    	elseif ($this->remainingValidityDays <= 0) {
-	    		$this->labelType = 'danger';
-	    		$this->labelString = 'certificate expired ' . -$this->remainingValidityDays . ' days ago';
-	    	}
-	    	elseif ($this->remainingValidityDays < 29) {
-	    		$this->labelType = 'warning';
-	    		$this->labelString = 'certificate not renewed : <br/> ' . $this->remainingValidityDays . ' days left';
-	    	}
-	    	else {
-	    		$this->labelType = 'success';
-	    		$this->labelString = 'OK';
-	    	}
-	    }
+				$this->labelType = 'danger';
+				$this->labelString = "issuer";
+				$this->labelTitle = "certificate not signed by let's encrypt ($issuer)";
+			}
+			elseif ($this->remainingValidityDays <= 0) {
+				$this->labelType = 'danger';
+				$this->labelString = "expired";
+				$this->labelTitle = -$this->remainingValidityDays . ' days ago';
+			}
+			elseif ($this->remainingValidityDays < 29) {
+				$this->labelType = 'warning';
+				$this->labelString = "not renewed";
+				$this->labelTitle = $this->remainingValidityDays . " days left";
+			}
+			else {
+				$this->labelType = 'success';
+				$this->labelString = 'OK';
+			}
+		}
 	}
 	
 	private static function calculateRemainingValidityDays ($sslExpires) {
 		if(!empty($sslExpires)) {
 			$now = new \DateTime();
-		    $diff = $now->diff($sslExpires);
-		    if(!$diff) vdd($sslExpires);
-		    $res = $diff->days;
-		    if ($diff->invert === 1) {
-		        $res = -$res; // expired cert
-		    }
-		    return $res;
+			$diff = $now->diff($sslExpires);
+			if(!$diff) vdd($sslExpires);
+			$res = $diff->days;
+			if ($diff->invert === 1) {
+				$res = -$res; // expired cert
+			}
+			return $res;
 		}
 		else {
 			return null;

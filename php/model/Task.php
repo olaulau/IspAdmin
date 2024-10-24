@@ -1,6 +1,6 @@
 <?php
-
 namespace model;
+
 
 abstract class Task {
 	
@@ -9,9 +9,11 @@ abstract class Task {
 	
 	protected $labelType;
 	protected $labelString;
+	protected $labelTitle;
 	
 	
-	public function __construct ($domain, $server) {
+	public function __construct ($domain, $server)
+	{
 		$this->domain = $domain;
 		$this->server = $server;
 	}
@@ -19,7 +21,8 @@ abstract class Task {
 	
 	public abstract function getCmd () ;
 	
-	public static function wrapCli () {
+	public static function wrapCli ()
+	{
 		$f3 = \Base::instance();
 		$domain = $f3->get('PARAMS.domain');
 		$t = new static($domain, null);
@@ -32,12 +35,19 @@ abstract class Task {
 	public abstract function extractInfos ($ispconfigInfos) ;
 	
 	
-	public function getLabelType () {
+	public function getLabelType ()
+	{
 		return $this->labelType;
 	}
 	
-	public function getLabelString () {
+	public function getLabelString ()
+	{
 		return $this->labelString;
+	}
+	
+	public function getLabelTitle ()
+	{
+		return $this->labelTitle;
 	}
 	
 }

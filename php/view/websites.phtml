@@ -71,7 +71,7 @@
 							if(!empty($website ['whoisInfos'])) {
 								//TODO convert to use methods
 								?>
-								<td class="bg-<?= $website['whoisInfos']->getLabelType() ?>">
+								<td class="bg-<?= $website['whoisInfos']->getLabelType() ?>" title="<?= $website['whoisInfos']->getLabelTitle() ?>">
 									<?= nl2br($website ['whoisInfos']->getLabelString()) ?>
 								</td>
 								<?php
@@ -85,7 +85,7 @@
 						if ($active_modules ['dns'] === true) {
 							if(!empty($website ['dnsInfos'])) {
 								?>
-								<td class="bg-<?= $website ['dnsInfos']->getLabelType() ?>">
+								<td class="bg-<?= $website ['dnsInfos']->getLabelType() ?>" title="<?= $website['dnsInfos']->getLabelTitle() ?>">
 									<?= nl2br($website ['dnsInfos']->getLabelString()) ?>
 								</td>
 								<?php
@@ -99,7 +99,7 @@
 						if ($active_modules ['ssl'] === true) {
 							if(!empty($website ['sslInfos'])) {
 								?>
-								<td class="bg-<?= $website ['sslInfos']->getLabelType() ?>">
+								<td class="bg-<?= $website ['sslInfos']->getLabelType() ?>" title="<?= $website['sslInfos']->getLabelTitle() ?>">
 									<?= $website ['sslInfos']->getLabelString() ?>
 								</td>
 								<?php
@@ -113,7 +113,7 @@
 						if ($active_modules ['http'] === true) {
 							if(!empty($website ['httpInfos'])) {
 								?>
-								<td class="bg-<?= $website ['httpInfos']->getLabelType() ?>">
+								<td class="bg-<?= $website ['httpInfos']->getLabelType() ?>" title="<?= $website['httpInfos']->getLabelTitle() ?>">
 									<?= $website ['httpInfos']->getLabelString() ?>
 								</td>
 								<?php
@@ -127,7 +127,7 @@
 						if ($active_modules ['php'] === true) {
 							if(!empty($website ['phpInfos'])) {
 								?>
-								<td class="bg-<?= $website ['phpInfos']->getLabelType() ?>">
+								<td class="bg-<?= $website ['phpInfos']->getLabelType() ?>" title="<?= $website['phpInfos']->getLabelTitle() ?>">
 									<?= $website ['phpInfos']->getLabelString() ?>
 								</td>
 								<?php

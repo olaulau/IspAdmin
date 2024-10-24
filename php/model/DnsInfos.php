@@ -1,6 +1,6 @@
 <?php
-
 namespace model;
+
 
 class DnsInfos extends Task {
 	
@@ -48,13 +48,16 @@ class DnsInfos extends Task {
 			$this->labelType = 'danger';
 			
 			if (empty($rawInfos)) {
-				$this->labelString = "DNS resolution failed";
+				$this->labelString = "failed";
+				$this->labelTitle = "DNS resolution failed";
 			}
 			elseif ($this->domain === $rawInfos) {
-				$this->labelString = "domain doesn't exist in DNS";
+				$this->labelString = "not in DNS";
+				$this->labelTitle = "domain doesn't exist in DNS";
 			}
 			else {
-				$this->labelString = "DNS doesn't resolve to server IP : <br/> " . $this->server["server"]["ip_address"] . " !== " . $rawInfos;
+				$this->labelString = "resolv";
+				$this->labelTitle = "DNS doesn't resolve to server IP : <br/> " . $this->server["server"]["ip_address"] . " !== " . $rawInfos;
 			}
 		}
 	}

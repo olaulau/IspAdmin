@@ -1,12 +1,15 @@
 <?php
 namespace model;
 
-class HttpInfos extends Task {
+
+class HttpInfos extends Task
+{
 	
-	public function getCmd () {
-	    $f3 = \Base::instance();
-	    
-	    $php_binary = $f3->get("tech.PHP_BINARY");
+	public function getCmd ()
+	{
+		$f3 = \Base::instance();
+		
+		$php_binary = $f3->get("tech.PHP_BINARY");
 		$cmd = "$php_binary index.php http $this->domain";
 		
 		$key = "http_$this->domain";
@@ -19,7 +22,8 @@ class HttpInfos extends Task {
 	}
 	
 	
-	public function execCmd () {
+	public function execCmd ()
+	{
 		$f3 = \Base::instance();
 		$this->domain = $f3->get('PARAMS.domain');
 		
@@ -29,7 +33,8 @@ class HttpInfos extends Task {
 	}
 	
 	
-	public function extractInfos ($ispconfigInfos) {
+	public function extractInfos ($ispconfigInfos)
+	{
 		$cache = \Cache::instance();
 		$rawInfos = $cache->get("http_$this->domain");
 		if(isset($rawInfos->body->errors)) {
@@ -39,19 +44,23 @@ class HttpInfos extends Task {
 		
 		$this->labelType = 'success';
 		$this->labelString = 'OK';
+		$this->labelTitle = "";
 		
 		if (empty (intval($rawInfos))) {
 			$cache->clear("http_$this->domain");
 			$this->labelType = 'danger';
-			$this->labelString = "http query failed";
+			$this->labelString = "failed";
+			$this->labelTitle = "http query failed";
 		}
 		elseif ($rawInfos >= 500) {
 			$this->labelType = 'danger';
-			$this->labelString = "server side error : <br/> " . $rawInfos;
+			$this->labelString = $rawInfos;
+			$this->labelTitle = "server side error";
 		}
 		elseif ($rawInfos >= 400) {
 			$this->labelType = 'warning';
-			$this->labelString = "client side error : <br/> " . $rawInfos;
+			$this->labelString = $rawInfos;
+			$this->labelTitle = "client side error";
 		}
 	}
 	
