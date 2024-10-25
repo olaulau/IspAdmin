@@ -1,24 +1,29 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<link rel="icon" href="data:;base64,iVBORw0KGgo=">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="">
-<meta name="author" content="">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-<title><?= $PAGE["title"] ?></title>
+	<!-- <link rel="icon" href="data:;base64,iVBORw0KGgo="> -->
+	<link rel="icon" href="<?= $BASE . $f3->alias("favicon") ?>">
+	<link rel=”mask-icon” href=”<?= $BASE . $f3->alias("maskicon") ?>” color=”#000000">
+	<!-- <link rel="apple-touch-icon" href="apple-touch-icon.png"> -->
 
-<!-- Bootstrap core CSS -->
-<link href="<?= $BASE ?>/vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+	<title><?= $PAGE["title"] ?></title>
 
-<!--  font awesome -->
-<link href="<?= $BASE ?>/vendor/fortawesome/font-awesome/css/fontawesome.css" rel="stylesheet">
-<link href="<?= $BASE ?>/vendor/fortawesome/font-awesome/css/brands.css" rel="stylesheet">
-<link href="<?= $BASE ?>/vendor/fortawesome/font-awesome/css/solid.css" rel="stylesheet">
+	<!-- Bootstrap core CSS -->
+	<link href="<?= $BASE ?>/vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<link href="assets/<?= $PAGE["name"] ?>.css" rel="stylesheet">
+	<!--  font awesome -->
+	<link href="<?= $BASE ?>/vendor/fortawesome/font-awesome/css/fontawesome.css" rel="stylesheet">
+	<link href="<?= $BASE ?>/vendor/fortawesome/font-awesome/css/brands.css" rel="stylesheet">
+	<link href="<?= $BASE ?>/vendor/fortawesome/font-awesome/css/solid.css" rel="stylesheet">
 
-<!-- Custom styles for this template -->
-<link href="assets/sticky-footer-navbar.css" rel="stylesheet">
+	<link href="assets/common.css" rel="stylesheet">
+	<link href="assets/<?= $PAGE["name"] ?>.css" rel="stylesheet">
+
+	<!-- Custom styles for this template -->
+	<link href="assets/sticky-footer-navbar.css" rel="stylesheet">
 </head>

@@ -1,13 +1,15 @@
 <?php
 namespace controller;
 
+use ErrorException;
 
-class FrontCtrl
+
+class FrontCtrl extends Ctrl
 {
 	
-	public static function beforeroute()
+	public static function beforeroute(\Base $f3, array $url, string $controler)
 	{
-		$f3 = \Base::instance();
+		parent::beforeroute($f3, $url, $controler);
 		
 		if(empty( $f3->get("SESSION.auth_user") )) {
 			$f3->reroute("/login");
@@ -15,7 +17,7 @@ class FrontCtrl
 	}
 	
 	
-	public static function afterroute()
+	public static function afterroute(\Base $f3, array $url, string $controler)
 	{
 		
 	}
@@ -271,7 +273,7 @@ class FrontCtrl
 	}
 	
 
-	public static function GET_domains ()
+	public static function GET_domains (\Base $f3, array $url, string $controler)
 	{
 		$f3 = \Base::instance();
 		
@@ -363,4 +365,14 @@ class FrontCtrl
 		$f3->reroute($f3->get('SERVER.HTTP_REFERER'));
 	}
 	
+	
+	public static function faviconGET (\Base $f3, array $url, string $controler)
+	{
+		$web = \Web::instance();
+		$filename = __DIR__ . "/../../assets/app_icon.svg";
+		$sent = $web->send($filename);
+		if ($sent === false) {
+			throw new ErrorException("web send error");
+		}
+	}
 }
