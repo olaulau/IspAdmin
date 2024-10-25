@@ -1,20 +1,22 @@
 	<header>
 		<!-- Fixed navbar -->
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<a class="navbar-brand" href="<?= $BASE ?>/">ISP config Admin</a>
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
-				aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-			<div class="collapse navbar-collapse" id="navbarCollapse">
-				<ul class="navbar-nav mr-auto">
-					<li class="nav-item <?= $PAGE["name"] === "websites" ? "active" : "" ?>"> <a class="nav-link" href="<?= $BASE ?>/websites"> WebSites </a> </li>
-					<li class="nav-item <?= $PAGE["name"] === "emails" ? "active" : "" ?>"> <a class="nav-link" href="<?= $BASE ?>/emails"> E-mails </a> </li>
-					<li class="nav-item <?= $PAGE["name"] === "domains" ? "active" : "" ?>"> <a class="nav-link" href="<?= $BASE ?>/domains"> DNS </a> </li>
+			<div class="container-fluid">
+				<a class="navbar-brand" href="<?= $BASE ?>/">ISP config Admin</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+					aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarCollapse">
+					<ul class="navbar-nav mr-auto">
+						<li class="nav-item <?= $PAGE["name"] === "websites" ? "active" : "" ?>"> <a class="nav-link" href="<?= $BASE ?>/websites"> WebSites </a> </li>
+						<li class="nav-item <?= $PAGE["name"] === "emails" ? "active" : "" ?>"> <a class="nav-link" href="<?= $BASE ?>/emails"> E-mails </a> </li>
+						<li class="nav-item <?= $PAGE["name"] === "domains" ? "active" : "" ?>"> <a class="nav-link" href="<?= $BASE ?>/domains"> DNS </a> </li>
+					</ul>
+				</div>
+				<ul class="navbar-nav px-3">
+					<li class="nav-item text-nowrap"> <a href="<?=$BASE?>/logout" class="nav-link" href="#"> déconnecter ( <?= $SESSION["auth_user"] ?> ) </a> </li>
 				</ul>
 			</div>
-			<ul class="navbar-nav px-3">
-				<li class="nav-item text-nowrap"> <a href="<?=$BASE?>/logout" class="nav-link" href="#"> déconnecter ( <?= $SESSION["auth_user"] ?> ) </a> </li>
-			</ul>
-	</nav>
+		</nav>
 	</header>

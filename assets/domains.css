@@ -1,6 +1,5 @@
-
-.container-fluid {
-	padding-top: 4rem;
+body > .container-fluid {
+	padding: 60px 15px 0;
 }
 
 .truncate {
