@@ -1,6 +1,8 @@
 <?php
 namespace controller;
 
+use service\IspConfig;
+
 
 class Cli
 {
@@ -26,7 +28,7 @@ class Cli
 		$cache = \Cache::instance();
 		$key = "ispconfig";
 		if ($cache->exists($key, $ispconfigRawinfos) === false) {
-			$ispconfigRawinfos = \IspConfig::IspGetInfos ();
+			$ispconfigRawinfos = IspConfig::IspGetInfos ();
 			$cache->set($key, $ispconfigRawinfos, $f3->get("cache.ispconfig"));
 		}
 		list($servers, $websites) = $ispconfigRawinfos;
@@ -74,16 +76,16 @@ class Cli
 		
 		
 		// vdd($websites);
-		$session_id = \IspConfig::IspLogin ();
+		$session_id = IspConfig::IspLogin ();
 		foreach ($websites as $domain => &$website) {
 			if ($website['ispconfigInfos']['ssl'] === 'y' && $website['ispconfigInfos']['ssl_letsencrypt'] === 'y') {
 				if ($website['sslRemainingValidityDays'] !== null && $website['sslRemainingValidityDays'] < 30) {
 					echo $domain . " : " . $website['sslRemainingValidityDays'] . " days left " . PHP_EOL;
 					// renew
 					$website['ispconfigInfos']['ssl_letsencrypt'] = 'n';
-					\IspConfig::IspUpdateWebsite($session_id, $website['ispconfigInfos']);
+					IspConfig::IspUpdateWebsite($session_id, $website['ispconfigInfos']);
 					$website['ispconfigInfos']['ssl_letsencrypt'] = 'y';
-					\IspConfig::IspUpdateWebsite($session_id, $website['ispconfigInfos']);
+					IspConfig::IspUpdateWebsite($session_id, $website['ispconfigInfos']);
 				}
 			}
 		}

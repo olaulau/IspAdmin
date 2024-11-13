@@ -2,6 +2,7 @@
 namespace controller;
 
 use ErrorException;
+use service\IspConfig;
 
 
 class FrontCtrl extends Ctrl
@@ -48,7 +49,7 @@ class FrontCtrl extends Ctrl
 		$cache = \Cache::instance();
 		$key = "ispconfig";
 		if ($cache->exists($key, $ispconfigRawinfos) === false) { //TODO count in stats
-			$ispconfigRawinfos = \IspConfig::IspGetInfos ();
+			$ispconfigRawinfos = IspConfig::IspGetInfos ();
 			$cache->set($key, $ispconfigRawinfos, $f3->get("cache.ispconfig"));
 		}
 		global $servers;
@@ -214,7 +215,7 @@ class FrontCtrl extends Ctrl
 			$drop_existing_mailboxes = true;
 		}
 		
-		$session_id = \IspConfig::IspLogin();
+		$session_id = IspConfig::IspLogin();
 		$mail_domains = [];
 		// uploaded file loop
 		foreach ($files as $file => $uploaded) {
@@ -226,10 +227,10 @@ class FrontCtrl extends Ctrl
 						list($email, $password) = $data;
 						
 						// delete mail user
-						$mail_user = \IspConfig::IspGetMailUser($session_id, $email);
+						$mail_user = IspConfig::IspGetMailUser($session_id, $email);
 						if(!empty($mail_user)) { // existing email
 							if($drop_existing_mailboxes === true) {
-								\IspConfig::IspDeleteMailUser($session_id, $mail_user["mailuser_id"]);
+								IspConfig::IspDeleteMailUser($session_id, $mail_user["mailuser_id"]);
 							}
 							else {
 								continue; // can't recreate an existing mailbox
@@ -245,8 +246,8 @@ class FrontCtrl extends Ctrl
 
 						// look for server and client hosting mail domain (if not in cache)
 						if(empty($mail_domains[$email_domain])) {
-							$mail_domain = \IspConfig::IspGetMailDomain($session_id, $email_domain);
-							$client_id = \IspConfig::IspGetClientIdFromUserId($session_id, $mail_domain["sys_groupid"]);
+							$mail_domain = IspConfig::IspGetMailDomain($session_id, $email_domain);
+							$client_id = IspConfig::IspGetClientIdFromUserId($session_id, $mail_domain["sys_groupid"]);
 							$mail_domain["client_id"] = $client_id;
 							$mail_domains[$email_domain] = $mail_domain;
 						}
@@ -255,7 +256,7 @@ class FrontCtrl extends Ctrl
 						$server_id = $mail_domains[$email_domain]["server_id"];
 						$client_id = $mail_domains[$email_domain]["client_id"];
 						$quota = $f3->get("POST.quota") * 1024 * 1024 * 1024; // GB -> Bytes
-						$mail_user_id = \IspConfig::IspAddMailUser($session_id, $server_id, $client_id, $email, $password, $quota);
+						$mail_user_id = IspConfig::IspAddMailUser($session_id, $server_id, $client_id, $email, $password, $quota);
 						
 						$row++;
 					}
@@ -283,11 +284,11 @@ class FrontCtrl extends Ctrl
 		];
 		$f3->set("PAGE", $PAGE);
 		
-		$domains = \IspConfig::IspGetDomains();
+		$domains = IspConfig::IspGetDomains();
 		$domains =  array_combine( array_column($domains, "id"), $domains ); // index by id
 		$f3->set("domains", $domains);
 		
-		$domain_entries = \IspConfig::IspGetDomainEntries();
+		$domain_entries = IspConfig::IspGetDomainEntries();
 		// convert zone id to domain name
 		foreach ($domain_entries as &$domain_entry) {
 			if(!empty($domain_entry["zone"]) && !empty($domains[$domain_entry["zone"]]))
@@ -352,7 +353,7 @@ class FrontCtrl extends Ctrl
 			$name = $post ["name"];
 	
 			foreach ($post["domain_entry"] as $domain_entry_id => $on) {
-				$result = \IspConfig::IspSetDomainParams ($domain_entry_id, $name, $data);
+				$result = IspConfig::IspSetDomainParams ($domain_entry_id, $name, $data);
 			}
 			
 			//TODO check same type and data / name
