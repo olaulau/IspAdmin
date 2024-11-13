@@ -95,3 +95,19 @@ function execMultipleProcesses(&$cmds, $fork=true, $wait=true) {
 		}
 	}
 }
+
+
+function get_sub_aliases(string $alias)
+{
+	$f3 = Base::instance();
+	$aliases = $f3->get("ALIASES");
+	if(!isset($aliases [$alias])) {
+		return [];
+	}
+	
+	$url = $aliases [$alias];
+	return array_filter($aliases, function ($cur_url) use ($url)
+	{
+		return str_starts_with($cur_url, $url) && ($cur_url !== $url);
+	});
+}

@@ -1,7 +1,6 @@
-<?php require_once __DIR__ . "/layout/head.inc.phtml"; ?>
+<?php require_once __DIR__ . "/../layout/head.inc.phtml"; ?>
 
-<body>
-<?php require_once __DIR__ . "/layout/header.inc.phtml"; ?>
+<?php require_once __DIR__ . "/../layout/header.inc.phtml"; ?>
 
 	<!-- Begin page content -->
 	<main role="main" class="container-fluid">
@@ -28,7 +27,7 @@
 				</tr>
 			</thead>
 			
-			<form action="<?= $BASE ?>/domains/bulk_edit" method="post">
+			<form action="" method="post">
 				<tbody class="">
 				<?php
 				foreach($domain_entries as $domain_entry) {
@@ -56,6 +55,6 @@
 		</table>
 	</main>
 
-<?php require_once __DIR__ . "/layout/footer.inc.phtml"; ?>
+<?php require_once __DIR__ . "/../layout/footer.inc.phtml"; ?>
 
-<?php require_once __DIR__ . "/layout/foot.inc.phtml"; ?>
+<?php require_once __DIR__ . "/../layout/foot.inc.phtml"; ?>

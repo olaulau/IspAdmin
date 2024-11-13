@@ -2,16 +2,54 @@
 		<!-- Fixed navbar -->
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="<?= $BASE ?>/"><i class="fa-solid fa-hammer"></i> ISPconfig Admin</a>
+				<a class="navbar-brand" href="<?= $BASE ?>/"><i class="fa-solid fa-hammer"></i> ISPConfig Admin</a>
 				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
 					aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="collapse navbar-collapse" id="navbarCollapse">
 					<ul class="navbar-nav mr-auto">
-						<li class="nav-item"> <a class="nav-link <?= $PAGE["name"] === "websites" ? "active" : "" ?>" href="<?= $BASE ?>/websites"> <i class="fa-solid fa-globe"></i> WebSites </a> </li>
-						<li class="nav-item"> <a class="nav-link <?= $PAGE["name"] === "emails" ? "active" : "" ?>" href="<?= $BASE ?>/emails"> <i class="fa-solid fa-envelope"></i> E-mails </a> </li>
-						<li class="nav-item"> <a class="nav-link <?= $PAGE["name"] === "domains" ? "active" : "" ?>" href="<?= $BASE ?>/domains"> <i class="fa-solid fa-address-book"></i> DNS </a> </li>
+						<?php
+						$websites_sub_aliases = get_sub_aliases("websites");
+						?>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle <?= array_key_exists($f3->get("ALIAS"), $websites_sub_aliases) ?  "active" : "" ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								<i class="fa-solid fa-globe"></i> WebSites
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a class="dropdown-item <?= $PAGE["name"] === "websites/check" ? "active" : "" ?>" href="<?= $BASE . $f3->alias("websitesCheck") ?>">Check</a>
+								</li>
+							</ul>
+						</li>
+						
+						<?php
+						$emails_sub_aliases = get_sub_aliases("emails");
+						?>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle <?= array_key_exists($f3->get("ALIAS"), $emails_sub_aliases) ?  "active" : "" ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								<i class="fa-solid fa-envelope"></i> E-mails
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a class="dropdown-item <?= $PAGE["name"] === "emails/bulk" ? "active" : "" ?>" href="<?= $BASE . $f3->alias("emailsBulk") ?>">Bulk creation</a>
+								</li>
+							</ul>
+						</li>
+						
+						<?php
+						$domains_sub_aliases = get_sub_aliases("domains");
+						?>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle <?= array_key_exists($f3->get("ALIAS"), $domains_sub_aliases) ?  "active" : "" ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								<i class="fa-solid fa-address-book"></i> Domains
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a class="dropdown-item <?= $PAGE["name"] === "domains/bulk" ? "active" : "" ?>" href="<?= $BASE . $f3->alias("domainsBulk") ?>">Bulk edit</a>
+								</li>
+							</ul>
+						</li>
 					</ul>
 				</div>
 				<ul class="navbar-nav px-3">
@@ -20,3 +58,4 @@
 			</div>
 		</nav>
 	</header>
+	

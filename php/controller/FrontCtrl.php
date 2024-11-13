@@ -24,7 +24,7 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function GET_index ()
+	public static function homeGET ()
 	{
 		$f3 = \Base::instance();
 		
@@ -38,8 +38,22 @@ class FrontCtrl extends Ctrl
 		echo $view->render('index.phtml');
 	}
 	
+	public static function testGET ()
+	{
+		$f3 = \Base::instance();
+		
+		$PAGE = [
+			"name" => "test",
+			"title" => "test",
+		];
+		$f3->set("PAGE", $PAGE);
+		
+		$view = new \View();
+		echo $view->render('test.phtml');
+	}
 	
-	public static function GET_websites ()
+	
+	public static function websitesCheckGET ()
 	{
 		$generation_start = microtime(true);
 		
@@ -167,32 +181,32 @@ class FrontCtrl extends Ctrl
 		$f3->set("footer_additional_text", $footer_additional_text);
 		
 		$PAGE = [
-			"name" => "websites",
+			"name" => "websites/check",
 			"title" => "Web Sites",
 		];
 		$f3->set("PAGE", $PAGE);
 		
 		$view = new \View();
-		echo $view->render('websites.phtml');
+		echo $view->render('websites/check.phtml');
 	}
 	
 	
-	public static function GET_emails ()
+	public static function emailsBulkGET ()
 	{
 		$f3 = \Base::instance();
 		
 		$PAGE = [
-			"name" => "emails",
+			"name" => "emails/bulk",
 			"title" => "E-mails",
 		];
 		$f3->set("PAGE", $PAGE);
 		
 		$view = new \View();
-		echo $view->render('emails.phtml');
+		echo $view->render('emails/bulk.phtml');
 	}
 	
 	
-	public static function POST_emails ()
+	public static function emailsBulkPOST ()
 	{
 		$f3 = \Base::instance();
 		$web = \Web::instance();
@@ -275,17 +289,11 @@ class FrontCtrl extends Ctrl
 	}
 	
 
-	public static function GET_domains (\Base $f3, array $url, string $controler)
+	public static function domainsBulkGET (\Base $f3, array $url, string $controler)
 	{
 		$generation_start = microtime(true);
 		
 		$f3 = \Base::instance();
-		
-		$PAGE = [
-			"name" => "domains",
-			"title" => "DNS",
-		];
-		$f3->set("PAGE", $PAGE);
 		
 		$domains = IspConfig::IspGetDomains();
 		$domains =  array_combine( array_column($domains, "id"), $domains ); // index by id
@@ -345,13 +353,19 @@ class FrontCtrl extends Ctrl
 		$footer_additional_text = ' | 
 				generated in '.$generation_time .' ms';
 		$f3->set("footer_additional_text", $footer_additional_text);
+		
+		$PAGE = [
+			"name" => "domains/bulk",
+			"title" => "DNS",
+		];
+		$f3->set("PAGE", $PAGE);
 
 		$view = new \View();
-		echo $view->render('domains.phtml');
+		echo $view->render('domains/bulk.phtml');
 	}
 	
 	
-	public static function POST_domains_bulk_edit () {
+	public static function domainsBulkPOST () {
 		$f3 = \Base::instance();
 		
 		$post = $f3->get("POST");
