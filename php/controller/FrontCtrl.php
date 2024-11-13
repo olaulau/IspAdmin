@@ -160,8 +160,9 @@ class FrontCtrl extends Ctrl
 		
 		$generation_end = microtime(true);
 		$generation_time = number_format ( (($generation_end - $generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
-		$footer_additional_text = '
-				<span title="'.implode(PHP_EOL, $stats['executed_cmds']).'">'.$stats['total_executed_cmds'].' / '.$stats['total_cmds'].' executed</span> - 
+		$footer_additional_text = ' | 
+				<span title="'.implode(PHP_EOL, $stats['executed_cmds']).'">'.$stats['total_executed_cmds'].' / '.$stats['total_cmds'].' executed</span>
+				 | 
 				generated in '.$generation_time .' ms';
 		$f3->set("footer_additional_text", $footer_additional_text);
 		
@@ -276,6 +277,8 @@ class FrontCtrl extends Ctrl
 
 	public static function GET_domains (\Base $f3, array $url, string $controler)
 	{
+		$generation_start = microtime(true);
+		
 		$f3 = \Base::instance();
 		
 		$PAGE = [
@@ -336,6 +339,12 @@ class FrontCtrl extends Ctrl
 			$domain_entries
 		);
 		$f3->set("domain_entries", $domain_entries);
+		
+		$generation_end = microtime(true);
+		$generation_time = number_format ( (($generation_end - $generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
+		$footer_additional_text = ' | 
+				generated in '.$generation_time .' ms';
+		$f3->set("footer_additional_text", $footer_additional_text);
 
 		$view = new \View();
 		echo $view->render('domains.phtml');
