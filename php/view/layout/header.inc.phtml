@@ -52,8 +52,18 @@
 						</li>
 					</ul>
 				</div>
+				
 				<ul class="navbar-nav px-3">
-					<li class="nav-item text-nowrap"> <span class="nav-link"><?= $SESSION["auth_user"] ?> <a href="<?=$BASE?>/logout" class="text-decoration-none text-danger" href="#"> <i class="fa-solid fa-right-from-bracket" title="déconnecter"></i> </a> </span> </li>
+					<li class="nav-item dropdown">
+						<a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<i class="fa-solid fa-user"></i> <?= $SESSION["auth_user"] ?>
+						</a>
+						<ul class="dropdown-menu dropdown-menu-end">
+							<li>
+								<a class="dropdown-item text-danger" href="<?=$BASE?>/logout"><i class="fa-solid fa-right-from-bracket"></i> déconnecter</a>
+							</li>
+						</ul>
+					</li>
 				</ul>
 			</div>
 		</nav>
