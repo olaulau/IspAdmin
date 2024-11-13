@@ -9,13 +9,13 @@
 				</button>
 				<div class="collapse navbar-collapse" id="navbarCollapse">
 					<ul class="navbar-nav mr-auto">
-						<li class="nav-item <?= $PAGE["name"] === "websites" ? "active" : "" ?>"> <a class="nav-link" href="<?= $BASE ?>/websites"> WebSites </a> </li>
-						<li class="nav-item <?= $PAGE["name"] === "emails" ? "active" : "" ?>"> <a class="nav-link" href="<?= $BASE ?>/emails"> E-mails </a> </li>
-						<li class="nav-item <?= $PAGE["name"] === "domains" ? "active" : "" ?>"> <a class="nav-link" href="<?= $BASE ?>/domains"> DNS </a> </li>
+						<li class="nav-item <?= $PAGE["name"] === "websites" ? "active" : "" ?>"> <a class="nav-link" href="<?= $BASE ?>/websites"> <i class="fa-solid fa-globe"></i> WebSites </a> </li>
+						<li class="nav-item <?= $PAGE["name"] === "emails" ? "active" : "" ?>"> <a class="nav-link" href="<?= $BASE ?>/emails"> <i class="fa-solid fa-envelope"></i> E-mails </a> </li>
+						<li class="nav-item <?= $PAGE["name"] === "domains" ? "active" : "" ?>"> <a class="nav-link" href="<?= $BASE ?>/domains"> <i class="fa-solid fa-address-book"></i> DNS </a> </li>
 					</ul>
 				</div>
 				<ul class="navbar-nav px-3">
-					<li class="nav-item text-nowrap"> <a href="<?=$BASE?>/logout" class="nav-link" href="#"> déconnecter ( <?= $SESSION["auth_user"] ?> ) </a> </li>
+					<li class="nav-item text-nowrap"> <span class="nav-link"><?= $SESSION["auth_user"] ?> <a href="<?=$BASE?>/logout" class="text-decoration-none text-danger" href="#"> <i class="fa-solid fa-right-from-bracket" title="déconnecter"></i> </a> </span> </li>
 				</ul>
 			</div>
 		</nav>
