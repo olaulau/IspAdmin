@@ -1,22 +1,24 @@
 <?php
 namespace controller;
 
-class AuthCtrl
+
+class AuthCtrl extends Ctrl
 {
 	
-	public static function beforeroute()
+	public static function beforeroute(\Base $f3, array $url, string $controler)
 	{
-		
+		parent::beforeRoute($f3, $url, $controler);
 	}
 	
 	
-	public static function afterroute()
+	public static function afterroute(\Base $f3, array $url, string $controler)
 	{
 		
+		parent::afterRoute($f3, $url, $controler);
 	}
 	
 	
-	public static function GET_login ()
+	public static function GET_login (\Base $f3, array $url, string $controler)
 	{
 		$f3 = \Base::instance();
 		
@@ -30,7 +32,7 @@ class AuthCtrl
 		echo $view->render('login.phtml');
 	}
 	
-	public static function POST_login ()
+	public static function POST_login (\Base $f3, array $url, string $controler)
 	{
 		$f3 = \Base::instance();
 		
@@ -45,7 +47,7 @@ class AuthCtrl
 	}
 	
 	
-	public static function GET_logout ()
+	public static function GET_logout (\Base $f3, array $url, string $controler)
 	{
 		$f3 = \Base::instance();
 		

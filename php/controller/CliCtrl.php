@@ -5,20 +5,20 @@ namespace controller;
 class Cli
 {
 	
-	public static function beforeroute()
+	public static function beforeroute(\Base $f3, array $url, string $controler)
 	{
 		
 	}
 	
 	
-	public static function afterroute()
+	public static function afterroute(\Base $f3, array $url, string $controler)
 	{
 		
 	}
 	
 	
 	//TODO really usefull ?
-	public static function ssl_auto_renew ()
+	public static function ssl_auto_renew (\Base $f3, array $url, string $controler)
 	{
 		$f3 = \Base::instance();
 		
