@@ -2,6 +2,7 @@
 namespace controller;
 
 use ErrorException;
+use service\IspcDomain;
 use service\IspConfig;
 use service\IspcWebsite;
 
@@ -9,7 +10,7 @@ use service\IspcWebsite;
 class FrontCtrl extends Ctrl
 {
 	
-	public static function beforeroute(\Base $f3, array $url, string $controler)
+	public static function beforeroute(\Base $f3, array $url, string $controler) : void
 	{
 		parent::beforeroute($f3, $url, $controler);
 		
@@ -19,16 +20,14 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function afterroute(\Base $f3, array $url, string $controler)
+	public static function afterroute(\Base $f3, array $url, string $controler) : void
 	{
 		
 	}
 	
 	
-	public static function homeGET ()
+	public static function homeGET (\Base $f3, array $url, string $controler) : void
 	{
-		$f3 = \Base::instance();
-		
 		$PAGE = [
 			"name" => "index",
 			"title" => "Isp Admin",
@@ -39,10 +38,8 @@ class FrontCtrl extends Ctrl
 		echo $view->render('index.phtml');
 	}
 	
-	public static function testGET ()
+	public static function testGET (\Base $f3, array $url, string $controler) : void
 	{
-		$f3 = \Base::instance();
-		
 		$PAGE = [
 			"name" => "test",
 			"title" => "test",
@@ -54,11 +51,9 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function websitesCheckGET ()
+	public static function websitesCheckGET (\Base $f3, array $url, string $controler) : void
 	{
 		$generation_start = microtime(true);
-		
-		$f3 = \Base::instance();
 		
 		// get servers and websites list
 		$cache = \Cache::instance();
@@ -192,10 +187,8 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function emailsBulkGET ()
+	public static function emailsBulkGET (\Base $f3, array $url, string $controler) : void
 	{
-		$f3 = \Base::instance();
-		
 		$PAGE = [
 			"name" => "emails/bulk",
 			"title" => "E-mails",
@@ -207,9 +200,8 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function emailsBulkPOST ()
+	public static function emailsBulkPOST (\Base $f3, array $url, string $controler) : void
 	{
-		$f3 = \Base::instance();
 		$web = \Web::instance();
 		
 		// receive upload file
@@ -290,17 +282,15 @@ class FrontCtrl extends Ctrl
 	}
 	
 
-	public static function domainsBulkGET (\Base $f3, array $url, string $controler)
+	public static function domainsBulkGET (\Base $f3, array $url, string $controler) : void
 	{
 		$generation_start = microtime(true);
 		
-		$f3 = \Base::instance();
-		
-		$domains = IspConfig::IspGetDomains();
+		$domains = IspcDomain::IspGetDomains();
 		$domains =  array_combine( array_column($domains, "id"), $domains ); // index by id
 		$f3->set("domains", $domains);
 		
-		$domain_entries = IspConfig::IspGetDomainEntries();
+		$domain_entries = IspcDomain::IspGetDomainEntries();
 		// convert zone id to domain name
 		foreach ($domain_entries as &$domain_entry) {
 			if(!empty($domain_entry["zone"]) && !empty($domains[$domain_entry["zone"]]))
@@ -366,9 +356,8 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function domainsBulkPOST () {
-		$f3 = \Base::instance();
-		
+	public static function domainsBulkPOST (\Base $f3, array $url, string $controler) : void
+	{
 		$post = $f3->get("POST");
 		$action = $post ["action"];
 		
@@ -377,7 +366,7 @@ class FrontCtrl extends Ctrl
 			$name = $post ["name"];
 	
 			foreach ($post["domain_entry"] as $domain_entry_id => $on) {
-				$result = IspConfig::IspSetDomainParams ($domain_entry_id, $name, $data);
+				$result = IspcDomain::IspSetDomainParams ($domain_entry_id, $name, $data);
 			}
 			
 			//TODO check same type and data / name
@@ -391,7 +380,7 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function faviconGET (\Base $f3, array $url, string $controler)
+	public static function faviconGET (\Base $f3, array $url, string $controler) : void
 	{
 		$web = \Web::instance();
 		$filename = __DIR__ . "/../../assets/app_icon.svg";
