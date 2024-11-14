@@ -3,6 +3,7 @@ namespace controller;
 
 use ErrorException;
 use service\IspConfig;
+use service\IspcWebsite;
 
 
 class FrontCtrl extends Ctrl
@@ -63,7 +64,7 @@ class FrontCtrl extends Ctrl
 		$cache = \Cache::instance();
 		$key = "ispconfig";
 		if ($cache->exists($key, $ispconfigRawinfos) === false) { //TODO count in stats
-			$ispconfigRawinfos = IspConfig::IspGetInfos ();
+			$ispconfigRawinfos = IspcWebsite::IspGetInfos ();
 			$cache->set($key, $ispconfigRawinfos, $f3->get("cache.ispconfig"));
 		}
 		global $servers;
