@@ -8,11 +8,11 @@
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="collapse navbar-collapse" id="navbarCollapse">
-					<ul class="navbar-nav mr-auto">
-						<?php
-						$websites_sub_aliases = get_sub_aliases("websites");
-						?>
+					<ul class="navbar-nav mr-auto" data-bs-theme="dark">
 						<li class="nav-item dropdown">
+							<?php
+							$websites_sub_aliases = get_sub_aliases("websites");
+							?>
 							<a class="nav-link dropdown-toggle <?= array_key_exists($f3->get("ALIAS"), $websites_sub_aliases) ?  "active" : "" ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 								<i class="fa-solid fa-globe"></i> WebSites
 							</a>
@@ -22,11 +22,13 @@
 								</li>
 							</ul>
 						</li>
+					</ul>
 						
-						<?php
-						$emails_sub_aliases = get_sub_aliases("emails");
-						?>
+					<ul class="navbar-nav mr-auto" data-bs-theme="dark">
 						<li class="nav-item dropdown">
+							<?php
+							$emails_sub_aliases = get_sub_aliases("emails");
+							?>
 							<a class="nav-link dropdown-toggle <?= array_key_exists($f3->get("ALIAS"), $emails_sub_aliases) ?  "active" : "" ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 								<i class="fa-solid fa-envelope"></i> E-mails
 							</a>
@@ -36,11 +38,13 @@
 								</li>
 							</ul>
 						</li>
+					</ul>
 						
-						<?php
-						$domains_sub_aliases = get_sub_aliases("domains");
-						?>
+					<ul class="navbar-nav mr-auto" data-bs-theme="dark">
 						<li class="nav-item dropdown">
+							<?php
+							$domains_sub_aliases = get_sub_aliases("domains");
+							?>
 							<a class="nav-link dropdown-toggle <?= array_key_exists($f3->get("ALIAS"), $domains_sub_aliases) ?  "active" : "" ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 								<i class="fa-solid fa-address-book"></i> Domains
 							</a>
@@ -53,7 +57,7 @@
 					</ul>
 				</div>
 				
-				<ul class="navbar-nav px-3">
+				<ul class="navbar-nav px-3" data-bs-theme="dark">
 					<li class="nav-item dropdown">
 						<a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 							<i class="fa-solid fa-user"></i> <?= $SESSION["auth_user"] ?>
