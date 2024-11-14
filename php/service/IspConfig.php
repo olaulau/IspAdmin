@@ -9,6 +9,7 @@ abstract class IspConfig
 {
 	
 	private static string $session_id;
+	private static mixed $last_query_response;
 	
 	
 	protected static function restCall ($method, $data) : mixed
@@ -37,7 +38,14 @@ abstract class IspConfig
 			var_dump($result); die;
 			die("json decode error " . $ex->getCode() . " : " . $ex->getMessage() . PHP_EOL . $ex->getTraceAsString());
 		}
+		
+		static::$last_query_response = $res;
 		return $res["response"];
+	}
+	
+	public static function getLastQueryResponse () : mixed
+	{
+		return self::$last_query_response;
 	}
 	
 	
@@ -77,89 +85,9 @@ abstract class IspConfig
 	}
 	
 	
-	/* ------------------------ */
-	
-	
-	public static function IspGetMailUsers($session_id, $domain) : array
+	public static function IspGetClientIdFromUserId($sys_userid) : int
 	{
-		$res = static::restCall('mail_user_get', [
-			'session_id' => $session_id,
-			'primary_id' => ["email" => "%@$domain"],
-		]);
-		$res = array_column($res, null, "mailuser_id");
-		return $res;
-	}
-	
-	
-	public static function IspGetMailUser($session_id, $email) : array | null
-	{
-		$res = static::restCall('mail_user_get', [
-			'session_id' => $session_id,
-			'primary_id' => ["email" => $email],
-		]);
-		if(!empty($res))
-			return $res[0];
-		else
-			return null;
-	}
-	
-	
-	public static function IspDeleteMailUser($session_id, $mail_user_id) : void
-	{
-		$res = static::restCall('mail_user_delete', [
-			'session_id' => $session_id,
-			'primary_id' => $mail_user_id,
-		]);
-		if($res !== 1) {
-			die("error deleting mail user id #$mail_user_id : $res");
-		}
-		//TODO return something ?
-	}
-	
-	
-	public static function IspAddMailUser($session_id, $server_id, $client_id, $email, $password, $quota) : int
-	{
-		list($email_username, $email_domain) = explode("@", $email);
-		$params = [
-				"server_id"	=> $server_id,
-				"email"		=> $email,
-				"login"		=> $email,
-				"password"	=> $password,
-				"quota"		=> $quota,
-				"uid"		=> 5000,
-				"gid"		=> 5000,
-				"maildir"	=> "/var/vmail/$email_domain/$email_username",
-				"homedir"	=> "/var/vmail",
-				"custom_mailfilter" => "",
-				"move_junk" => "n",
-				"postfix" => "y",
-				"backup_interval" => "monthly", //TODO
-				"backup_copies" => 2, //TODO
-		];
-		$res = static::restCall('mail_user_add', [ 'session_id' => $session_id, "client_id" => $client_id, 'params' => $params ]);
-		$res = intval($res);
-		return $res;
-	}
-	
-	
-	public static function IspGetMailDomain($session_id, $domain) : array | null
-	{
-		$res = static::restCall('mail_domain_get_by_domain', [
-			'session_id' => $session_id,
-			'domain' => $domain,
-		]);
-		if(!empty($res))
-			return $res[0];
-		else
-			return null;
-	}
-	
-	
-	/* ------------------------ */
-	
-	
-	public static function IspGetClientIdFromUserId($session_id, $sys_userid) : array
-	{
+		$session_id = static::IspLogin ();
 		$res = static::restCall('client_get_id', [
 			'session_id' => $session_id,
 			'sys_userid' => $sys_userid,

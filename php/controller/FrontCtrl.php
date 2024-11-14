@@ -3,6 +3,7 @@ namespace controller;
 
 use ErrorException;
 use service\IspcDomain;
+use service\IspcMail;
 use service\IspConfig;
 use service\IspcWebsite;
 
@@ -223,62 +224,61 @@ class FrontCtrl extends Ctrl
 			$drop_existing_mailboxes = true;
 		}
 		
-		$session_id = IspConfig::IspLogin();
 		$mail_domains = [];
 		// uploaded file loop
 		foreach ($files as $file => $uploaded) {
 			if($uploaded === true) {
 				// row loop
-				$row = 1;
 				if (($handle = fopen($file, "r")) !== FALSE) {
 					while (($data = fgetcsv($handle)) !== FALSE) {
 						list($email, $password) = $data;
 						
 						// delete mail user
-						$mail_user = IspConfig::IspGetMailUser($session_id, $email);
+						$mail_user = IspcMail::IspGetMailUser($email);
 						if(!empty($mail_user)) { // existing email
 							if($drop_existing_mailboxes === true) {
-								IspConfig::IspDeleteMailUser($session_id, $mail_user["mailuser_id"]);
+								IspcMail::IspDeleteMailUser($mail_user["mailuser_id"]);
 							}
 							else {
 								continue; // can't recreate an existing mailbox
-								//TODO count stats
 							}
 						}
 						
 						// calculate domain
 						if(filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-							die("invalid email : $email");
+							throw new ErrorException("invalid email : $email");
 						}
 						list($email_username, $email_domain) = explode("@", $email);
 
 						// look for server and client hosting mail domain (if not in cache)
-						if(empty($mail_domains[$email_domain])) {
-							$mail_domain = IspConfig::IspGetMailDomain($session_id, $email_domain);
-							$client_id = IspConfig::IspGetClientIdFromUserId($session_id, $mail_domain["sys_groupid"]);
-							$mail_domain["client_id"] = $client_id;
-							$mail_domains[$email_domain] = $mail_domain;
+						if(empty($mail_domains [$email_domain])) {
+							$mail_domain = IspcMail::IspGetMailDomain($email_domain);
+							$client_id = IspConfig::IspGetClientIdFromUserId($mail_domain ["sys_groupid"]);
+							$mail_domain ["client_id"] = $client_id;
+							$mail_domains [$email_domain] = $mail_domain;
 						}
 						
 						// create mailbox
-						$server_id = $mail_domains[$email_domain]["server_id"];
-						$client_id = $mail_domains[$email_domain]["client_id"];
+						$server_id = $mail_domains [$email_domain] ["server_id"];
+						$client_id = $mail_domains [$email_domain] ["client_id"];
 						$quota = $f3->get("POST.quota") * 1024 * 1024 * 1024; // GB -> Bytes
-						$mail_user_id = IspConfig::IspAddMailUser($session_id, $server_id, $client_id, $email, $password, $quota);
-						
-						$row++;
+						$mail_user_id = IspcMail::IspAddMailUser($server_id, $client_id, $email, $password, $quota);
+						if($mail_user_id === 0) { // error
+							$response = IspConfig::getLastQueryResponse();
+							throw new ErrorException("{$response["code"]} : {$response["message"]}");
+						}
 					}
 					fclose($handle);
 					unlink($file);
 				}
 			}
 			else {
-				die("error in upload");
+				throw new ErrorException("error in upload");
 			}
 		}
 		
 		//TODO put result in session flash message and redirect to emails urls (GET)
-		$f3->reroute("/emails");
+		$f3->reroute();
 	}
 	
 
