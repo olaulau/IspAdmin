@@ -60,21 +60,27 @@ class FrontCtrl extends Ctrl
 	{
 		$generation_start = microtime(true);
 		
+		global $servers_configs; //TODO remove WTF ugly
+		
 		// get servers and websites list
 		$cache = \Cache::instance();
-		$key = "ispconfig";
-		if ($cache->exists($key, $ispconfigRawinfos) === false) { //TODO count in stats
-			//////////////////////
-			// $servers_configs = IspcWebsite::getServersConfigs ();
-			// $websites = IspcWebsite::getVhostsPlusPlus ();
-			// $phps = IspcWebsite::getServerPhps ();
-			
-			$ispconfigRawinfos = IspcWebsite::IspGetInfos (); ////////////////////
-			$cache->set($key, $ispconfigRawinfos, $f3->get("cache.ispconfig"));
+		$key = "servers_configs";
+		if ($cache->exists($key, $servers_configs) === false) { //TODO count in stats
+			$servers_configs = IspcWebsite::getServersConfigs ();
+			$cache->set($key, $servers_configs, $f3->get("cache.ispconfig"));
 		}
-		global $servers;
-		list($servers, $websites, $phps) = $ispconfigRawinfos;
-
+		$key = "websites";
+		if ($cache->exists($key, $websites) === false) { //TODO count in stats
+			$websites = IspcWebsite::getVhostsPlusPlus ();
+			$cache->set($key, $websites, $f3->get("cache.ispconfig"));
+		}
+		$key = "servers_phps";
+		if ($cache->exists($key, $servers_phps) === false) { //TODO count in stats
+			$servers_phps = IspcWebsite::getServerPhps ();
+			$cache->set($key, $servers_phps, $f3->get("cache.ispconfig"));
+		}
+		
+		
 		// filter domains (dev tests)
 		if(!empty($f3->get('debug.websites_filter'))) {
 			array_walk ( $websites , function ( $value , $key , $filter ) use ( &$websites ) {
@@ -89,81 +95,81 @@ class FrontCtrl extends Ctrl
 		
 		// group domains by 2LD
 		$stats = [];
-		$stats["websites_count"] = count($websites);
+		$stats ["websites_count"] = count($websites);
 		$websites = group2dArray($websites, "2LD");
-		$stats["2LD_count"] = count($websites);
+		$stats ["2LD_count"] = count($websites);
 		
 		// get infos (by running external processes)
 		$cmds = [];
 		$tasks = [];
 		foreach ($websites as $parent => $group) {
 			foreach ($group as $domain => $website) {
-				if ($website["ispconfigInfos"]['active']==='y') {
-					if(!empty($servers[$website["ispconfigInfos"]["server_id"]])) {
-						$server = $servers[$website["ispconfigInfos"]["server_id"]];
+				if ($website ["ispconfigInfos"] ['active'] === 'y') {
+					if(!empty($servers_configs [$website ["ispconfigInfos"] ["server_id"]])) {
+						$server = $servers_configs[$website ["ispconfigInfos"] ["server_id"]];
 						if ($f3->get('active_modules.whois') === true) {
 							$t = new \model\WhoisInfos ($parent, $server);
-							$tasks["whois"][$parent] = $t;
-							$cmds["whois_$parent"] = $t->getCmd();
+							$tasks ["whois"] [$parent] = $t;
+							$cmds ["whois_$parent"] = $t->getCmd();
 							//TODO do not recreate things if parents domain has already been done
 						}
 						if ($f3->get('active_modules.dns') === true) {
 							$t = new \model\DnsInfos ($domain, $server);
-							$tasks["dns"][$domain] = $t;
-							$cmds["dns_$domain"] = $t->getCmd();
+							$tasks ["dns"] [$domain] = $t;
+							$cmds ["dns_$domain"] = $t->getCmd();
 						}
 						if ($f3->get('active_modules.ssl') === true) {
 							$t = new \model\SslInfos ($domain, $server);
-							$tasks["ssl"][$domain] = $t;
-							$cmds["ssl_$domain"] = $t->getCmd();
+							$tasks ["ssl"] [$domain] = $t;
+							$cmds ["ssl_$domain"] = $t->getCmd();
 						}
 						if ($f3->get('active_modules.http') === true) {
 							$t = new \model\HttpInfos ($domain, $server);
-							$tasks["http"][$domain] = $t;
-							$cmds["http_$domain"] = $t->getCmd();
+							$tasks ["http"] [$domain] = $t;
+							$cmds ["http_$domain"] = $t->getCmd();
 						}
 						if ($f3->get('active_modules.php') === true) {
-							$t = new \model\PhpInfos ($domain, $server, $website, $phps);
-							$tasks["php"][$domain] = $t;
+							$t = new \model\PhpInfos ($domain, $server, $website, $servers_phps);
+							$tasks ["php"] [$domain] = $t;
 						}
 					}
 				}
 			}
 		}
 		
-		$stats['total_cmds'] = count($cmds);
+		$stats ['total_cmds'] = count($cmds);
 		execMultipleProcesses($cmds, true, true);
-		$stats['total_executed_cmds'] = count($cmds);
-		$stats['executed_cmds'] = $cmds;
+		$stats ['total_executed_cmds'] = count($cmds);
+		$stats ['executed_cmds'] = $cmds;
 		$f3->set('stats', $stats);
 		
 		// extract infos
 		foreach ($websites as $parent => &$group) {
 			foreach ($group as $domain => &$website) {
-				if ($website["ispconfigInfos"]['active']==='y') {
-					if(!empty($servers[$website["ispconfigInfos"]["server_id"]])) {
-						$server = $servers[$website["ispconfigInfos"]["server_id"]]; //TODO useless
+				if ($website ["ispconfigInfos"] ['active'] === 'y') {
+					if(!empty($servers_configs [$website["ispconfigInfos"] ["server_id"]])) {
+						$server = $servers_configs[$website["ispconfigInfos"]["server_id"]]; //TODO useless
 						if ($f3->get('active_modules.whois') === true) {
-							$tasks["whois"][$parent]->extractInfos($website['ispconfigInfos']);
-							$website['whoisInfos'] = $tasks["whois"][$parent];
+							$tasks ["whois"] [$parent]->extractInfos ($website ['ispconfigInfos']);
+							$website ['whoisInfos'] = $tasks ["whois"] [$parent];
 						}
 						
 						if ($f3->get('active_modules.dns') === true) {
-							$tasks["dns"][$domain]->extractInfos($website['ispconfigInfos']);
-							 $website['dnsInfos'] = $tasks["dns"][$domain];
+							$tasks ["dns"] [$domain]->extractInfos ($website ['ispconfigInfos']);
+							 $website ['dnsInfos'] = $tasks ["dns"] [$domain];
 						}
 						
 						if ($f3->get('active_modules.ssl') === true) {
-							$tasks["ssl"][$domain]->extractInfos($website['ispconfigInfos']);
-							$website['sslInfos'] = $tasks["ssl"][$domain];
+							$tasks ["ssl"] [$domain]->extractInfos ($website ['ispconfigInfos']);
+							$website ['sslInfos'] = $tasks ["ssl"] [$domain];
 						}
 						if ($f3->get('active_modules.http') === true) {
-							$tasks["http"][$domain]->extractInfos($website['ispconfigInfos']);
-							$website['httpInfos'] = $tasks["http"][$domain];
+							$tasks ["http"] [$domain]->extractInfos ($website ['ispconfigInfos']);
+							$website ['httpInfos'] = $tasks ["http"] [$domain];
 						}
 						if ($f3->get('active_modules.php') === true) {
-							$tasks["php"][$domain]->extractInfos($website['ispconfigInfos']);
-							$website['phpInfos'] = $tasks["php"][$domain];
+							$tasks ["php"] [$domain]->extractInfos ($website ['ispconfigInfos']);
+							$website ['phpInfos'] = $tasks["php"] [$domain];
 						}
 					}
 				}
@@ -176,7 +182,7 @@ class FrontCtrl extends Ctrl
 		$generation_end = microtime(true);
 		$generation_time = number_format ( (($generation_end - $generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
 		$footer_additional_text = ' | 
-				<span title="'.implode(PHP_EOL, $stats['executed_cmds']).'">'.$stats['total_executed_cmds'].' / '.$stats['total_cmds'].' executed</span>
+				<span title="'.implode(PHP_EOL, $stats ['executed_cmds']).'">'.$stats ['total_executed_cmds'].' / '.$stats ['total_cmds'].' executed</span>
 				 | 
 				generated in '.$generation_time .' ms';
 		$f3->set("footer_additional_text", $footer_additional_text);

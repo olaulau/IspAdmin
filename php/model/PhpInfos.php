@@ -24,20 +24,19 @@ class PhpInfos extends Task
 	
 	public function execCmd ()
 	{
-		// never execute in background
-		return;
+		return; // never execute in background
 	}
 	
 	
 	public function extractInfos ($ispconfigInfos)
 	{
-		global $servers;
+		global $servers_configs;
 		$f3 = \Base::instance();
 		
 		$min_version_security_support = $f3->get('php.min_version_security_support');
 		$min_version_active_support = $f3->get('php.min_version_active_support');
 		
-		$php = $this->website['ispconfigInfos']['php'];
+		$php = $this->website ['ispconfigInfos'] ['php'];
 		if ($php === "no") {
 			$this->labelString = "disabled";
 			$this->labelType = "warning";
@@ -55,11 +54,11 @@ class PhpInfos extends Task
 		}
 		
 		elseif ($php === "php-fpm") {
-			if ($this->website["ispconfigInfos"]["server_php_id"] == 0) { // default php version ?
+			if ($this->website ["ispconfigInfos"] ["server_php_id"] == 0) { // default php version ?
 				$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
-				$php_default_name = $servers[$this->website['ispconfigInfos']['server_id']]["web"]["php_default_name"];
+				$php_default_name = $servers_configs [$this->website ['ispconfigInfos'] ['server_id']] ["web"] [ "php_default_name"];
 				if (preg_match($regex, $php_default_name, $matches)) {
-					$this->labelString = $matches[1]; // default server PHP version
+					$this->labelString = $matches [1]; // default server PHP version
 				}
 				else {
 					$this->labelString = '??'; // unknown
@@ -68,10 +67,10 @@ class PhpInfos extends Task
 				}
 			}
 			else {
-				$server_php_id = $this->website["ispconfigInfos"]["server_php_id"];
-				if(isset($this->phps[$server_php_id])) {
-					$php = $this->phps[$server_php_id];
-					$this->labelString = $php["name"];
+				$server_php_id = $this->website ["ispconfigInfos"] ["server_php_id"];
+				if(isset($this->phps [$server_php_id])) {
+					$php = $this->phps [$server_php_id];
+					$this->labelString = $php ["name"];
 					$this->labelTitle = "";
 				}
 				else {
