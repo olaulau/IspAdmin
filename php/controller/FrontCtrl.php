@@ -41,14 +41,18 @@ class FrontCtrl extends Ctrl
 	
 	public static function testGET (\Base $f3, array $url, string $controler) : void
 	{
-		$PAGE = [
-			"name" => "test",
-			"title" => "test",
-		];
-		$f3->set("PAGE", $PAGE);
+		$res = IspcWebsite::getVhosts();
+		vd($res);
+		die; ////////////////////////
 		
-		$view = new \View();
-		echo $view->render('test.phtml');
+		// $PAGE = [
+		// 	"name" => "test",
+		// 	"title" => "test",
+		// ];
+		// $f3->set("PAGE", $PAGE);
+		
+		// $view = new \View();
+		// echo $view->render('test.phtml');
 	}
 	
 	
@@ -60,7 +64,12 @@ class FrontCtrl extends Ctrl
 		$cache = \Cache::instance();
 		$key = "ispconfig";
 		if ($cache->exists($key, $ispconfigRawinfos) === false) { //TODO count in stats
-			$ispconfigRawinfos = IspcWebsite::IspGetInfos ();
+			//////////////////////
+			// $servers_configs = IspcWebsite::getServersConfigs ();
+			// $websites = IspcWebsite::getVhostsPlusPlus ();
+			// $phps = IspcWebsite::getServerPhps ();
+			
+			$ispconfigRawinfos = IspcWebsite::IspGetInfos (); ////////////////////
 			$cache->set($key, $ispconfigRawinfos, $f3->get("cache.ispconfig"));
 		}
 		global $servers;
@@ -77,14 +86,12 @@ class FrontCtrl extends Ctrl
 		if(!empty($f3->get('debug.websites_max_number'))) {
 			$websites = array_slice($websites, 0, $f3->get('debug.websites_max_number')); // dev test with few domains
 		}
-// 		var_dump($websites); die;
 		
 		// group domains by 2LD
 		$stats = [];
 		$stats["websites_count"] = count($websites);
 		$websites = group2dArray($websites, "2LD");
 		$stats["2LD_count"] = count($websites);
-// 		var_dump($websites); die;
 		
 		// get infos (by running external processes)
 		$cmds = [];
@@ -123,14 +130,12 @@ class FrontCtrl extends Ctrl
 				}
 			}
 		}
-// 		vdd($cmds);
 		
 		$stats['total_cmds'] = count($cmds);
 		execMultipleProcesses($cmds, true, true);
 		$stats['total_executed_cmds'] = count($cmds);
 		$stats['executed_cmds'] = $cmds;
 		$f3->set('stats', $stats);
-// 		vdd($cmds);
 		
 		// extract infos
 		foreach ($websites as $parent => &$group) {
@@ -166,7 +171,6 @@ class FrontCtrl extends Ctrl
 			}
 			unset($group);
 		}
-// 		var_dump($websites); die;
 		$f3->set('websites', $websites);
 		
 		$generation_end = microtime(true);
@@ -266,7 +270,7 @@ class FrontCtrl extends Ctrl
 						if($mail_user_id === 0) { // error
 							$response = IspConfig::getLastQueryResponse();
 							throw new ErrorException("{$response["code"]} : {$response["message"]}");
-						}
+						} //TODO remove as useless with usage of IspRestCall()
 					}
 					fclose($handle);
 					unlink($file);

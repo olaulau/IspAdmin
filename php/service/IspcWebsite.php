@@ -6,21 +6,68 @@ use model\DnsInfos;
 
 abstract class IspcWebsite extends IspConfig
 {
+	/**
+	 * types :
+	 * array(3) { [0]=> string(5) "vhost" [9]=> string(5) "alias" [99]=> string(9) "subdomain" } 
+	 */
 	
-	public static function IspGetWebsites () : array
+	
+	/**
+	 * results are grouped by parent_domain_id (and will by indexed by id)
+	 */
+	public static function getAliases () : array
 	{
-		$session_id = parent::getSessionId();
-		$domain_record = static::restCall('sites_web_domain_get', [
-			'session_id' => $session_id,
-			'primary_id' => ['type' => 'vhost'],
-		]); //TODO handle type=alias
+		$res = static::IspRestCall('sites_web_domain_get',
+		[
+			'primary_id' => ['type' => 'alias'],
+		]);
+		
+		//TODO first index result by id
+		
+		// group by 'parent_domain_id'
+		$test = group2dArray($res, "parent_domain_id");
+		var_dump($test);
+		
+		die; /////////////////
+		
 		$res = [];
-		foreach ($domain_record as $ispinfo) {
+		foreach ($res as $ispinfo) {
 			$domain = $ispinfo['domain'];
 			$parent = DnsInfos::getParent($domain);
 			$res[$domain]['ispconfigInfos'] = $ispinfo;
 			$res[$domain]['2LD'] = $parent;
 		}
+		return $res;
+	}
+	
+	
+	public static function getVhostsPlusPlus () : array
+	{
+		$domain_record = self::IspRestCall('sites_web_domain_get',
+		[
+			'primary_id' => ['type' => 'vhost'],
+		]); //TODO handle type=alias
+		$res = [];
+		foreach ($domain_record as $ispinfo) {
+			$domain = $ispinfo ['domain'];
+			$parent = DnsInfos::getParent($domain);
+			$res [$domain] ['ispconfigInfos'] = $ispinfo;
+			$res [$domain] ['2LD'] = $parent;
+		}
+		return $res;
+	}
+	
+	
+	public static function getVhosts () : array
+	{
+		$res = self::IspRestCall('sites_web_domain_get',
+		[
+			'primary_id' => ['type' => 'vhost'],
+		]);
+		
+		// index and sort by "domain_id"
+		$res = index2dArray ($res, "domain_id");
+		ksort($res);
 		return $res;
 	}
 	
@@ -38,7 +85,7 @@ abstract class IspcWebsite extends IspConfig
 	}
 	
 	
-	public static function IspGetServersConfig() : array
+	public static function getServersConfigs () : array
 	{
 		$session_id = parent::getSessionId();
 		$res = static::restCall('server_get', [
@@ -49,7 +96,7 @@ abstract class IspcWebsite extends IspConfig
 	}
 	
 	
-	public static function IspGetServersPhps() : array
+	public static function getServerPhps () : array
 	{
 		$session_id = parent::getSessionId();
 		$res = static::restCall('server_get_php_versions', [
@@ -66,12 +113,10 @@ abstract class IspcWebsite extends IspConfig
 	
 	public static function IspGetInfos () : array
 	{
-		$session_id = parent::getSessionId();
-		$servers = static::IspGetServersConfig($session_id);
-		$websites = static::IspGetWebsites ($session_id);
-		$phps = static::IspGetServersPhps ($session_id);
-		parent::IspLogout ();
+		$servers = static::getServersConfigs ();
+		$websites = static::getVhostsPlusPlus ();
+		$phps = static::getServerPhps ();
 		return [$servers, $websites, $phps];
-	}
+	} //TODO remove, this is ugly
 	
 }

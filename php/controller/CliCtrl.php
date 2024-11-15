@@ -2,7 +2,7 @@
 namespace controller;
 
 use service\IspConfig;
-
+use service\IspcWebsite;
 
 class Cli
 {
@@ -83,9 +83,9 @@ class Cli
 					echo $domain . " : " . $website['sslRemainingValidityDays'] . " days left " . PHP_EOL;
 					// renew
 					$website['ispconfigInfos']['ssl_letsencrypt'] = 'n';
-					IspConfig::IspUpdateWebsite($session_id, $website['ispconfigInfos']);
+					IspcWebsite::IspUpdateWebsite($session_id, $website['ispconfigInfos']);
 					$website['ispconfigInfos']['ssl_letsencrypt'] = 'y';
-					IspConfig::IspUpdateWebsite($session_id, $website['ispconfigInfos']);
+					IspcWebsite::IspUpdateWebsite($session_id, $website['ispconfigInfos']);
 				}
 			}
 		}

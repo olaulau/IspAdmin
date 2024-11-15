@@ -12,7 +12,7 @@ abstract class IspConfig
 	private static mixed $last_query_response;
 	
 	
-	protected static function restCall ($method, $data) : mixed
+	private static function rest ($method, $data) : mixed
 	{
 		$f3 = \Base::instance();
 		
@@ -40,13 +40,32 @@ abstract class IspConfig
 		}
 		
 		static::$last_query_response = $res;
-		return $res["response"];
+		return $res;
 	}
+	
+	
+	public static function restCall ($method, $data) : mixed
+	{
+		$res = self::rest($method, $data);
+		return $res["response"];
+	} // TODO remove later, kept for backward compatibility
 	
 	public static function getLastQueryResponse () : mixed
 	{
 		return self::$last_query_response;
-	}
+	} //TODO remove, useless with usage of IspRestCall()
+	
+	
+	public static function IspRestCall ($method, $data) : array
+	{
+		$session_id = self::getSessionId();
+		$data ["session_id"] = $session_id;
+		$res = static::rest($method, $data);
+		if($res ["code"] !== "ok") {
+			throw new ErrorException("{$res ["code"]} : {$res ["message"]}");
+		}
+		return $res ["response"];
+	} //TODO use instead of restCall()
 	
 	
 	public static function IspLogin () : string
@@ -75,7 +94,7 @@ abstract class IspConfig
 	}
 	
 	
-	protected static function getSessionId () : string
+	public static function getSessionId () : string
 	{
 		if(empty(static::$session_id)) {
 			$session_id = static::IspLogin();
