@@ -5,7 +5,7 @@ use service\IspConfig;
 use service\IspcWebsite;
 
 
-class Cli
+class CliCtrl
 {
 	
 	public static function beforeroute(\Base $f3, array $url, string $controler)
@@ -27,12 +27,16 @@ class Cli
 		
 		// get servers and websites list
 		$cache = \Cache::instance();
-		$key = "ispconfig";
-		if ($cache->exists ($key, $ispconfigRawinfos) === false) {
-			$ispconfigRawinfos = IspcWebsite::IspGetInfos ();
-			$cache->set ($key, $ispconfigRawinfos, $f3->get ("cache.ispconfig"));
+		$key = "servers_configs";
+		if ($cache->exists($key, $servers_configs) === false) { //TODO count in stats
+			$servers_configs = IspcWebsite::getServersConfigs ();
+			$cache->set($key, $servers_configs, $f3->get("cache.ispconfig"));
 		}
-		list ($servers, $websites) = $ispconfigRawinfos;
+		$key = "websites";
+		if ($cache->exists($key, $websites) === false) { //TODO count in stats
+			$websites = IspcWebsite::getVhostsPlusPlus ();
+			$cache->set($key, $websites, $f3->get("cache.ispconfig"));
+		}
 		
 		if(!empty($f3->get ('debug.websites_max_number'))) {
 			$websites = array_slice ($websites, 0, $f3->get ('debug.websites_max_number')); // dev test with few domains
@@ -52,7 +56,7 @@ class Cli
 		$cmds = [];
 		$tasks = [];
 		foreach ($websites as $domain => $website) {
-			$server = $servers [$website ["ispconfigInfos"] ["server_id"]];
+			$server = $servers_configs [$website ["ispconfigInfos"] ["server_id"]];
 			if ($f3->get('active_modules.ssl') === true) {
 				$t = new \model\SslInfos ($domain, $server);
 				$tasks ["ssl"] [$domain] = $t;

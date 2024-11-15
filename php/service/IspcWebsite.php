@@ -110,13 +110,4 @@ abstract class IspcWebsite extends IspConfig
 		return $res;
 	}
 	
-	
-	public static function IspGetInfos () : array
-	{
-		$servers = static::getServersConfigs ();
-		$websites = static::getVhostsPlusPlus ();
-		$phps = static::getServerPhps ();
-		return [$servers, $websites, $phps];
-	} //TODO remove, this is ugly
-	
 }

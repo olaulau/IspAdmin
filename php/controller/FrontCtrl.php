@@ -78,7 +78,6 @@ class FrontCtrl extends Ctrl
 			$cache->set($key, $servers_phps, $f3->get("cache.ispconfig"));
 		}
 		
-		
 		// filter domains (dev tests)
 		if(!empty($f3->get('debug.websites_filter'))) {
 			array_walk ( $websites , function ( $value , $key , $filter ) use ( &$websites ) {
