@@ -30,7 +30,6 @@ class PhpInfos extends Task
 	
 	public function extractInfos ($ispconfigInfos)
 	{
-		global $servers_configs;
 		$f3 = \Base::instance();
 		
 		$min_version_security_support = $f3->get('php.min_version_security_support');
@@ -56,7 +55,7 @@ class PhpInfos extends Task
 		elseif ($php === "php-fpm") {
 			if ($this->website ["ispconfigInfos"] ["server_php_id"] == 0) { // default php version ?
 				$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
-				$php_default_name = $servers_configs [$this->website ['ispconfigInfos'] ['server_id']] ["web"] [ "php_default_name"];
+				$php_default_name = $this->server ["web"] [ "php_default_name"];
 				if (preg_match($regex, $php_default_name, $matches)) {
 					$this->labelString = $matches [1]; // default server PHP version
 				}

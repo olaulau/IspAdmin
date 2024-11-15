@@ -60,8 +60,6 @@ class FrontCtrl extends Ctrl
 	{
 		$generation_start = microtime(true);
 		
-		global $servers_configs; //TODO remove WTF ugly
-		
 		// get servers and websites list
 		$cache = \Cache::instance();
 		$key = "servers_configs";
