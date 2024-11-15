@@ -71,6 +71,7 @@ function index2dArray ($table, $column)
  */
 function group2dArray ($table, $column)
 {
+	$res = [];
 	// make groups
 	foreach ($table as $key => $row) {
 		$group = $row [$column];

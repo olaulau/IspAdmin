@@ -34,7 +34,7 @@ class CliCtrl
 		}
 		$key = "websites";
 		if ($cache->exists($key, $websites) === false) { //TODO count in stats
-			$websites = IspcWebsite::getVhostsPlusPlus ();
+			$websites = IspcWebsite::getVhosts ();
 			$cache->set($key, $websites, $f3->get("cache.ispconfig"));
 		}
 		
@@ -56,7 +56,7 @@ class CliCtrl
 		$cmds = [];
 		$tasks = [];
 		foreach ($websites as $domain => $website) {
-			$server = $servers_configs [$website ["ispconfigInfos"] ["server_id"]];
+			$server = $servers_configs [$website ["server_id"]];
 			if ($f3->get('active_modules.ssl') === true) {
 				$t = new \model\SslInfos ($domain, $server);
 				$tasks ["ssl"] [$domain] = $t;
@@ -72,7 +72,7 @@ class CliCtrl
 		foreach ($websites as $domain => &$website) {
 			/* @var \model\SslInfos $sslInfos */
 			$sslInfos = $tasks ["ssl"] [$domain];
-			$sslInfos->extractInfos ($website ['ispconfigInfos']);
+			$sslInfos->extractInfos ($website);
 			$website ['sslRemainingValidityDays'] = $sslInfos->getRemainingValidityDays ();
 		}
 		
@@ -83,14 +83,14 @@ class CliCtrl
 		// vdd($websites);
 		$session_id = IspConfig::IspLogin ();
 		foreach ($websites as $domain => &$website) {
-			if ($website ['ispconfigInfos']['ssl'] === 'y' && $website ['ispconfigInfos'] ['ssl_letsencrypt'] === 'y') {
+			if ($website ['ssl'] === 'y' && $website ['ssl_letsencrypt'] === 'y') {
 				if ($website ['sslRemainingValidityDays'] !== null && $website ['sslRemainingValidityDays'] < 30) {
 					echo $domain . " : " . $website['sslRemainingValidityDays'] . " days left " . PHP_EOL;
 					// renew
-					$website ['ispconfigInfos'] ['ssl_letsencrypt'] = 'n';
-					IspcWebsite::IspUpdateWebsite ($session_id, $website ['ispconfigInfos']);
-					$website ['ispconfigInfos'] ['ssl_letsencrypt'] = 'y';
-					IspcWebsite::IspUpdateWebsite ($session_id, $website ['ispconfigInfos']);
+					$website ['ssl_letsencrypt'] = 'n';
+					IspcWebsite::IspUpdateWebsite ($session_id, $website);
+					$website ['ssl_letsencrypt'] = 'y';
+					IspcWebsite::IspUpdateWebsite ($session_id, $website);
 				}
 			}
 		}

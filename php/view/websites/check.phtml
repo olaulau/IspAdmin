@@ -49,28 +49,28 @@
 		<tbody>
 			<?php
 			foreach ($websites as $parent => $group) {
-				foreach ($group as $domain => $website) {
+				foreach ($group as $website_id => $website) {
 					?>
 					<tr>
 					<?php
 					if (empty($currentParent) || $currentParent !== $parent) {
 						?>
-						<td rowspan="<?=count($group)?>" style="vertical-align: middle;">
+						<td rowspan="<?= count($group) ?>" style="vertical-align: middle;">
 							<a href="https://<?= $parent ?>/"><?= $parent ?></a>
 						</td>
 						<?php
 					}
 					?>
-					<td class="<?= $website ["ispconfigInfos"] ['active']==='n' ? 'table-danger' : '' ?>">
-						<a href="https://<?= $domain ?>/" target="_blank"><?= $domain ?></a>
+					<td class="<?= $website ['active'] === 'n' ? 'table-danger' : '' ?>">
+						<a href="https://<?= $website ["domain"] ?>/" target="_blank"><?=  $website ["domain"] ?></a>
 					</td>
 					<?php
-					if ($website ["ispconfigInfos"] ['active'] === 'y') {
+					if ($website ['active'] === 'y') {
 						if ($active_modules ['whois'] === true ) {
 							if(!empty($website ['whoisInfos'])) {
 								//TODO convert to use methods
 								?>
-								<td class="bg-<?= $website['whoisInfos']->getLabelType() ?>" title="<?= $website['whoisInfos']->getLabelTitle() ?>">
+								<td class="bg-<?= $website ['whoisInfos']->getLabelType() ?>" title="<?= $website ['whoisInfos']->getLabelTitle() ?>">
 									<?= nl2br($website ['whoisInfos']->getLabelString()) ?>
 								</td>
 								<?php
@@ -84,7 +84,7 @@
 						if ($active_modules ['dns'] === true) {
 							if(!empty($website ['dnsInfos'])) {
 								?>
-								<td class="bg-<?= $website ['dnsInfos']->getLabelType() ?>" title="<?= $website['dnsInfos']->getLabelTitle() ?>">
+								<td class="bg-<?= $website ['dnsInfos']->getLabelType() ?>" title="<?= $website ['dnsInfos']->getLabelTitle() ?>">
 									<?= nl2br($website ['dnsInfos']->getLabelString()) ?>
 								</td>
 								<?php
@@ -98,7 +98,7 @@
 						if ($active_modules ['ssl'] === true) {
 							if(!empty($website ['sslInfos'])) {
 								?>
-								<td class="bg-<?= $website ['sslInfos']->getLabelType() ?>" title="<?= $website['sslInfos']->getLabelTitle() ?>">
+								<td class="bg-<?= $website ['sslInfos']->getLabelType() ?>" title="<?= $website ['sslInfos']->getLabelTitle() ?>">
 									<?= $website ['sslInfos']->getLabelString() ?>
 								</td>
 								<?php
@@ -112,7 +112,7 @@
 						if ($active_modules ['http'] === true) {
 							if(!empty($website ['httpInfos'])) {
 								?>
-								<td class="bg-<?= $website ['httpInfos']->getLabelType() ?>" title="<?= $website['httpInfos']->getLabelTitle() ?>">
+								<td class="bg-<?= $website ['httpInfos']->getLabelType() ?>" title="<?= $website ['httpInfos']->getLabelTitle() ?>">
 									<?= $website ['httpInfos']->getLabelString() ?>
 								</td>
 								<?php
@@ -126,7 +126,7 @@
 						if ($active_modules ['php'] === true) {
 							if(!empty($website ['phpInfos'])) {
 								?>
-								<td class="bg-<?= $website ['phpInfos']->getLabelType() ?>" title="<?= $website['phpInfos']->getLabelTitle() ?>">
+								<td class="bg-<?= $website ['phpInfos']->getLabelType() ?>" title="<?= $website ['phpInfos']->getLabelTitle() ?>">
 									<?= $website ['phpInfos']->getLabelString() ?>
 								</td>
 								<?php

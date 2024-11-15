@@ -35,7 +35,7 @@ class PhpInfos extends Task
 		$min_version_security_support = $f3->get('php.min_version_security_support');
 		$min_version_active_support = $f3->get('php.min_version_active_support');
 		
-		$php = $this->website ['ispconfigInfos'] ['php'];
+		$php = $this->website ['php'];
 		if ($php === "no") {
 			$this->labelString = "disabled";
 			$this->labelType = "warning";
@@ -53,7 +53,7 @@ class PhpInfos extends Task
 		}
 		
 		elseif ($php === "php-fpm") {
-			if ($this->website ["ispconfigInfos"] ["server_php_id"] == 0) { // default php version ?
+			if ($this->website ["server_php_id"] == 0) { // default php version ?
 				$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
 				$php_default_name = $this->server ["web"] [ "php_default_name"];
 				if (preg_match($regex, $php_default_name, $matches)) {
@@ -66,7 +66,7 @@ class PhpInfos extends Task
 				}
 			}
 			else {
-				$server_php_id = $this->website ["ispconfigInfos"] ["server_php_id"];
+				$server_php_id = $this->website ["server_php_id"];
 				if(isset($this->phps [$server_php_id])) {
 					$php = $this->phps [$server_php_id];
 					$this->labelString = $php ["name"];

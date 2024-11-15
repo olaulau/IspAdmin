@@ -34,24 +34,7 @@ abstract class IspcWebsite extends IspConfig
 		foreach ($res as $ispinfo) {
 			$domain = $ispinfo['domain'];
 			$parent = DnsInfos::getParent($domain);
-			$res[$domain]['ispconfigInfos'] = $ispinfo;
-			$res[$domain]['2LD'] = $parent;
-		}
-		return $res;
-	}
-	
-	
-	public static function getVhostsPlusPlus () : array
-	{
-		$domain_record = self::IspRestCall('sites_web_domain_get',
-		[
-			'primary_id' => ['type' => 'vhost'],
-		]); //TODO handle type=alias
-		$res = [];
-		foreach ($domain_record as $ispinfo) {
-			$domain = $ispinfo ['domain'];
-			$parent = DnsInfos::getParent($domain);
-			$res [$domain] ['ispconfigInfos'] = $ispinfo;
+			$res [$domain] = $ispinfo;
 			$res [$domain] ['2LD'] = $parent;
 		}
 		return $res;
@@ -72,13 +55,13 @@ abstract class IspcWebsite extends IspConfig
 	}
 	
 	
-	public static function IspUpdateWebsite ($ispconfigInfos) : array
+	public static function IspUpdateWebsite (array $ispconfigInfos) : array
 	{
 		$session_id = parent::getSessionId();
 		$res = static::restCall('sites_web_domain_update', [
 			'session_id' => $session_id,
 			'client_id' => null,
-			'primary_id' => $ispconfigInfos['domain_id'],
+			'primary_id' => $ispconfigInfos ['domain_id'],
 			'params' => $ispconfigInfos
 		]);
 		return $res;

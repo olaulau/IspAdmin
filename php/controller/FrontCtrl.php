@@ -2,6 +2,7 @@
 namespace controller;
 
 use ErrorException;
+use model\DnsInfos;
 use service\IspcDomain;
 use service\IspcMail;
 use service\IspConfig;
@@ -69,7 +70,7 @@ class FrontCtrl extends Ctrl
 		}
 		$key = "websites";
 		if ($cache->exists($key, $websites) === false) { //TODO count in stats
-			$websites = IspcWebsite::getVhostsPlusPlus ();
+			$websites = IspcWebsite::getVhosts ();
 			$cache->set($key, $websites, $f3->get("cache.ispconfig"));
 		}
 		$key = "servers_phps";
@@ -81,13 +82,20 @@ class FrontCtrl extends Ctrl
 		// filter domains (dev tests)
 		if(!empty($f3->get('debug.websites_filter'))) {
 			array_walk ( $websites , function ( $value , $key , $filter ) use ( &$websites ) {
-				if (strpos($key, $filter) === false) {
-					unset ($websites[$key]); // dev test by filtering domain
+				if (strpos($value ["domain"], $filter) === false) {
+					unset ($websites [$key]); // dev test by filtering domain
 				}
 			} , $f3->get('debug.websites_filter') );
 		}
 		if(!empty($f3->get('debug.websites_max_number'))) {
 			$websites = array_slice($websites, 0, $f3->get('debug.websites_max_number')); // dev test with few domains
+		}
+		
+		// add 2LD info
+		foreach ($websites as &$vhost) {
+			$domain = $vhost ['domain'];
+			$two_ld = DnsInfos::getParent($domain);
+			$vhost ['2LD'] = $two_ld;
 		}
 		
 		// group domains by 2LD
@@ -99,15 +107,16 @@ class FrontCtrl extends Ctrl
 		// get infos (by running external processes)
 		$cmds = [];
 		$tasks = [];
-		foreach ($websites as $parent => $group) {
-			foreach ($group as $domain => $website) {
-				if ($website ["ispconfigInfos"] ['active'] === 'y') {
-					if(!empty($servers_configs [$website ["ispconfigInfos"] ["server_id"]])) {
-						$server = $servers_configs[$website ["ispconfigInfos"] ["server_id"]];
+		foreach ($websites as $two_ld => $group) {
+			foreach ($group as $website_id => $website) {
+				$domain = $website ["domain"];
+				if ($website ['active'] === 'y') {
+					if(!empty($servers_configs [$website ["server_id"]])) {
+						$server = $servers_configs [$website ["server_id"]];
 						if ($f3->get('active_modules.whois') === true) {
-							$t = new \model\WhoisInfos ($parent, $server);
-							$tasks ["whois"] [$parent] = $t;
-							$cmds ["whois_$parent"] = $t->getCmd();
+							$t = new \model\WhoisInfos ($two_ld, $server);
+							$tasks ["whois"] [$two_ld] = $t;
+							$cmds ["whois_$two_ld"] = $t->getCmd();
 							//TODO do not recreate things if parents domain has already been done
 						}
 						if ($f3->get('active_modules.dns') === true) {
@@ -141,31 +150,32 @@ class FrontCtrl extends Ctrl
 		$f3->set('stats', $stats);
 		
 		// extract infos
-		foreach ($websites as $parent => &$group) {
-			foreach ($group as $domain => &$website) {
-				if ($website ["ispconfigInfos"] ['active'] === 'y') {
-					if(!empty($servers_configs [$website["ispconfigInfos"] ["server_id"]])) {
-						$server = $servers_configs[$website["ispconfigInfos"]["server_id"]]; //TODO useless
+		foreach ($websites as $two_ld => &$group) {
+			foreach ($group as $website_id => &$website) {
+				$domain = $website ["domain"];
+				if ($website ['active'] === 'y') {
+					if(!empty($servers_configs [$website ["server_id"]])) {
+						$server = $servers_configs [$website ["server_id"]]; //TODO useless
 						if ($f3->get('active_modules.whois') === true) {
-							$tasks ["whois"] [$parent]->extractInfos ($website ['ispconfigInfos']);
-							$website ['whoisInfos'] = $tasks ["whois"] [$parent];
+							$tasks ["whois"] [$two_ld]->extractInfos ($website);
+							$website ['whoisInfos'] = $tasks ["whois"] [$two_ld];
 						}
 						
 						if ($f3->get('active_modules.dns') === true) {
-							$tasks ["dns"] [$domain]->extractInfos ($website ['ispconfigInfos']);
+							$tasks ["dns"] [$domain]->extractInfos ($website);
 							 $website ['dnsInfos'] = $tasks ["dns"] [$domain];
 						}
 						
 						if ($f3->get('active_modules.ssl') === true) {
-							$tasks ["ssl"] [$domain]->extractInfos ($website ['ispconfigInfos']);
+							$tasks ["ssl"] [$domain]->extractInfos ($website);
 							$website ['sslInfos'] = $tasks ["ssl"] [$domain];
 						}
 						if ($f3->get('active_modules.http') === true) {
-							$tasks ["http"] [$domain]->extractInfos ($website ['ispconfigInfos']);
+							$tasks ["http"] [$domain]->extractInfos ($website);
 							$website ['httpInfos'] = $tasks ["http"] [$domain];
 						}
 						if ($f3->get('active_modules.php') === true) {
-							$tasks ["php"] [$domain]->extractInfos ($website ['ispconfigInfos']);
+							$tasks ["php"] [$domain]->extractInfos ($website);
 							$website ['phpInfos'] = $tasks["php"] [$domain];
 						}
 					}
@@ -174,6 +184,7 @@ class FrontCtrl extends Ctrl
 			}
 			unset($group);
 		}
+		// vdd($websites);
 		$f3->set('websites', $websites);
 		
 		$generation_end = microtime(true);
