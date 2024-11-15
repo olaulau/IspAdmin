@@ -22,21 +22,8 @@ abstract class IspcWebsite extends IspConfig
 			'primary_id' => ['type' => 'alias'],
 		]);
 		
-		//TODO first index result by id
-		
 		// group by 'parent_domain_id'
-		$test = group2dArray($res, "parent_domain_id");
-		var_dump($test);
-		
-		die; /////////////////
-		
-		$res = [];
-		foreach ($res as $ispinfo) {
-			$domain = $ispinfo['domain'];
-			$parent = DnsInfos::getParent($domain);
-			$res [$domain] = $ispinfo;
-			$res [$domain] ['2LD'] = $parent;
-		}
+		$res = group2dArray($res, "parent_domain_id");
 		return $res;
 	}
 	

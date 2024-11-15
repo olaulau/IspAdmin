@@ -62,7 +62,21 @@
 					}
 					?>
 					<td class="<?= $website ['active'] === 'n' ? 'table-danger' : '' ?>">
-						<a href="https://<?= $website ["domain"] ?>/" target="_blank"><?=  $website ["domain"] ?></a>
+						<a href="https://<?= $website ["domain"] ?>/" target="_blank"><?= $website ["domain"] ?></a>
+						<?php
+						$website_aliases = $aliases [$website_id] ?? null;
+						if(!empty($website_aliases)) {
+							?>
+							<br/>
+							<p style="font-size: x-small" class="mx-2 my-0">
+								<?php
+								$aliases_domains = array_column($website_aliases, "domain");
+								echo implode("<br/>", $aliases_domains);
+								?>
+							</p>
+							<?php
+						}
+						?>
 					</td>
 					<?php
 					if ($website ['active'] === 'y') {

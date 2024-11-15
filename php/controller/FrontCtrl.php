@@ -73,6 +73,11 @@ class FrontCtrl extends Ctrl
 			$websites = IspcWebsite::getVhosts ();
 			$cache->set($key, $websites, $f3->get("cache.ispconfig"));
 		}
+		$key = "aliases";
+		if ($cache->exists($key, $aliases) === false) { //TODO count in stats
+			$aliases = IspcWebsite::getAliases ();
+			$cache->set($key, $aliases, $f3->get("cache.ispconfig"));
+		}
 		$key = "servers_phps";
 		if ($cache->exists($key, $servers_phps) === false) { //TODO count in stats
 			$servers_phps = IspcWebsite::getServerPhps ();
@@ -88,7 +93,7 @@ class FrontCtrl extends Ctrl
 			} , $f3->get('debug.websites_filter') );
 		}
 		if(!empty($f3->get('debug.websites_max_number'))) {
-			$websites = array_slice($websites, 0, $f3->get('debug.websites_max_number')); // dev test with few domains
+			$websites = array_slice($websites, 0, $f3->get('debug.websites_max_number'), true); // dev test with few domains
 		}
 		
 		// add 2LD info
@@ -163,7 +168,7 @@ class FrontCtrl extends Ctrl
 						
 						if ($f3->get('active_modules.dns') === true) {
 							$tasks ["dns"] [$domain]->extractInfos ($website);
-							 $website ['dnsInfos'] = $tasks ["dns"] [$domain];
+							$website ['dnsInfos'] = $tasks ["dns"] [$domain];
 						}
 						
 						if ($f3->get('active_modules.ssl') === true) {
@@ -184,8 +189,8 @@ class FrontCtrl extends Ctrl
 			}
 			unset($group);
 		}
-		// vdd($websites);
 		$f3->set('websites', $websites);
+		$f3->set('aliases', $aliases);
 		
 		$generation_end = microtime(true);
 		$generation_time = number_format ( (($generation_end - $generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
