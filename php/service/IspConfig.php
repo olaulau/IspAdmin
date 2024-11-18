@@ -43,20 +43,13 @@ abstract class IspConfig
 		return $res;
 	}
 	
-	
-	public static function restCall ($method, $data) : mixed
+	private static function restCall ($method, $data) : mixed
 	{
 		$res = self::rest($method, $data);
 		return $res["response"];
-	} // TODO remove later, kept for backward compatibility
+	}
 	
-	public static function getLastQueryResponse () : mixed
-	{
-		return self::$last_query_response;
-	} //TODO remove, useless with usage of IspRestCall()
-	
-	
-	public static function IspRestCall ($method, $data) : array
+	public static function IspRestCall ($method, $data) : mixed
 	{
 		$session_id = self::getSessionId();
 		$data ["session_id"] = $session_id;
@@ -65,7 +58,7 @@ abstract class IspConfig
 			throw new ErrorException("{$res ["code"]} : {$res ["message"]}");
 		}
 		return $res ["response"];
-	} //TODO use instead of restCall()
+	}
 	
 	
 	public static function IspLogin () : string
@@ -86,9 +79,7 @@ abstract class IspConfig
 	
 	public static function IspLogout () : void
 	{
-		$session_id = static::getSessionId();
-		// logout
-		$result = static::restCall('logout', ['session_id' => $session_id]);
+		$result = static::IspRestCall('logout', []);
 		if(!$result)
 		    die("Could not get logout result\n");
 	}
@@ -106,9 +97,7 @@ abstract class IspConfig
 	
 	public static function IspGetClientIdFromUserId($sys_userid) : int
 	{
-		$session_id = static::IspLogin ();
-		$res = static::restCall('client_get_id', [
-			'session_id' => $session_id,
+		$res = static::IspRestCall('client_get_id', [
 			'sys_userid' => $sys_userid,
 		]);
 		return $res;

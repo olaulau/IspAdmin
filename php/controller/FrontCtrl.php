@@ -278,6 +278,9 @@ class FrontCtrl extends Ctrl
 						// look for server and client hosting mail domain (if not in cache)
 						if(empty($mail_domains [$email_domain])) {
 							$mail_domain = IspcMail::IspGetMailDomain($email_domain);
+							if(empty($mail_domain)) {
+								throw new ErrorException("mail domain does not exist");
+							}
 							$client_id = IspConfig::IspGetClientIdFromUserId($mail_domain ["sys_groupid"]);
 							$mail_domain ["client_id"] = $client_id;
 							$mail_domains [$email_domain] = $mail_domain;
@@ -288,10 +291,6 @@ class FrontCtrl extends Ctrl
 						$client_id = $mail_domains [$email_domain] ["client_id"];
 						$quota = $f3->get("POST.quota") * 1024 * 1024 * 1024; // GB -> Bytes
 						$mail_user_id = IspcMail::IspAddMailUser($server_id, $client_id, $email, $password, $quota);
-						if($mail_user_id === 0) { // error
-							$response = IspConfig::getLastQueryResponse();
-							throw new ErrorException("{$response["code"]} : {$response["message"]}");
-						} //TODO remove as useless with usage of IspRestCall()
 					}
 					fclose($handle);
 					unlink($file);

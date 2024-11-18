@@ -26,9 +26,7 @@ abstract class IspcWebsite extends IspConfig
 	
 	public static function IspUpdateWebsite (array $ispconfigInfos) : array
 	{
-		$session_id = parent::getSessionId();
-		$res = static::restCall('sites_web_domain_update', [
-			'session_id' => $session_id,
+		$res = static::IspRestCall('sites_web_domain_update', [
 			'client_id' => null,
 			'primary_id' => $ispconfigInfos ['domain_id'],
 			'params' => $ispconfigInfos
@@ -39,9 +37,7 @@ abstract class IspcWebsite extends IspConfig
 	
 	public static function getServersConfigs () : array
 	{
-		$session_id = parent::getSessionId();
-		$res = static::restCall('server_get', [
-			'session_id' => $session_id,
+		$res = static::IspRestCall('server_get', [
 			'server_id' => [],
 		]);
 		return $res;
@@ -50,9 +46,7 @@ abstract class IspcWebsite extends IspConfig
 	
 	public static function getServerPhps () : array
 	{
-		$session_id = parent::getSessionId();
-		$res = static::restCall('server_get_php_versions', [
-			'session_id' => $session_id,
+		$res = static::IspRestCall('server_get_php_versions', [
 			'server_id' => 1, //TODO server id !!!
 			"php" => "php-fpm",
 			"get_full_data" => true,
