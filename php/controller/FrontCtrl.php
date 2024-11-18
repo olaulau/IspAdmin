@@ -88,10 +88,10 @@ class FrontCtrl extends Ctrl
 		}
 		
 		// add 2LD info
-		foreach ($websites_all as &$website) {
+		foreach ($websites_all as $website_id => $website) {
 			$domain = $website ['domain'];
 			$two_ld = DnsInfos::getParent($domain);
-			$website ['2LD'] = $two_ld;
+			$websites_all [$website_id] ['2LD'] = $two_ld;
 		}
 		
 		// get websites infos (by running external processes)
@@ -185,7 +185,7 @@ class FrontCtrl extends Ctrl
 		$stats ["2LD_count"] = count($vhosts);
 		$f3->set('stats', $stats);
 		
-		// group aliases  & subdomains by 'parent_domain_id'
+		// group aliases & subdomains by 'parent_domain_id'
 		$aliases = group2dArray($aliases, "parent_domain_id");
 		$subdomains = group2dArray($subdomains, "parent_domain_id");
 		
