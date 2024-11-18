@@ -103,11 +103,12 @@ class FrontCtrl extends Ctrl
 			if ($website ['active'] === 'y') {
 				if(!empty($servers_configs [$website ["server_id"]])) {
 					$server = $servers_configs [$website ["server_id"]];
-					if ($f3->get('active_modules.whois') === true) {
-						$t = new \model\WhoisInfos ($two_ld, $server);
-						$tasks ["whois"] [$two_ld] = $t;
-						$cmds ["whois_$two_ld"] = $t->getCmd();
-						//TODO do not recreate things if parents domain has already been done
+					if ($f3->get('active_modules.whois') === true) { // do not recreate things if parents domain has already been done
+						if(empty($tasks ["whois"] [$two_ld])) {
+							$t = new \model\WhoisInfos ($two_ld, $server);
+							$tasks ["whois"] [$two_ld] = $t;
+							$cmds ["whois_$two_ld"] = $t->getCmd();
+						}
 					}
 					if ($f3->get('active_modules.dns') === true) {
 						$t = new \model\DnsInfos ($domain, $server);
