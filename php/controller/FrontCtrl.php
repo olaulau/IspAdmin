@@ -64,15 +64,15 @@ class FrontCtrl extends Ctrl
 			$servers_configs = IspcWebsite::getServersConfigs ();
 			$cache->set($key, $servers_configs, $f3->get("cache.ispconfig"));
 		}
-		$key = "websites";
-		if ($cache->exists($key, $websites) === false) { //TODO count in stats
-			$websites = IspcWebsite::getVhosts ();
-			$cache->set($key, $websites, $f3->get("cache.ispconfig"));
+		$key = "websites_vhosts";
+		if ($cache->exists($key, $websites_vhosts) === false) { //TODO count in stats
+			$websites_vhosts = IspcWebsite::getVhosts ();
+			$cache->set($key, $websites_vhosts, $f3->get("cache.ispconfig"));
 		}
-		$key = "aliases";
-		if ($cache->exists($key, $aliases) === false) { //TODO count in stats
-			$aliases = IspcWebsite::getAliases ();
-			$cache->set($key, $aliases, $f3->get("cache.ispconfig"));
+		$key = "websites_aliases";
+		if ($cache->exists($key, $websites_aliases) === false) { //TODO count in stats
+			$websites_aliases = IspcWebsite::getAliases ();
+			$cache->set($key, $websites_aliases, $f3->get("cache.ispconfig"));
 		}
 		//TODO also subdomains
 		$key = "servers_phps";
@@ -83,118 +83,117 @@ class FrontCtrl extends Ctrl
 		
 		// filter domains (dev tests)
 		if(!empty($f3->get('debug.websites_filter'))) {
-			array_walk ( $websites , function ( $value , $key , $filter ) use ( &$websites ) {
+			array_walk ( $websites_vhosts , function ( $value , $key , $filter ) use ( &$websites_vhosts ) {
 				if (strpos($value ["domain"], $filter) === false) {
-					unset ($websites [$key]); // dev test by filtering domain
+					unset ($websites_vhosts [$key]); // dev test by filtering domain
 				}
 			} , $f3->get('debug.websites_filter') );
 		}
 		if(!empty($f3->get('debug.websites_max_number'))) {
-			$websites = array_slice($websites, 0, $f3->get('debug.websites_max_number'), true); // dev test with few domains
+			$websites_vhosts = array_slice($websites_vhosts, 0, $f3->get('debug.websites_max_number'), true); // dev test with few domains
 		}
 		
 		// add 2LD info
-		foreach ($websites as &$vhost) {
+		foreach ($websites_vhosts as &$vhost) {
 			$domain = $vhost ['domain'];
 			$two_ld = DnsInfos::getParent($domain);
 			$vhost ['2LD'] = $two_ld;
 		}
 		
-		// group domains by 2LD
-		$stats = [];
-		$stats ["websites_count"] = count($websites);
-		$websites = group2dArray($websites, "2LD");
-		$stats ["2LD_count"] = count($websites);
-		
 		// get infos (by running external processes)
 		$cmds = [];
 		$tasks = [];
-		foreach ($websites as $two_ld => $group) {
-			foreach ($group as $website_id => $website) {
-				$domain = $website ["domain"];
-				if ($website ['active'] === 'y') {
-					if(!empty($servers_configs [$website ["server_id"]])) {
-						$server = $servers_configs [$website ["server_id"]];
-						if ($f3->get('active_modules.whois') === true) {
-							$t = new \model\WhoisInfos ($two_ld, $server);
-							$tasks ["whois"] [$two_ld] = $t;
-							$cmds ["whois_$two_ld"] = $t->getCmd();
-							//TODO do not recreate things if parents domain has already been done
-						}
-						if ($f3->get('active_modules.dns') === true) {
-							$t = new \model\DnsInfos ($domain, $server);
-							$tasks ["dns"] [$domain] = $t;
-							$cmds ["dns_$domain"] = $t->getCmd();
-						}
-						if ($f3->get('active_modules.ssl') === true) {
-							$t = new \model\SslInfos ($domain, $server);
-							$tasks ["ssl"] [$domain] = $t;
-							$cmds ["ssl_$domain"] = $t->getCmd();
-						}
-						if ($f3->get('active_modules.http') === true) {
-							$t = new \model\HttpInfos ($domain, $server);
-							$tasks ["http"] [$domain] = $t;
-							$cmds ["http_$domain"] = $t->getCmd();
-						}
-						if ($f3->get('active_modules.php') === true) {
-							$t = new \model\PhpInfos ($domain, $server, $website, $servers_phps);
-							$tasks ["php"] [$domain] = $t;
-						}
+		foreach ($websites_vhosts as $website_id => $website) {
+			$two_ld = $website ["2LD"];
+			$domain = $website ["domain"];
+			if ($website ['active'] === 'y') {
+				if(!empty($servers_configs [$website ["server_id"]])) {
+					$server = $servers_configs [$website ["server_id"]];
+					if ($f3->get('active_modules.whois') === true) {
+						$t = new \model\WhoisInfos ($two_ld, $server);
+						$tasks ["whois"] [$two_ld] = $t;
+						$cmds ["whois_$two_ld"] = $t->getCmd();
+						//TODO do not recreate things if parents domain has already been done
+					}
+					if ($f3->get('active_modules.dns') === true) {
+						$t = new \model\DnsInfos ($domain, $server);
+						$tasks ["dns"] [$domain] = $t;
+						$cmds ["dns_$domain"] = $t->getCmd();
+					}
+					if ($f3->get('active_modules.ssl') === true) {
+						$t = new \model\SslInfos ($domain, $server);
+						$tasks ["ssl"] [$domain] = $t;
+						$cmds ["ssl_$domain"] = $t->getCmd();
+					}
+					if ($f3->get('active_modules.http') === true) {
+						$t = new \model\HttpInfos ($domain, $server);
+						$tasks ["http"] [$domain] = $t;
+						$cmds ["http_$domain"] = $t->getCmd();
+					}
+					if ($f3->get('active_modules.php') === true) {
+						$t = new \model\PhpInfos ($domain, $server, $website, $servers_phps);
+						$tasks ["php"] [$domain] = $t;
 					}
 				}
 			}
 		}
 		
+		// stats & execution
+		$stats = [];
 		$stats ['total_cmds'] = count($cmds);
 		execMultipleProcesses($cmds, true, true);
 		$stats ['total_executed_cmds'] = count($cmds);
 		$stats ['executed_cmds'] = $cmds;
-		$f3->set('stats', $stats);
 		
 		// extract infos
-		foreach ($websites as $two_ld => &$group) {
-			foreach ($group as $website_id => &$website) {
-				$domain = $website ["domain"];
-				if ($website ['active'] === 'y') {
-					if(!empty($servers_configs [$website ["server_id"]])) {
-						$server = $servers_configs [$website ["server_id"]]; //TODO useless
-						if ($f3->get('active_modules.whois') === true) {
-							$tasks ["whois"] [$two_ld]->extractInfos ($website);
-							$website ['whoisInfos'] = $tasks ["whois"] [$two_ld];
-						}
-						
-						if ($f3->get('active_modules.dns') === true) {
-							$tasks ["dns"] [$domain]->extractInfos ($website);
-							$website ['dnsInfos'] = $tasks ["dns"] [$domain];
-						}
-						
-						if ($f3->get('active_modules.ssl') === true) {
-							$tasks ["ssl"] [$domain]->extractInfos ($website);
-							$website ['sslInfos'] = $tasks ["ssl"] [$domain];
-						}
-						if ($f3->get('active_modules.http') === true) {
-							$tasks ["http"] [$domain]->extractInfos ($website);
-							$website ['httpInfos'] = $tasks ["http"] [$domain];
-						}
-						if ($f3->get('active_modules.php') === true) {
-							$tasks ["php"] [$domain]->extractInfos ($website);
-							$website ['phpInfos'] = $tasks["php"] [$domain];
-						}
+		foreach ($websites_vhosts as $website_id => &$website) {
+			$two_ld = $website ["2LD"];
+			$domain = $website ["domain"];
+			if ($website ['active'] === 'y') {
+				if(!empty($servers_configs [$website ["server_id"]])) {
+					$server = $servers_configs [$website ["server_id"]]; //TODO useless
+					if ($f3->get('active_modules.whois') === true) {
+						$tasks ["whois"] [$two_ld]->extractInfos ($website);
+						$website ['whoisInfos'] = $tasks ["whois"] [$two_ld];
+					}
+					
+					if ($f3->get('active_modules.dns') === true) {
+						$tasks ["dns"] [$domain]->extractInfos ($website);
+						$website ['dnsInfos'] = $tasks ["dns"] [$domain];
+					}
+					
+					if ($f3->get('active_modules.ssl') === true) {
+						$tasks ["ssl"] [$domain]->extractInfos ($website);
+						$website ['sslInfos'] = $tasks ["ssl"] [$domain];
+					}
+					if ($f3->get('active_modules.http') === true) {
+						$tasks ["http"] [$domain]->extractInfos ($website);
+						$website ['httpInfos'] = $tasks ["http"] [$domain];
+					}
+					if ($f3->get('active_modules.php') === true) {
+						$tasks ["php"] [$domain]->extractInfos ($website);
+						$website ['phpInfos'] = $tasks ["php"] [$domain];
 					}
 				}
-				unset($website);
 			}
-			unset($group);
+			unset($website);
 		}
-		$f3->set('websites', $websites);
-		$f3->set('aliases', $aliases);
+		
+		// group domains by 2LD
+		$stats ["websites_count"] = count($websites_vhosts);
+		$websites_vhosts = group2dArray($websites_vhosts, "2LD");
+		$stats ["2LD_count"] = count($websites_vhosts);
+		
+		$f3->set('stats', $stats);
+		$f3->set('websites', $websites_vhosts);
+		$f3->set('aliases', $websites_aliases);
 		
 		$generation_end = microtime(true);
 		$generation_time = number_format ( (($generation_end - $generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
 		$footer_additional_text = ' | 
-				<span title="'.implode(PHP_EOL, $stats ['executed_cmds']).'">'.$stats ['total_executed_cmds'].' / '.$stats ['total_cmds'].' executed</span>
-				 | 
-				generated in '.$generation_time .' ms';
+			<span title="' . implode(PHP_EOL, $stats ['executed_cmds']).'">' . $stats ['total_executed_cmds'] . ' / ' . $stats ['total_cmds'] . ' executed</span>
+				| 
+			generated in ' . $generation_time .' ms';
 		$f3->set("footer_additional_text", $footer_additional_text);
 		
 		$PAGE = [

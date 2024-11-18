@@ -75,7 +75,6 @@ function group2dArray ($table, $column)
 	// make groups
 	foreach ($table as $key => $row) {
 		$group = $row [$column];
-		unset($row [$column]);
 		$res [$group] [$key] = $row;
 	}
 	// sort each group by key
