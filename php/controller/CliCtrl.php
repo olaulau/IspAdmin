@@ -34,7 +34,7 @@ class CliCtrl
 		}
 		$key = "websites";
 		if ($cache->exists($key, $websites) === false) { //TODO count in stats
-			$websites = IspcWebsite::getVhosts ();
+			$websites = IspcWebsite::getAll ();
 			$cache->set($key, $websites, $f3->get("cache.ispconfig"));
 		}
 		
@@ -49,8 +49,6 @@ class CliCtrl
 				}
 			} , $f3->get ('debug.websites_filter'));
 		}
-		// var_dump($websites); die;
-		
 		
 		// get SSLinfos (by running external processes)
 		$cmds = [];
@@ -58,39 +56,38 @@ class CliCtrl
 		foreach ($websites as $domain => $website) {
 			$server = $servers_configs [$website ["server_id"]];
 			if ($f3->get('active_modules.ssl') === true) {
-				$t = new \model\SslInfos ($domain, $server);
-				$tasks ["ssl"] [$domain] = $t;
-				$cmds ["ssl_$domain"] = $t->getCmd();
+				if ($website ['ssl'] === 'y' && $website ['ssl_letsencrypt'] === 'y') {
+					$t = new \model\SslInfos ($domain, $server);
+					$tasks ["ssl"] [$domain] = $t;
+					$cmds ["ssl_$domain"] = $t->getCmd();
+				}
 			}
 		}
-		// vdd($cmds);
 		execMultipleProcesses ($cmds, true, true);
-		// vdd($cmds);
-		
 		
 		// add ssl remaining validity days with direct access for auto sort
 		foreach ($websites as $domain => &$website) {
-			/* @var \model\SslInfos $sslInfos */
-			$sslInfos = $tasks ["ssl"] [$domain];
-			$sslInfos->extractInfos ($website);
-			$website ['sslRemainingValidityDays'] = $sslInfos->getRemainingValidityDays ();
+			if ($website ['ssl'] === 'y' && $website ['ssl_letsencrypt'] === 'y') {
+				/* @var \model\SslInfos $sslInfos */
+				$sslInfos = $tasks ["ssl"] [$domain];
+				$sslInfos->extractInfos ($website);
+				$website ['sslRemainingValidityDays'] = $sslInfos->getRemainingValidityDays ();
+			}
 		}
 		
 		// sort table
 		sort2dArray ($websites, 'sslRemainingValidityDays');
 		
-		
-		// vdd($websites);
-		$session_id = IspConfig::IspLogin ();
+		// force renew
 		foreach ($websites as $domain => &$website) {
 			if ($website ['ssl'] === 'y' && $website ['ssl_letsencrypt'] === 'y') {
 				if ($website ['sslRemainingValidityDays'] !== null && $website ['sslRemainingValidityDays'] < 30) {
 					echo $domain . " : " . $website['sslRemainingValidityDays'] . " days left " . PHP_EOL;
 					// renew
 					$website ['ssl_letsencrypt'] = 'n';
-					IspcWebsite::IspUpdateWebsite ($session_id, $website);
+					IspcWebsite::IspUpdateWebsite ($website);
 					$website ['ssl_letsencrypt'] = 'y';
-					IspcWebsite::IspUpdateWebsite ($session_id, $website);
+					IspcWebsite::IspUpdateWebsite ($website);
 				}
 			}
 		}

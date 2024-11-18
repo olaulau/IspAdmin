@@ -1,0 +1,83 @@
+<?php
+
+function website_check_modules (array $website, array $active_modules) : void
+{
+	if ($website ['active'] === 'y') {
+		if ($active_modules ['whois'] === true ) {
+			if(!empty($website ['whoisInfos'])) {
+				//TODO convert to use methods
+				?>
+				<td class="bg-<?= $website ['whoisInfos']->getLabelType() ?>" title="<?= $website ['whoisInfos']->getLabelTitle() ?>">
+					<?= nl2br($website ['whoisInfos']->getLabelString()) ?>
+				</td>
+				<?php
+			}
+			else {
+				?>
+				<td>&nbsp;</td>
+				<?php
+			}
+		}
+		if ($active_modules ['dns'] === true) {
+			if(!empty($website ['dnsInfos'])) {
+				?>
+				<td class="bg-<?= $website ['dnsInfos']->getLabelType() ?>" title="<?= $website ['dnsInfos']->getLabelTitle() ?>">
+					<?= nl2br($website ['dnsInfos']->getLabelString()) ?>
+				</td>
+				<?php
+			}
+			else {
+				?>
+				<td>&nbsp;</td>
+				<?php
+			}
+		}
+		if ($active_modules ['ssl'] === true) {
+			if(!empty($website ['sslInfos'])) {
+				?>
+				<td class="bg-<?= $website ['sslInfos']->getLabelType() ?>" title="<?= $website ['sslInfos']->getLabelTitle() ?>">
+					<?= $website ['sslInfos']->getLabelString() ?>
+				</td>
+				<?php
+			}
+			else {
+				?>
+				<td>&nbsp;</td>
+				<?php
+			}
+		}
+		if ($active_modules ['http'] === true) {
+			if(!empty($website ['httpInfos'])) {
+				?>
+				<td class="bg-<?= $website ['httpInfos']->getLabelType() ?>" title="<?= $website ['httpInfos']->getLabelTitle() ?>">
+					<?= $website ['httpInfos']->getLabelString() ?>
+				</td>
+				<?php
+			}
+			else {
+				?>
+				<td>&nbsp;</td>
+				<?php
+			}
+		}
+		if ($active_modules ['php'] === true) {
+			if(!empty($website ['phpInfos'])) {
+				?>
+				<td class="bg-<?= $website ['phpInfos']->getLabelType() ?>" title="<?= $website ['phpInfos']->getLabelTitle() ?>">
+					<?= $website ['phpInfos']->getLabelString() ?>
+				</td>
+				<?php
+			}
+			else {
+				?>
+				<td>&nbsp;</td>
+				<?php
+			}
+		}
+	}
+	else {
+		?>
+		<td colspan="5">&nbsp;</td>
+		<?php
+	}
+}

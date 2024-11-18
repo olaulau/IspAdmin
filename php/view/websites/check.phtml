@@ -2,6 +2,8 @@
 
 <?php require_once __DIR__ . "/../layout/header.inc.phtml"; ?>
 
+<?php require_once __DIR__ . "/check_modules.phtml"; ?>
+
 	<!-- Begin page content -->
 	<main role="main" class="container-fluid">
 	<table class="table table-sm table-bordered table-hover">
@@ -48,126 +50,76 @@
 		</thead>
 		<tbody>
 			<?php
-			foreach ($websites as $parent => $group) {
-				// calculate how many aliases we will have
+			foreach ($vhosts as $parent => $group) {
+				// calculate how many aliases & subdomains we will have
 				$group_aliases = 0;
-				foreach ($group as $website_id => $website) {
-					$website_aliases = $aliases [$website_id] ?? null;
+				foreach ($group as $website_id => $vhost) {
+					$website_aliases = $aliases [$website_id] ?? [];
 					$group_aliases += count($website_aliases);
 				}
-				foreach ($group as $website_id => $website) {
+				$group_subdomains = 0;
+				foreach ($group as $website_id => $vhost) {
+					$website_subdomains = $subdomains [$website_id] ?? [];
+					$group_subdomains += count($website_subdomains);
+				}
+				
+				foreach ($group as $website_id => $vhost) {
 					?>
 					<tr>
 					<?php
 					if (empty($currentParent) || $currentParent !== $parent) {
 						?>
-						<td rowspan="<?= count($group) + $group_aliases ?>" style="vertical-align: middle;">
+						<td rowspan="<?= count($group) + $group_aliases + $group_subdomains ?>" style="vertical-align: middle;">
 							<a href="https://<?= $parent ?>/"><?= $parent ?></a>
 						</td>
 						<?php
 					}
 					?>
-					<td class="<?= $website ['active'] === 'n' ? 'table-danger' : '' ?>">
-						<a href="https://<?= $website ["domain"] ?>/" target="_blank"><?= $website ["domain"] ?></a>
+					<td class="<?= $vhost ['active'] === 'n' ? 'table-danger' : '' ?>">
+						<a href="https://<?= $vhost ["domain"] ?>/" target="_blank"><?= $vhost ["domain"] ?></a>
 					</td>
 					
 					<?php
-					if ($website ['active'] === 'y') {
-						if ($active_modules ['whois'] === true ) {
-							if(!empty($website ['whoisInfos'])) {
-								//TODO convert to use methods
-								?>
-								<td class="bg-<?= $website ['whoisInfos']->getLabelType() ?>" title="<?= $website ['whoisInfos']->getLabelTitle() ?>">
-									<?= nl2br($website ['whoisInfos']->getLabelString()) ?>
-								</td>
-								<?php
-							}
-							else {
-								?>
-								<td>&nbsp;</td>
-								<?php
-							}
-						}
-						if ($active_modules ['dns'] === true) {
-							if(!empty($website ['dnsInfos'])) {
-								?>
-								<td class="bg-<?= $website ['dnsInfos']->getLabelType() ?>" title="<?= $website ['dnsInfos']->getLabelTitle() ?>">
-									<?= nl2br($website ['dnsInfos']->getLabelString()) ?>
-								</td>
-								<?php
-							}
-							else {
-								?>
-								<td>&nbsp;</td>
-								<?php
-							}
-						}
-						if ($active_modules ['ssl'] === true) {
-							if(!empty($website ['sslInfos'])) {
-								?>
-								<td class="bg-<?= $website ['sslInfos']->getLabelType() ?>" title="<?= $website ['sslInfos']->getLabelTitle() ?>">
-									<?= $website ['sslInfos']->getLabelString() ?>
-								</td>
-								<?php
-							}
-							else {
-								?>
-								<td>&nbsp;</td>
-								<?php
-							}
-						}
-						if ($active_modules ['http'] === true) {
-							if(!empty($website ['httpInfos'])) {
-								?>
-								<td class="bg-<?= $website ['httpInfos']->getLabelType() ?>" title="<?= $website ['httpInfos']->getLabelTitle() ?>">
-									<?= $website ['httpInfos']->getLabelString() ?>
-								</td>
-								<?php
-							}
-							else {
-								?>
-								<td>&nbsp;</td>
-								<?php
-							}
-						}
-						if ($active_modules ['php'] === true) {
-							if(!empty($website ['phpInfos'])) {
-								?>
-								<td class="bg-<?= $website ['phpInfos']->getLabelType() ?>" title="<?= $website ['phpInfos']->getLabelTitle() ?>">
-									<?= $website ['phpInfos']->getLabelString() ?>
-								</td>
-								<?php
-							}
-							else {
-								?>
-								<td>&nbsp;</td>
-								<?php
-							}
-						}
-					}
-					else {
-						?>
-						<td colspan="5">&nbsp;</td>
-						<?php
-					}
+					website_check_modules ($vhost, $active_modules);
 					?>
 				</tr>
 				
 				<?php
 				$website_aliases = $aliases [$website_id] ?? null;
 				if(!empty($website_aliases)) {
-					foreach ($website_aliases as $website_alias) {
+					foreach ($website_aliases as $alias) {
 						?>
 						<tr>
-							<td class="<?= $website_alias ['active'] === 'n' ? 'table-danger' : '' ?> ">
-								<a class="ms-4" href="https://<?= $website_alias ["domain"] ?>/" target="_blank"><?= $website_alias ["domain"] ?></a>
+							<td class="<?= $alias ['active'] === 'n' ? 'table-danger' : '' ?> ">
+								<a class="ms-4" href="https://<?= $alias ["domain"] ?>/" target="_blank"><?= $alias ["domain"] ?></a>
 							</td>
+							<?php
+							website_check_modules ($alias, $active_modules);
+							?>
 						</tr>
 						<?php
 					}
 				}
 				?>
-					
+				
+				<?php
+				$website_subdomains = $subdomains [$website_id] ?? null;
+				if(!empty($website_subdomains)) {
+					foreach ($website_subdomains as $subdomain) {
+						?>
+						<tr>
+							<td class="<?= $subdomain ['active'] === 'n' ? 'table-danger' : '' ?> ">
+								<a class="ms-4" href="https://<?= $subdomain ["domain"] ?>/" target="_blank"><?= $subdomain ["domain"] ?></a>
+							</td>
+							<?php
+							website_check_modules ($subdomain, $active_modules);
+							?>
+						</tr>
+						<?php
+					}
+				}
+				?>
+				
 				<?php
 				$currentParent = $parent;
 				}

@@ -1,38 +1,20 @@
 <?php
 namespace service;
 
-use model\DnsInfos;
-
 
 abstract class IspcWebsite extends IspConfig
 {
 	/**
 	 * types :
 	 * array(3) { [0]=> string(5) "vhost" [9]=> string(5) "alias" [99]=> string(9) "subdomain" } 
+	 * 
+	 * results are indexed by domain_id
 	 */
-	
-	
-	/**
-	 * results are grouped by parent_domain_id (and will by indexed by id)
-	 */
-	public static function getAliases () : array
+	public static function getAll () : array
 	{
 		$res = static::IspRestCall('sites_web_domain_get',
 		[
-			'primary_id' => ['type' => 'alias'],
-		]);
-		
-		// group by 'parent_domain_id'
-		$res = group2dArray($res, "parent_domain_id");
-		return $res;
-	}
-	
-	
-	public static function getVhosts () : array
-	{
-		$res = self::IspRestCall('sites_web_domain_get',
-		[
-			'primary_id' => ['type' => 'vhost'],
+			'primary_id' => [],
 		]);
 		
 		// index and sort by "domain_id"

@@ -64,17 +64,11 @@ class FrontCtrl extends Ctrl
 			$servers_configs = IspcWebsite::getServersConfigs ();
 			$cache->set($key, $servers_configs, $f3->get("cache.ispconfig"));
 		}
-		$key = "websites_vhosts";
-		if ($cache->exists($key, $websites_vhosts) === false) { //TODO count in stats
-			$websites_vhosts = IspcWebsite::getVhosts ();
-			$cache->set($key, $websites_vhosts, $f3->get("cache.ispconfig"));
+		$key = "websites";
+		if ($cache->exists($key, $websites_all) === false) { //TODO count in stats
+			$websites_all = IspcWebsite::getAll ();
+			$cache->set($key, $websites_all, $f3->get("cache.ispconfig"));
 		}
-		$key = "websites_aliases";
-		if ($cache->exists($key, $websites_aliases) === false) { //TODO count in stats
-			$websites_aliases = IspcWebsite::getAliases ();
-			$cache->set($key, $websites_aliases, $f3->get("cache.ispconfig"));
-		}
-		//TODO also subdomains
 		$key = "servers_phps";
 		if ($cache->exists($key, $servers_phps) === false) { //TODO count in stats
 			$servers_phps = IspcWebsite::getServerPhps ();
@@ -83,27 +77,27 @@ class FrontCtrl extends Ctrl
 		
 		// filter domains (dev tests)
 		if(!empty($f3->get('debug.websites_filter'))) {
-			array_walk ( $websites_vhosts , function ( $value , $key , $filter ) use ( &$websites_vhosts ) {
+			array_walk ( $websites_all , function ( $value , $key , $filter ) use ( &$websites_all ) {
 				if (strpos($value ["domain"], $filter) === false) {
-					unset ($websites_vhosts [$key]); // dev test by filtering domain
+					unset ($websites_all [$key]); // dev test by filtering domain
 				}
 			} , $f3->get('debug.websites_filter') );
 		}
 		if(!empty($f3->get('debug.websites_max_number'))) {
-			$websites_vhosts = array_slice($websites_vhosts, 0, $f3->get('debug.websites_max_number'), true); // dev test with few domains
+			$websites_all = array_slice($websites_all, 0, $f3->get('debug.websites_max_number'), true); // dev test with few domains
 		}
 		
 		// add 2LD info
-		foreach ($websites_vhosts as &$vhost) {
-			$domain = $vhost ['domain'];
+		foreach ($websites_all as &$website) {
+			$domain = $website ['domain'];
 			$two_ld = DnsInfos::getParent($domain);
-			$vhost ['2LD'] = $two_ld;
+			$website ['2LD'] = $two_ld;
 		}
 		
-		// get infos (by running external processes)
+		// get websites infos (by running external processes)
 		$cmds = [];
 		$tasks = [];
-		foreach ($websites_vhosts as $website_id => $website) {
+		foreach ($websites_all as $website_id => $website) {
 			$two_ld = $website ["2LD"];
 			$domain = $website ["domain"];
 			if ($website ['active'] === 'y') {
@@ -146,7 +140,7 @@ class FrontCtrl extends Ctrl
 		$stats ['executed_cmds'] = $cmds;
 		
 		// extract infos
-		foreach ($websites_vhosts as $website_id => &$website) {
+		foreach ($websites_all as $website_id => &$website) {
 			$two_ld = $website ["2LD"];
 			$domain = $website ["domain"];
 			if ($website ['active'] === 'y') {
@@ -179,14 +173,25 @@ class FrontCtrl extends Ctrl
 			unset($website);
 		}
 		
-		// group domains by 2LD
-		$stats ["websites_count"] = count($websites_vhosts);
-		$websites_vhosts = group2dArray($websites_vhosts, "2LD");
-		$stats ["2LD_count"] = count($websites_vhosts);
+		// separate websites by types
+		$websites_by_type = group2dArray($websites_all, "type");
+		$vhosts = $websites_by_type ["vhost"] ?? [];
+		$aliases = $websites_by_type ["alias"] ?? [];
+		$subdomains = $websites_by_type ["subdomain"] ?? [];
 		
+		// group vhosts by 2LD & make stats
+		$stats ["websites_count"] = count($vhosts);
+		$vhosts = group2dArray($vhosts, "2LD");
+		$stats ["2LD_count"] = count($vhosts);
 		$f3->set('stats', $stats);
-		$f3->set('websites', $websites_vhosts);
-		$f3->set('aliases', $websites_aliases);
+		
+		// group aliases  & subdomains by 'parent_domain_id'
+		$aliases = group2dArray($aliases, "parent_domain_id");
+		$subdomains = group2dArray($subdomains, "parent_domain_id");
+		
+		$f3->set('vhosts', $vhosts);
+		$f3->set('aliases', $aliases);
+		$f3->set('subdomains', $subdomains);
 		
 		$generation_end = microtime(true);
 		$generation_time = number_format ( (($generation_end - $generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
