@@ -49,13 +49,19 @@
 		<tbody>
 			<?php
 			foreach ($websites as $parent => $group) {
+				// calculate how many aliases we will have
+				$group_aliases = 0;
+				foreach ($group as $website_id => $website) {
+					$website_aliases = $aliases [$website_id] ?? null;
+					$group_aliases += count($website_aliases);
+				}
 				foreach ($group as $website_id => $website) {
 					?>
 					<tr>
 					<?php
 					if (empty($currentParent) || $currentParent !== $parent) {
 						?>
-						<td rowspan="<?= count($group) ?>" style="vertical-align: middle;">
+						<td rowspan="<?= count($group) + $group_aliases ?>" style="vertical-align: middle;">
 							<a href="https://<?= $parent ?>/"><?= $parent ?></a>
 						</td>
 						<?php
@@ -63,21 +69,8 @@
 					?>
 					<td class="<?= $website ['active'] === 'n' ? 'table-danger' : '' ?>">
 						<a href="https://<?= $website ["domain"] ?>/" target="_blank"><?= $website ["domain"] ?></a>
-						<?php
-						$website_aliases = $aliases [$website_id] ?? null;
-						if(!empty($website_aliases)) {
-							?>
-							<br/>
-							<p style="font-size: x-small" class="mx-2 my-0">
-								<?php
-								$aliases_domains = array_column($website_aliases, "domain");
-								echo implode("<br/>", $aliases_domains);
-								?>
-							</p>
-							<?php
-						}
-						?>
 					</td>
+					
 					<?php
 					if ($website ['active'] === 'y') {
 						if ($active_modules ['whois'] === true ) {
@@ -159,8 +152,24 @@
 					}
 					?>
 				</tr>
+				
 				<?php
-					$currentParent = $parent;
+				$website_aliases = $aliases [$website_id] ?? null;
+				if(!empty($website_aliases)) {
+					foreach ($website_aliases as $website_alias) {
+						?>
+						<tr>
+							<td class="<?= $website_alias ['active'] === 'n' ? 'table-danger' : '' ?> ">
+								<a class="ms-4" href="https://<?= $website_alias ["domain"] ?>/" target="_blank"><?= $website_alias ["domain"] ?></a>
+							</td>
+						</tr>
+						<?php
+					}
+				}
+				?>
+					
+				<?php
+				$currentParent = $parent;
 				}
 			}
 			?>

@@ -42,18 +42,14 @@ class FrontCtrl extends Ctrl
 	
 	public static function testGET (\Base $f3, array $url, string $controler) : void
 	{
-		$res = IspcWebsite::getVhosts();
-		vd($res);
-		die; ////////////////////////
+		$PAGE = [
+			"name" => "test",
+			"title" => "test",
+		];
+		$f3->set("PAGE", $PAGE);
 		
-		// $PAGE = [
-		// 	"name" => "test",
-		// 	"title" => "test",
-		// ];
-		// $f3->set("PAGE", $PAGE);
-		
-		// $view = new \View();
-		// echo $view->render('test.phtml');
+		$view = new \View();
+		echo $view->render('test.phtml');
 	}
 	
 	
@@ -78,6 +74,7 @@ class FrontCtrl extends Ctrl
 			$aliases = IspcWebsite::getAliases ();
 			$cache->set($key, $aliases, $f3->get("cache.ispconfig"));
 		}
+		//TODO also subdomains
 		$key = "servers_phps";
 		if ($cache->exists($key, $servers_phps) === false) { //TODO count in stats
 			$servers_phps = IspcWebsite::getServerPhps ();
