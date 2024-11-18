@@ -181,15 +181,17 @@ class FrontCtrl extends Ctrl
 		$subdomains = $websites_by_type ["subdomain"] ?? [];
 		
 		// group vhosts by 2LD & make stats
-		$stats ["websites_count"] = count($vhosts);
+		$stats ["vhost_count"] = count($vhosts);
 		$vhosts = group2dArray($vhosts, "2LD");
 		$stats ["2LD_count"] = count($vhosts);
-		$f3->set('stats', $stats);
 		
-		// group aliases & subdomains by 'parent_domain_id'
+		// group aliases & subdomains by 'parent_domain_id' & stats
+		$stats ["aliases_count"] = count($aliases);
 		$aliases = group2dArray($aliases, "parent_domain_id");
+		$stats ["subdomains_count"] = count($subdomains);
 		$subdomains = group2dArray($subdomains, "parent_domain_id");
 		
+		$f3->set('stats', $stats);
 		$f3->set('vhosts', $vhosts);
 		$f3->set('aliases', $aliases);
 		$f3->set('subdomains', $subdomains);
