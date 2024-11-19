@@ -66,44 +66,58 @@ class SslInfos extends Task {
 		}
 		$this->remainingValidityDays = self::calculateRemainingValidityDays ($sslExpires);
 		
-		if ($ispconfigInfos['ssl'] == 'n') {
-			$this->labelType = 'danger';
-			$this->labelString = 'disabled';
-			$this->labelTitle = 'ssl disabled';
-		}
-		elseif (empty($rawInfos)) {
-			$this->labelType = 'danger';
-			$this->labelString = 'error getting infos';
-			$cache->clear($key);
-		}
-		elseif (!empty($error)) {
-			$this->labelType = 'danger';
-			$this->labelString = $error;
-		}
-		else {
-			if ($ispconfigInfos['ssl_letsencrypt'] == 'n') {
-				$this->labelType = 'warning';
-				$this->labelString = "disabled";
-				$this->labelTitle = "let's encrypt disabled";
-			}
-			if ($issuer !== "Let's Encrypt") {
+		if ($ispconfigInfos ["type"] === "vhost") {
+			if ($ispconfigInfos['ssl'] == 'n') {
 				$this->labelType = 'danger';
-				$this->labelString = "issuer";
-				$this->labelTitle = "certificate not signed by let's encrypt ($issuer)";
+				$this->labelString = 'disabled';
+				$this->labelTitle = 'ssl disabled';
 			}
-			elseif ($this->remainingValidityDays <= 0) {
+			elseif (empty($rawInfos)) {
 				$this->labelType = 'danger';
-				$this->labelString = "expired";
-				$this->labelTitle = -$this->remainingValidityDays . ' days ago';
+				$this->labelString = 'error getting infos';
+				$cache->clear($key);
 			}
-			elseif ($this->remainingValidityDays < 29) {
-				$this->labelType = 'warning';
-				$this->labelString = "not renewed";
-				$this->labelTitle = $this->remainingValidityDays . " days left";
+			elseif (!empty($error)) {
+				$this->labelType = 'danger';
+				$this->labelString = $error;
 			}
 			else {
-				$this->labelType = 'success';
-				$this->labelString = 'OK';
+				if ($ispconfigInfos['ssl_letsencrypt'] == 'n') {
+					$this->labelType = 'warning';
+					$this->labelString = "disabled";
+					$this->labelTitle = "let's encrypt disabled";
+				}
+				if ($issuer !== "Let's Encrypt") {
+					$this->labelType = 'danger';
+					$this->labelString = "issuer";
+					$this->labelTitle = "certificate not signed by let's encrypt ($issuer)";
+				}
+				elseif ($this->remainingValidityDays <= 0) {
+					$this->labelType = 'danger';
+					$this->labelString = "expired";
+					$this->labelTitle = -$this->remainingValidityDays . ' days ago';
+				}
+				elseif ($this->remainingValidityDays < 29) {
+					$this->labelType = 'warning';
+					$this->labelString = "not renewed";
+					$this->labelTitle = $this->remainingValidityDays . " days left";
+				}
+				else {
+					$this->labelType = 'success';
+					$this->labelString = 'OK';
+				}
+			}
+		}
+		elseif ($ispconfigInfos ["type"] === "alias" || $ispconfigInfos ["type"] === "subdomain") {
+			if ($ispconfigInfos ["ssl_letsencrypt_exclude"] === "y") {
+				$this->labelType = 'danger';
+				$this->labelString = "disabled";
+				$this->labelTitle = "not added to  let's encrypt";
+			}
+			else {
+				$this->labelType = 'warning';
+				$this->labelString = "same";
+				$this->labelTitle = "same as parent vhost";
 			}
 		}
 	}
