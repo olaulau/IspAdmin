@@ -60,6 +60,17 @@ abstract class IspConfig
 		return $res ["response"];
 	}
 	
+	/**
+	 * for testing only
+	 */
+	protected static function IspRestRawCall ($method, $data) : mixed
+	{
+		$session_id = self::getSessionId();
+		$data ["session_id"] = $session_id;
+		$res = static::rest($method, $data);
+		return $res;
+	}
+	
 	
 	public static function IspLogin () : string
 	{

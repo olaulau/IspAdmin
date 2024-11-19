@@ -71,7 +71,7 @@ class FrontCtrl extends Ctrl
 		}
 		$key = "servers_phps";
 		if ($cache->exists($key, $servers_phps) === false) { //TODO count in stats
-			$servers_phps = IspcWebsite::getServerPhps ();
+			$servers_phps = IspcWebsite::getServersPhps ();
 			$cache->set($key, $servers_phps, $f3->get("cache.ispconfig"));
 		}
 		
@@ -100,9 +100,10 @@ class FrontCtrl extends Ctrl
 		foreach ($websites_all as $website_id => $website) {
 			$two_ld = $website ["2LD"];
 			$domain = $website ["domain"];
+			$server_id = $website ["server_id"];
 			if ($website ['active'] === 'y') {
-				if(!empty($servers_configs [$website ["server_id"]])) {
-					$server = $servers_configs [$website ["server_id"]];
+				if(!empty($servers_configs [$server_id])) {
+					$server = $servers_configs [$server_id];
 					if ($f3->get('active_modules.whois') === true) { // do not recreate things if parents domain has already been done
 						if(empty($tasks ["whois"] [$two_ld])) {
 							$t = new \model\WhoisInfos ($two_ld, $server);
@@ -126,7 +127,7 @@ class FrontCtrl extends Ctrl
 						$cmds ["http_$domain"] = $t->getCmd();
 					}
 					if ($f3->get('active_modules.php') === true) {
-						$t = new \model\PhpInfos ($domain, $server, $website, $servers_phps);
+						$t = new \model\PhpInfos ($domain, $server, $website, $servers_phps [$server_id]);
 						$tasks ["php"] [$domain] = $t;
 					}
 				}

@@ -114,7 +114,7 @@ class SslInfos extends Task {
 				$this->labelString = "disabled";
 				$this->labelTitle = "not added to  let's encrypt";
 			}
-			else {
+			else { //TODO copy parent vhost result
 				$this->labelType = 'warning';
 				$this->labelString = "same";
 				$this->labelTitle = "same as parent vhost";

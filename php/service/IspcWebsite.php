@@ -1,6 +1,8 @@
 <?php
 namespace service;
 
+use ErrorException;
+
 
 abstract class IspcWebsite extends IspConfig
 {
@@ -27,9 +29,9 @@ abstract class IspcWebsite extends IspConfig
 	public static function IspUpdateWebsite (array $ispconfigInfos) : array
 	{
 		$res = static::IspRestCall('sites_web_domain_update', [
-			'client_id' => null,
-			'primary_id' => $ispconfigInfos ['domain_id'],
-			'params' => $ispconfigInfos
+			'client_id'		=> null,
+			'primary_id'	=> $ispconfigInfos ['domain_id'],
+			'params'		=> $ispconfigInfos
 		]);
 		return $res;
 	}
@@ -44,15 +46,32 @@ abstract class IspcWebsite extends IspConfig
 	}
 	
 	
-	public static function getServerPhps () : array
+	private static function getServerPhps (int $server_id) : array
 	{
 		$res = static::IspRestCall('server_get_php_versions', [
-			'server_id' => 1, //TODO server id !!!
-			"php" => "php-fpm",
+			"server_id"		=> $server_id,
+			"php"			=> "php-fpm",
 			"get_full_data" => true,
 		
 		]);
+		if ($res === false) {
+			throw new ErrorException("error getting server php");
+		}
 		$res = array_column($res, null, "server_php_id");
+		return $res;
+	}
+	
+	/**
+	 * @return array server phps for each server
+	 */
+	public static function getServersPhps () : array
+	{
+		$servers_config = self::getServersConfigs();
+		$res = [];
+		foreach ($servers_config as $server_id => $server) {
+			$server_phps = self::getServerPhps($server_id);
+			$res [$server_id] = $server_phps;
+		}
 		return $res;
 	}
 	
