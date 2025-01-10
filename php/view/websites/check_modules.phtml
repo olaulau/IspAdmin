@@ -1,6 +1,9 @@
 <?php
 
-function website_check_modules (array $website, array $active_modules) : void
+/**
+ * $vhost_subsites = -1 for aliases & subdomaines (not SSL & PHP cell as we used rowspan)
+ */
+function website_check_modules (array $website, array $active_modules, int $vhost_subsites) : void
 {
 	if ($website ['active'] === 'y') {
 		if ($active_modules ['whois'] === true ) {
@@ -33,17 +36,19 @@ function website_check_modules (array $website, array $active_modules) : void
 			}
 		}
 		if ($active_modules ['ssl'] === true) {
-			if(!empty($website ['sslInfos'])) {
-				?>
-				<td class="bg-<?= $website ['sslInfos']->getLabelType() ?>" title="<?= $website ['sslInfos']->getLabelTitle() ?>">
-					<?= $website ['sslInfos']->getLabelString() ?>
-				</td>
-				<?php
-			}
-			else {
-				?>
-				<td>&nbsp;</td>
-				<?php
+			if($vhost_subsites !== -1) {
+				if(!empty($website ['sslInfos'])) {
+					?>
+					<td class="bg-<?= $website ['sslInfos']->getLabelType() ?>" title="<?= $website ['sslInfos']->getLabelTitle() ?>" rowspan="<?= $vhost_subsites+1 ?>" style="vertical-align: middle;">
+						<?= $website ['sslInfos']->getLabelString() ?>
+					</td>
+					<?php
+				}
+				else {
+					?>
+					<td>&nbsp;</td>
+					<?php
+				}
 			}
 		}
 		if ($active_modules ['http'] === true) {
@@ -61,17 +66,19 @@ function website_check_modules (array $website, array $active_modules) : void
 			}
 		}
 		if ($active_modules ['php'] === true) {
-			if(!empty($website ['phpInfos'])) {
-				?>
-				<td class="bg-<?= $website ['phpInfos']->getLabelType() ?>" title="<?= $website ['phpInfos']->getLabelTitle() ?>">
-					<?= $website ['phpInfos']->getLabelString() ?>
-				</td>
-				<?php
-			}
-			else {
-				?>
-				<td>&nbsp;</td>
-				<?php
+			if($vhost_subsites !== -1) {
+				if(!empty($website ['phpInfos'])) {
+					?>
+					<td class="bg-<?= $website ['phpInfos']->getLabelType() ?>" title="<?= $website ['phpInfos']->getLabelTitle() ?>" rowspan="<?= $vhost_subsites+1 ?>" style="vertical-align: middle;">
+						<?= $website ['phpInfos']->getLabelString() ?>
+					</td>
+					<?php
+				}
+				else {
+					?>
+					<td>&nbsp;</td>
+					<?php
+				}
 			}
 		}
 	}

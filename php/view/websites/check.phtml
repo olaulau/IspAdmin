@@ -61,12 +61,11 @@
 				}
 				
 				foreach ($websites as $website_id => $vhost) {
-					//TODO counts group aliases here
-					//TOOD add vhost aliases count 
+					$vhost_subsites = count($aliases [$website_id] ?? []) + count($subdomains [$website_id] ?? []);
 					?>
 					<tr>
 					<?php
-					if (empty($currentParent) || $currentParent !== $sld) {
+					if (empty($currentSld) || $currentSld !== $sld) {
 						?>
 						<td rowspan="<?= count($websites) + $sld_subsites ?>" style="vertical-align: middle;">
 							<a href="https://<?= $sld ?>/"><?= $sld ?></a>
@@ -79,7 +78,7 @@
 					</td>
 					
 					<?php
-					website_check_modules ($vhost, $active_modules);
+					website_check_modules ($vhost, $active_modules, $vhost_subsites);
 					?>
 				</tr>
 				
@@ -93,7 +92,7 @@
 								<a class="ms-4" href="https://<?= $alias ["domain"] ?>/" target="_blank"><?= $alias ["domain"] ?></a>
 							</td>
 							<?php
-							website_check_modules ($alias, $active_modules);
+							website_check_modules ($alias, $active_modules, -1);
 							?>
 						</tr>
 						<?php
@@ -111,7 +110,7 @@
 								<a class="ms-4" href="https://<?= $subdomain ["domain"] ?>/" target="_blank"><?= $subdomain ["domain"] ?></a>
 							</td>
 							<?php
-							website_check_modules ($subdomain, $active_modules);
+							website_check_modules ($subdomain, $active_modules, -1);
 							?>
 						</tr>
 						<?php
@@ -120,7 +119,7 @@
 				?>
 				
 				<?php
-				$currentParent = $sld;
+				$currentSld = $sld;
 				}
 			}
 			?>
