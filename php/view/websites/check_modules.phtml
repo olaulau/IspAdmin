@@ -1,24 +1,27 @@
 <?php
 
 /**
+ * $sld_rows = -1 for all rows except the first of a 2LD
  * $vhost_subsites = -1 for aliases & subdomaines (not SSL & PHP cell as we used rowspan)
  */
-function website_check_modules (array $website, array $active_modules, int $vhost_subsites) : void
+function website_check_modules (array $website, array $active_modules, int $sld_rows, int $vhost_subsites) : void
 {
 	if ($website ['active'] === 'y') {
 		if ($active_modules ['whois'] === true ) {
-			if(!empty($website ['whoisInfos'])) {
-				//TODO convert to use methods
-				?>
-				<td class="bg-<?= $website ['whoisInfos']->getLabelType() ?>" title="<?= $website ['whoisInfos']->getLabelTitle() ?>">
-					<?= nl2br($website ['whoisInfos']->getLabelString()) ?>
-				</td>
-				<?php
-			}
-			else {
-				?>
-				<td>&nbsp;</td>
-				<?php
+			if($sld_rows !== -1) {
+				if(!empty($website ['whoisInfos'])) {
+					//TODO convert to use methods
+					?>
+					<td class="bg-<?= $website ['whoisInfos']->getLabelType() ?>" title="<?= $website ['whoisInfos']->getLabelTitle() ?>" rowspan="<?= $sld_rows ?>" style="vertical-align: middle;">
+						<?= nl2br($website ['whoisInfos']->getLabelString()) ?>
+					</td>
+					<?php
+				}
+				else {
+					?>
+					<td>&nbsp;</td>
+					<?php
+				}
 			}
 		}
 		if ($active_modules ['dns'] === true) {

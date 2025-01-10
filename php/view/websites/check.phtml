@@ -59,6 +59,7 @@
 					$website_subdomains = $subdomains [$website_id] ?? [];
 					$sld_subsites += count($website_subdomains);
 				}
+				$sld_rows = count($websites) + $sld_subsites;
 				
 				foreach ($websites as $website_id => $vhost) {
 					$vhost_subsites = count($aliases [$website_id] ?? []) + count($subdomains [$website_id] ?? []);
@@ -67,7 +68,7 @@
 					<?php
 					if (empty($currentSld) || $currentSld !== $sld) {
 						?>
-						<td rowspan="<?= count($websites) + $sld_subsites ?>" style="vertical-align: middle;">
+						<td rowspan="<?= $sld_rows ?>" style="vertical-align: middle;">
 							<a href="https://<?= $sld ?>/"><?= $sld ?></a>
 						</td>
 						<?php
@@ -78,7 +79,12 @@
 					</td>
 					
 					<?php
-					website_check_modules ($vhost, $active_modules, $vhost_subsites);
+					if (empty($currentSld) || $currentSld !== $sld) {
+						website_check_modules ($vhost, $active_modules, $sld_rows, $vhost_subsites);
+					}
+					else {
+						website_check_modules ($vhost, $active_modules, -1, $vhost_subsites);
+					}
 					?>
 				</tr>
 				
@@ -92,7 +98,7 @@
 								<a class="ms-4" href="https://<?= $alias ["domain"] ?>/" target="_blank"><?= $alias ["domain"] ?></a>
 							</td>
 							<?php
-							website_check_modules ($alias, $active_modules, -1);
+							website_check_modules ($alias, $active_modules, -1, -1);
 							?>
 						</tr>
 						<?php
@@ -110,7 +116,7 @@
 								<a class="ms-4" href="https://<?= $subdomain ["domain"] ?>/" target="_blank"><?= $subdomain ["domain"] ?></a>
 							</td>
 							<?php
-							website_check_modules ($subdomain, $active_modules, -1);
+							website_check_modules ($subdomain, $active_modules, -1, -1);
 							?>
 						</tr>
 						<?php
