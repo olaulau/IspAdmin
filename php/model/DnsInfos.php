@@ -43,7 +43,7 @@ class DnsInfos extends Task {
 		$this->labelType = 'success';
 		$this->labelString = 'OK';
 		
-		if ($this->server["server"]["ip_address"] !== $rawInfos) {
+		if ($this->server ["server"] ["ip_address"] !== $rawInfos) {
 			// if resolved ip address isn't the IP of the server hosting the website
 			$this->labelType = 'danger';
 			
@@ -57,7 +57,7 @@ class DnsInfos extends Task {
 			}
 			else {
 				$this->labelString = "resolv";
-				$this->labelTitle = "DNS doesn't resolve to server IP : <br/> " . $this->server["server"]["ip_address"] . " !== " . $rawInfos;
+				$this->labelTitle = "DNS doesn't resolve to server IP : <br/> " . $this->server ["server"] ["ip_address"] . " !== " . $rawInfos;
 			}
 		}
 	}

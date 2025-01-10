@@ -8,20 +8,20 @@
     "packages": [
         {
             "name": "bcosca/fatfree-core",
-            "version": "3.8.2",
+            "version": "3.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/f3-factory/fatfree-core.git",
-                "reference": "774692ce7698904d3cb35bbd4f79376bb17eeddc"
+                "reference": "227b3b03315ab86b1601d9e9fd8e07efbedf6ab9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/f3-factory/fatfree-core/zipball/774692ce7698904d3cb35bbd4f79376bb17eeddc",
-                "reference": "774692ce7698904d3cb35bbd4f79376bb17eeddc",
+                "url": "https://api.github.com/repos/f3-factory/fatfree-core/zipball/227b3b03315ab86b1601d9e9fd8e07efbedf6ab9",
+                "reference": "227b3b03315ab86b1601d9e9fd8e07efbedf6ab9",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4"
+                "php": ">=7.2"
             },
             "type": "library",
             "autoload": {
@@ -37,9 +37,19 @@
             "homepage": "http://fatfreeframework.com/",
             "support": {
                 "issues": "https://github.com/f3-factory/fatfree-core/issues",
-                "source": "https://github.com/f3-factory/fatfree-core/tree/3.8.2"
+                "source": "https://github.com/f3-factory/fatfree-core/tree/3.9.0"
             },
-            "time": "2023-07-23T22:11:30+00:00"
+            "funding": [
+                {
+                    "url": "https://www.buymeacoffee.com/ikkez",
+                    "type": "buy_me_a_coffee"
+                },
+                {
+                    "url": "https://github.com/ikkez",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-12-31T17:11:04+00:00"
         },
         {
             "name": "components/jquery",
@@ -58,15 +68,15 @@
             "type": "component",
             "extra": {
                 "component": {
-                    "scripts": [
-                        "jquery.js"
-                    ],
                     "files": [
                         "jquery.min.js",
                         "jquery.min.map",
                         "jquery.slim.js",
                         "jquery.slim.min.js",
                         "jquery.slim.min.map"
+                    ],
+                    "scripts": [
+                        "jquery.js"
                     ]
                 }
             },
@@ -111,20 +121,20 @@
             "extra": {
                 "component": {
                     "name": "jquery-ui",
-                    "scripts": [
-                        "jquery-ui.js"
-                    ],
-                    "files": [
-                        "ui/**",
-                        "themes/**",
-                        "jquery-ui.min.js"
-                    ],
                     "shim": {
                         "deps": [
                             "jquery"
                         ],
                         "exports": "jQuery"
-                    }
+                    },
+                    "files": [
+                        "ui/**",
+                        "themes/**",
+                        "jquery-ui.min.js"
+                    ],
+                    "scripts": [
+                        "jquery-ui.js"
+                    ]
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -181,16 +191,16 @@
         },
         {
             "name": "fortawesome/font-awesome",
-            "version": "6.6.0",
+            "version": "6.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/Font-Awesome.git",
-                "reference": "37eff7fa00de26db41183a3ad8ed0e9119fbc44b"
+                "reference": "af620534bfc3c2d4cbefcfeec29603bbe7809e64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/37eff7fa00de26db41183a3ad8ed0e9119fbc44b",
-                "reference": "37eff7fa00de26db41183a3ad8ed0e9119fbc44b",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/af620534bfc3c2d4cbefcfeec29603bbe7809e64",
+                "reference": "af620534bfc3c2d4cbefcfeec29603bbe7809e64",
                 "shasum": ""
             },
             "type": "library",
@@ -222,7 +232,7 @@
                 "issues": "https://github.com/FortAwesome/Font-Awesome/issues",
                 "source": "https://github.com/FortAwesome/Font-Awesome"
             },
-            "time": "2024-07-16T17:13:31+00:00"
+            "time": "2024-12-16T21:31:56+00:00"
         },
         {
             "name": "ikkez/f3-cortex",
@@ -517,16 +527,16 @@
             "type": "component",
             "extra": {
                 "component": {
-                    "scripts": [
-                        "dist/js/select2.js"
-                    ],
-                    "styles": [
-                        "dist/css/select2.css"
-                    ],
                     "files": [
                         "dist/js/select2.js",
                         "dist/js/i18n/*.js",
                         "dist/css/select2.css"
+                    ],
+                    "styles": [
+                        "dist/css/select2.css"
+                    ],
+                    "scripts": [
+                        "dist/js/select2.js"
                     ]
                 }
             },
@@ -566,8 +576,8 @@
             "type": "library",
             "extra": {
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "autoload": {
@@ -648,8 +658,8 @@
             "type": "library",
             "extra": {
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "autoload": {

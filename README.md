@@ -25,9 +25,9 @@ IspConfig additionnal admin features
 ## requirements
 - PHP 8.x (8.3 compatible)
 	- php-intl
-- create an IspConfig remote user in the panel : "System > Remote users"  
   
 ## installation
+- create an IspConfig remote user in the panel : "System > Remote users"  
 ```
 git clone https://github.com/olaulau/IspAdmin
 cd IspAdmin

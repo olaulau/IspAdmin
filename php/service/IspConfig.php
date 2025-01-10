@@ -9,7 +9,7 @@ abstract class IspConfig
 {
 	
 	private static string $session_id;
-	private static mixed $last_query_response;
+	// private static mixed $last_query_response;
 	
 	
 	private static function rest ($method, $data) : mixed
@@ -39,7 +39,7 @@ abstract class IspConfig
 			die("json decode error " . $ex->getCode() . " : " . $ex->getMessage() . PHP_EOL . $ex->getTraceAsString());
 		}
 		
-		static::$last_query_response = $res;
+		// self::$last_query_response = $res;
 		return $res;
 	}
 	

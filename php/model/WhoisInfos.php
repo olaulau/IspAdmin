@@ -3,6 +3,7 @@ namespace model;
 
 use Iodev\Whois\Factory;
 
+
 class WhoisInfos extends Task {
 	
 	public function getCmd () {
