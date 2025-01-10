@@ -50,27 +50,26 @@
 		</thead>
 		<tbody>
 			<?php
-			foreach ($vhosts as $parent => $group) {
-				// calculate how many aliases & subdomains we will have
-				$group_aliases = 0;
-				foreach ($group as $website_id => $vhost) {
+			foreach ($websites_grouped as $sld => $websites) {
+				// calculate how many aliases & subdomains we will have for the whole 2LD
+				$sld_subsites = 0;
+				foreach ($websites as $website_id => $vhost) {
 					$website_aliases = $aliases [$website_id] ?? [];
-					$group_aliases += count($website_aliases);
-				}
-				$group_subdomains = 0;
-				foreach ($group as $website_id => $vhost) {
+					$sld_subsites += count($website_aliases);
 					$website_subdomains = $subdomains [$website_id] ?? [];
-					$group_subdomains += count($website_subdomains);
+					$sld_subsites += count($website_subdomains);
 				}
 				
-				foreach ($group as $website_id => $vhost) {
+				foreach ($websites as $website_id => $vhost) {
+					//TODO counts group aliases here
+					//TOOD add vhost aliases count 
 					?>
 					<tr>
 					<?php
-					if (empty($currentParent) || $currentParent !== $parent) {
+					if (empty($currentParent) || $currentParent !== $sld) {
 						?>
-						<td rowspan="<?= count($group) + $group_aliases + $group_subdomains ?>" style="vertical-align: middle;">
-							<a href="https://<?= $parent ?>/"><?= $parent ?></a>
+						<td rowspan="<?= count($websites) + $sld_subsites ?>" style="vertical-align: middle;">
+							<a href="https://<?= $sld ?>/"><?= $sld ?></a>
 						</td>
 						<?php
 					}
@@ -121,7 +120,7 @@
 				?>
 				
 				<?php
-				$currentParent = $parent;
+				$currentParent = $sld;
 				}
 			}
 			?>

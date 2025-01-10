@@ -177,14 +177,14 @@ class FrontCtrl extends Ctrl
 		
 		// separate websites by types
 		$websites_by_type = group2dArray($websites_all, "type");
-		$vhosts = $websites_by_type ["vhost"] ?? [];
+		$websites_grouped = $websites_by_type ["vhost"] ?? [];
 		$aliases = $websites_by_type ["alias"] ?? [];
 		$subdomains = $websites_by_type ["subdomain"] ?? [];
 		
 		// group vhosts by 2LD & make stats
-		$stats ["vhost_count"] = count($vhosts);
-		$vhosts = group2dArray($vhosts, "2LD");
-		$stats ["2LD_count"] = count($vhosts);
+		$stats ["vhost_count"] = count($websites_grouped);
+		$websites_grouped = group2dArray($websites_grouped, "2LD");
+		$stats ["2LD_count"] = count($websites_grouped);
 		
 		// group aliases & subdomains by 'parent_domain_id' & stats
 		$stats ["aliases_count"] = count($aliases);
@@ -193,7 +193,7 @@ class FrontCtrl extends Ctrl
 		$subdomains = group2dArray($subdomains, "parent_domain_id");
 		
 		$f3->set('stats', $stats);
-		$f3->set('vhosts', $vhosts);
+		$f3->set('websites_grouped', $websites_grouped);
 		$f3->set('aliases', $aliases);
 		$f3->set('subdomains', $subdomains);
 		
