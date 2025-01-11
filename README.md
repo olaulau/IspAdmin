@@ -24,6 +24,7 @@ IspConfig additionnal admin features
   
 ## requirements
 - PHP 8.x (8.3 compatible)
+	- php-curl
 	- php-intl
   
 ## installation

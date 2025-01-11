@@ -18,6 +18,9 @@
 							</a>
 							<ul class="dropdown-menu">
 								<li>
+									<a class="dropdown-item <?= $PAGE["name"] === "websites/list" ? "active" : "" ?>" href="<?= $BASE . $f3->alias("websitesList") ?>">List</a>
+								</li>
+								<li>
 									<a class="dropdown-item <?= $PAGE["name"] === "websites/check" ? "active" : "" ?>" href="<?= $BASE . $f3->alias("websitesCheck") ?>">Check</a>
 								</li>
 							</ul>

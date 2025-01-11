@@ -53,6 +53,54 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
+	public static function websitesListGET (\Base $f3, array $url, string $controler) : void
+	{
+		$generation_start = microtime(true);
+		
+		// get servers and websites list
+		$cache = \Cache::instance();
+		$key = "servers_configs";
+		if ($cache->exists($key, $servers_configs) === false) { //TODO count in stats
+			$servers_configs = IspcWebsite::getServersConfigs ();
+			$cache->set($key, $servers_configs, $f3->get("cache.ispconfig"));
+		}
+		$vhosts = IspcWebsite::getAll ("vhost");
+		$key = "servers_phps";
+		if ($cache->exists($key, $servers_phps) === false) { //TODO count in stats
+			$servers_phps = IspcWebsite::getServersPhps ();
+			$cache->set($key, $servers_phps, $f3->get("cache.ispconfig"));
+		}
+		
+		$f3->set("servers_configs", $servers_configs);
+		$f3->set("vhosts", $vhosts);
+		$f3->set("servers_phps", $servers_phps);
+		
+		// filter domains (dev tests)
+		if(!empty($f3->get('debug.websites_filter'))) {
+			array_walk ( $vhosts , function ( $value , $key , $filter ) use ( &$vhosts ) {
+				if (strpos($value ["domain"], $filter) === false) {
+					unset ($vhosts [$key]); // dev test by filtering domain
+				}
+			} , $f3->get('debug.websites_filter') );
+		}
+		if(!empty($f3->get('debug.websites_max_number'))) {
+			$vhosts = array_slice($vhosts, 0, $f3->get('debug.websites_max_number'), true); // dev test with few domains
+		}
+		
+		array_multisort(array_column($vhosts, "domain"), SORT_ASC, $vhosts);
+		$f3->set("vhosts", $vhosts);
+		
+		$PAGE = [
+			"name" => "websites/list",
+			"title" => "Web Sites",
+		];
+		$f3->set("PAGE", $PAGE);
+		
+		$view = new \View();
+		echo $view->render('websites/list.phtml');
+	}
+	
+	
 	public static function websitesCheckGET (\Base $f3, array $url, string $controler) : void
 	{
 		$generation_start = microtime(true);

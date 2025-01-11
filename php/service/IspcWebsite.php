@@ -6,17 +6,21 @@ use ErrorException;
 
 abstract class IspcWebsite extends IspConfig
 {
-	/**
-	 * types :
-	 * array(3) { [0]=> string(5) "vhost" [9]=> string(5) "alias" [99]=> string(9) "subdomain" } 
-	 * 
-	 * results are indexed by domain_id
-	 */
-	public static function getAll () : array
+	 
+	 /**
+	  * @param string $type vhost / alias / subdomain
+	  * @return array indexed by domain_id
+	  */
+	public static function getAll (string $type="") : array
 	{
+		$params = [];
+		$accepted_type = ["vhost", "alias", "subdomain"];
+		if(!empty($type) && array_search($type, $accepted_type) !== false) {
+			$params ["type"] = $type;
+		}
 		$res = static::IspRestCall('sites_web_domain_get',
 		[
-			'primary_id' => [],
+			'primary_id' => $params,
 		]);
 		
 		// index and sort by "domain_id"

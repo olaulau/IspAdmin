@@ -1,0 +1,44 @@
+<?php require_once __DIR__ . "/../layout/head.inc.phtml"; ?>
+
+<?php require_once __DIR__ . "/../layout/header.inc.phtml"; ?>
+
+	<!-- Begin page content -->
+	<main role="main" class="container-fluid">
+	<table class="table table-sm table-bordered table-hover">
+		<thead class="table-dark">
+			<tr>
+				<th>id</th>
+				<th>FQDN</th>
+				<th>serveur</th>
+				<th>SSH login</th>
+				<th>MySQL database</th>
+				<th>MySQL user</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+			foreach ($vhosts as $vhost) {
+				?>
+				<tr>
+					<td><?= $vhost ["domain_id"] ?></td>
+					<td><a href="http://<?=$vhost ["domain"]?>" target="_blank"><?= $vhost ["domain"] ?></a></td>
+					<td><?= "" ?></td>
+					<td><?= "" ?></td>
+					<td><?= "" ?></td>
+					<td><?= "" ?></td>
+				</tr>
+				<?php
+			}
+			?>
+			</tbody>
+			<thead class="table-dark">
+				<tr>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
+	</table>
+	</main>
+
+<?php require_once __DIR__ . "/../layout/footer.inc.phtml"; ?>
+
+<?php require_once __DIR__ . "/../layout/foot.inc.phtml"; ?>
