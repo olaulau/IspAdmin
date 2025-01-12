@@ -87,8 +87,13 @@ class FrontCtrl extends Ctrl
 			$vhosts = array_slice($vhosts, 0, $f3->get('debug.websites_max_number'), true); // dev test with few domains
 		}
 		
+		// sort domains alphabetically
 		array_multisort(array_column($vhosts, "domain"), SORT_ASC, $vhosts);
 		$f3->set("vhosts", $vhosts);
+		
+		// get shell users
+		$shell_users = IspcWebsite::getShellUser();
+		$f3->set("shell_users", $shell_users);
 		
 		$PAGE = [
 			"name" => "websites/list",

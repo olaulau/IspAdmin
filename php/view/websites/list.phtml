@@ -4,6 +4,7 @@
 
 	<!-- Begin page content -->
 	<main role="main" class="container-fluid">
+		<h2>Websites list (<?= count($vhosts) ?>)</h2>
 	<table class="table table-sm table-bordered table-hover">
 		<thead class="table-dark">
 			<tr>
@@ -11,21 +12,20 @@
 				<th>FQDN</th>
 				<th>serveur</th>
 				<th>SSH login</th>
-				<th>MySQL database</th>
-				<th>MySQL user</th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php
 			foreach ($vhosts as $vhost) {
+				$server_config = $servers_configs [$vhost ["server_id"]] ?? null;
+				$hostname = $server_config ["server"] ["hostname"] ?? "";
+				$shell_users_str = implode(PHP_EOL, array_column($shell_users [$vhost ["domain_id"]] ?? [], "username"));
 				?>
 				<tr>
 					<td><?= $vhost ["domain_id"] ?></td>
 					<td><a href="http://<?=$vhost ["domain"]?>" target="_blank"><?= $vhost ["domain"] ?></a></td>
-					<td><?= "" ?></td>
-					<td><?= "" ?></td>
-					<td><?= "" ?></td>
-					<td><?= "" ?></td>
+					<td><?= $hostname ?></td>
+					<td><?= nl2br($shell_users_str)?></td>
 				</tr>
 				<?php
 			}
@@ -33,6 +33,9 @@
 			</tbody>
 			<thead class="table-dark">
 				<tr>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
 					<th>&nbsp;</th>
 				</tr>
 			</thead>

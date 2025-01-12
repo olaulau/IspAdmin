@@ -79,4 +79,21 @@ abstract class IspcWebsite extends IspConfig
 		return $res;
 	}
 	
+	/**
+	 * @return array shell users groupped by parent domain id
+	 */
+	public static function getShellUser (int $website_id=0) : array
+	{
+		$params = [];
+		if(!empty($website_id)) {
+			$params ["parent_domain_id"] = $website_id;
+		}
+		$res = static::IspRestCall('sites_shell_user_get', [
+			"primary_id"	=> $params
+		]);
+		
+		$res = group2dArray($res, "parent_domain_id");
+		return $res;
+	}
+	
 }

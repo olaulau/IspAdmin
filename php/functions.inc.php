@@ -53,6 +53,7 @@ function sort2dArray (&$table, $column, $reverse=false)
 
 /**
  * index a 2D array by a column
+ * (suposses only on element for each index exists, otherwise it will be overwritten)
  * @param array $table
  * @param string $column
  */
