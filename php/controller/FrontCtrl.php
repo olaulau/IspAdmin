@@ -64,16 +64,10 @@ class FrontCtrl extends Ctrl
 			$servers_configs = IspcWebsite::getServersConfigs ();
 			$cache->set($key, $servers_configs, $f3->get("cache.ispconfig"));
 		}
-		$vhosts = IspcWebsite::getAll ("vhost");
-		$key = "servers_phps";
-		if ($cache->exists($key, $servers_phps) === false) { //TODO count in stats
-			$servers_phps = IspcWebsite::getServersPhps ();
-			$cache->set($key, $servers_phps, $f3->get("cache.ispconfig"));
-		}
-		
 		$f3->set("servers_configs", $servers_configs);
+		
+		$vhosts = IspcWebsite::getAll ("vhost");
 		$f3->set("vhosts", $vhosts);
-		$f3->set("servers_phps", $servers_phps);
 		
 		// filter domains (dev tests)
 		if(!empty($f3->get('debug.websites_filter'))) {
@@ -109,6 +103,49 @@ class FrontCtrl extends Ctrl
 		
 		$view = new \View();
 		echo $view->render('websites/list.phtml');
+	}
+	
+	
+	public static function websiteDetailGET (\Base $f3, array $url, string $controler) : void
+	{
+		$generation_start = microtime(true);
+		
+		// get servers
+		$cache = \Cache::instance();
+		$key = "servers_configs";
+		if ($cache->exists($key, $servers_configs) === false) { //TODO count in stats
+			$servers_configs = IspcWebsite::getServersConfigs ();
+			$cache->set($key, $servers_configs, $f3->get("cache.ispconfig"));
+		}
+		$f3->set("servers_configs", $servers_configs);
+		
+		// get vhost
+		$vhost_id = intval($f3->get("PARAMS.id"));
+		if(empty($vhost_id) || !is_integer($vhost_id)) {
+			throw new ErrorException("invalid parameter");
+		}
+		$vhost = IspcWebsite::get($vhost_id);
+		$f3->set("vhost", $vhost);
+		
+		// get shell users
+		$shell_users = IspcWebsite::getShellUser();
+		$f3->set("shell_users", $shell_users);
+		/////////////////////////////////////
+		
+		$generation_end = microtime(true);
+		$generation_time = number_format ( (($generation_end - $generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
+		$footer_additional_text = ' | 
+			generated in ' . $generation_time .' ms';
+		$f3->set("footer_additional_text", $footer_additional_text);
+		
+		$PAGE = [
+			"name" => "websites/detail",
+			"title" => "Website : ",
+		];
+		$f3->set("PAGE", $PAGE);
+		
+		$view = new \View();
+		echo $view->render('websites/detail.phtml');
 	}
 	
 	

@@ -27,7 +27,11 @@
 							<?= $vhost ["domain_id"] ?>
 						</a>
 					</td>
-					<td class="<?= $vhost ["active"] === "n" ? "table-danger" : "" ?>"><a href="http://<?=$vhost ["domain"]?>" target="_blank"><?= $vhost ["domain"] ?></a></td>
+					<td class="<?= $vhost ["active"] === "n" ? "table-danger" : "" ?>">
+						<a href="http://<?=$vhost ["domain"]?>" target="_blank" title="ouvrir le site web dans un onglet">
+							<?= $vhost ["domain"] ?>
+						</a>
+					</td>
 					<td><?= $hostname ?></td>
 					<td><?= nl2br($shell_users_str)?></td>
 				</tr>

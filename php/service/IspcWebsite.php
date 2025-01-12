@@ -6,8 +6,20 @@ use ErrorException;
 
 abstract class IspcWebsite extends IspConfig
 {
-	 
-	 /**
+
+	public static function get (int $id) : array
+	{
+		$res = static::IspRestCall('sites_web_domain_get',
+		[
+			"primary_id" => [
+				"domain_id"	=> $id,
+			],
+		]);
+		return $res;
+	}
+	
+	
+	/**
 	  * @param string $type vhost / alias / subdomain
 	  * @return array indexed by domain_id
 	  */
