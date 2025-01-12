@@ -95,6 +95,12 @@ class FrontCtrl extends Ctrl
 		$shell_users = IspcWebsite::getShellUser();
 		$f3->set("shell_users", $shell_users);
 		
+		$generation_end = microtime(true);
+		$generation_time = number_format ( (($generation_end - $generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
+		$footer_additional_text = ' | 
+			generated in ' . $generation_time .' ms';
+		$f3->set("footer_additional_text", $footer_additional_text);
+		
 		$PAGE = [
 			"name" => "websites/list",
 			"title" => "Web Sites",

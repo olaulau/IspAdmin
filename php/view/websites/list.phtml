@@ -22,8 +22,12 @@
 				$shell_users_str = implode(PHP_EOL, array_column($shell_users [$vhost ["domain_id"]] ?? [], "username"));
 				?>
 				<tr>
-					<td><?= $vhost ["domain_id"] ?></td>
-					<td><a href="http://<?=$vhost ["domain"]?>" target="_blank"><?= $vhost ["domain"] ?></a></td>
+					<td>
+						<a href="<?= $BASE . $f3->alias("websiteDetail", ["id" => $vhost ["domain_id"]]) ?>" title="voir le détail">
+							<?= $vhost ["domain_id"] ?>
+						</a>
+					</td>
+					<td class="<?= $vhost ["active"] === "n" ? "table-danger" : "" ?>"><a href="http://<?=$vhost ["domain"]?>" target="_blank"><?= $vhost ["domain"] ?></a></td>
 					<td><?= $hostname ?></td>
 					<td><?= nl2br($shell_users_str)?></td>
 				</tr>
