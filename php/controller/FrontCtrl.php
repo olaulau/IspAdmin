@@ -107,25 +107,14 @@ class FrontCtrl extends Ctrl
 	{
 		$chronos = new Chronos ();
 		
-		// get servers
-		$cache = \Cache::instance();
-		$key = "servers_configs";
-		if ($cache->exists($key, $servers_configs) === false) { //TODO count in stats
-			$chronos->start("server_get");
-			$servers_configs = IspcWebsite::getServersConfigs ();
-			$chronos->stop();
-			$cache->set($key, $servers_configs, $f3->get("cache.ispconfig"));
-		}
-		$f3->set("servers_configs", $servers_configs);
-		
 		// get vhost
 		$vhost_id = intval($f3->get("PARAMS.id"));
 		if(empty($vhost_id) || !is_integer($vhost_id)) {
 			throw new ErrorException("invalid parameter");
 		}
 		$chronos->start("sites_web_domain_get");
-		$chronos->stop();
 		$vhost = IspcWebsite::get($vhost_id);
+		$chronos->stop();
 		$f3->set("vhost", $vhost);
 		$server_id = $vhost ["server_id"];
 		

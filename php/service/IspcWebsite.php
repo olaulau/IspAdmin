@@ -51,7 +51,6 @@ abstract class IspcWebsite extends IspConfig
 		return $res;
 	}
 	
-	
 	public static function IspUpdateWebsite (array $ispconfigInfos) : array
 	{
 		$res = static::IspRestCall('sites_web_domain_update', [
@@ -63,11 +62,17 @@ abstract class IspcWebsite extends IspConfig
 	}
 	
 	
-	public static function getServersConfigs () : array
+	/**
+	 * @return array servers indexed by id, or the specified server
+	 */
+	public static function getServersConfigs (int $server_id=0) : array
 	{
-		$res = static::IspRestCall('server_get', [
-			'server_id' => [],
-		]);
+		$params = [];
+		if(!empty($server_id)) {
+			$params ["server_id"] = $server_id;
+		}
+		
+		$res = static::IspRestCall('server_get', $params);
 		return $res;
 	}
 	
