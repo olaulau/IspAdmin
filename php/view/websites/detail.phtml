@@ -4,10 +4,35 @@
 
 	<!-- Begin page content -->
 	<main role="main" class="container-fluid">
-		<h2>Website : </h2>
+		<h2>Website : <?= $vhost ["domain"] ?></h2>
+		
+		id : <?= $vhost ["domain_id"] ?> <?= $vhost ["active"] === "y" ? "active" : "inactive" ?> <br/>
+		path : <?= $vhost ["document_root"] ?> ( <?= $vhost ["system_user"] ?> / <?= $vhost ["system_group"] ?> ) <br/>
+		quota : <?= $vhost ["hd_quota"] ?> Mo <br/>
+		<br/>
+		
+		php : <?= !empty($vhost ["server_php_id"]) ? $vhost ["php"] : "none" ?> <?= $php_name ?> <br/>
+		ssl : <?= $vhost ["ssl"] === "y" ? "yes" : "no" ?> <?= $vhost ["ssl_letsencrypt"] === "y" ? "Let's encrypt" : "" ?> <?= $vhost ["rewrite_to_https"] === "y" ? "with redirection" : "" ?> <br/>
+		sous domaine www : <?= $vhost ["is_subdomainwww"] ?> <br/>
+		<br/>
+		
+		stats : <?= $vhost ["stats_type"] ?> <br/>
+		backups : <?= $vhost ["backup_copies"] ?> <?= $vhost ["backup_interval"] ?> <br/>
+		<br/>
+		
+		shell users : 
 		<?php
-		var_dump($vhost);
+		if(count($shell_users) > 0) {
+			?>
+			( <?= $shell_users [0] ["puser"] ?? "" ?> / <?= $shell_users [0] ["pgroup"] ?? "" ?> ) <br/>
+			<?= implode(", ", array_column($shell_users, "username")) ?> <br/>
+			<?php
+		}
+		else {
+			echo "none";
+		}
 		?>
+		<br/>
 	</main>
 
 <?php require_once __DIR__ . "/../layout/footer.inc.phtml"; ?>

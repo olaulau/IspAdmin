@@ -15,6 +15,16 @@ abstract class IspcWebsite extends IspConfig
 				"domain_id"	=> $id,
 			],
 		]);
+		
+		if(count($res) > 1) {
+			throw new ErrorException("sites_web_domain_get returned too much results");
+		}
+		if(count($res) === 1) {
+			return $res [0];
+		}
+		else {
+			return null;
+		}
 		return $res;
 	}
 	
@@ -92,7 +102,7 @@ abstract class IspcWebsite extends IspConfig
 	}
 	
 	/**
-	 * @return array shell users groupped by parent domain id
+	 * @return array shell users (grouped by parent domain id if no parameter specified)
 	 */
 	public static function getShellUser (int $website_id=0) : array
 	{
@@ -104,7 +114,9 @@ abstract class IspcWebsite extends IspConfig
 			"primary_id"	=> $params
 		]);
 		
-		$res = group2dArray($res, "parent_domain_id");
+		if(empty($website_id)) {
+			$res = group2dArray($res, "parent_domain_id");
+		}
 		return $res;
 	}
 	

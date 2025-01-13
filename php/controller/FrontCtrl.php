@@ -127,10 +127,19 @@ class FrontCtrl extends Ctrl
 		$vhost = IspcWebsite::get($vhost_id);
 		$f3->set("vhost", $vhost);
 		
+		// get php infos
+		$servers_phps = IspcWebsite::getServersPhps ();
+		if(!empty($vhost ["server_php_id"])) {
+			$php_name = $servers_phps [$vhost ["server_id"]] [$vhost ["server_php_id"]] ["name"];
+		}
+		else {
+			$php_name = "";
+		}
+		$f3->set("php_name", $php_name);
+		
 		// get shell users
-		$shell_users = IspcWebsite::getShellUser();
+		$shell_users = IspcWebsite::getShellUser($vhost ["domain_id"]);
 		$f3->set("shell_users", $shell_users);
-		/////////////////////////////////////
 		
 		$generation_end = microtime(true);
 		$generation_time = number_format ( (($generation_end - $generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
