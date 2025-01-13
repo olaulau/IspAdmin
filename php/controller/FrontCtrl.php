@@ -118,6 +118,18 @@ class FrontCtrl extends Ctrl
 		$f3->set("vhost", $vhost);
 		$server_id = $vhost ["server_id"];
 		
+		$ssl = "no";
+		if($vhost ["ssl"] === "y") {
+			$ssl = "yes";
+			if($vhost ["ssl_letsencrypt"] === "y") {
+				$ssl = "Let's encrypt";
+				if($vhost ["rewrite_to_https"] === "y") {
+					$ssl .= " with redirection";
+				}
+			}
+		}
+		$f3->set("ssl", $ssl);
+		
 		// get php infos
 		$chronos->start("server_get_php_versions");
 		$server_phps = IspcWebsite::getServerPhps($server_id);
