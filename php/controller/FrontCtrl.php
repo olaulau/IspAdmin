@@ -127,13 +127,14 @@ class FrontCtrl extends Ctrl
 		$chronos->stop();
 		$vhost = IspcWebsite::get($vhost_id);
 		$f3->set("vhost", $vhost);
+		$server_id = $vhost ["server_id"];
 		
 		// get php infos
-		$chronos->start("getServersPhps");
-		$servers_phps = IspcWebsite::getServersPhps ();
+		$chronos->start("server_get_php_versions");
+		$server_phps = IspcWebsite::getServerPhps($server_id);
 		$chronos->stop();
 		if(!empty($vhost ["server_php_id"])) {
-			$php_name = $servers_phps [$vhost ["server_id"]] [$vhost ["server_php_id"]] ["name"];
+			$php_name = $server_phps [$vhost ["server_php_id"]] ["name"];
 		}
 		else {
 			$php_name = "";

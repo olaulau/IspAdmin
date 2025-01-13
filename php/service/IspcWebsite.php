@@ -72,7 +72,7 @@ abstract class IspcWebsite extends IspConfig
 	}
 	
 	
-	private static function getServerPhps (int $server_id) : array
+	public static function getServerPhps (int $server_id) : array
 	{
 		$res = static::IspRestCall('server_get_php_versions', [
 			"server_id"		=> $server_id,
