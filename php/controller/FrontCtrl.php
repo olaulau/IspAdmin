@@ -3,6 +3,7 @@ namespace controller;
 
 use ErrorException;
 use model\DnsInfos;
+use service\Chronos;
 use service\IspcDomain;
 use service\IspcMail;
 use service\IspConfig;
@@ -85,10 +86,6 @@ class FrontCtrl extends Ctrl
 		array_multisort(array_column($vhosts, "domain"), SORT_ASC, $vhosts);
 		$f3->set("vhosts", $vhosts);
 		
-		// get shell users
-		$shell_users = IspcWebsite::getShellUser();
-		$f3->set("shell_users", $shell_users);
-		
 		$generation_end = microtime(true);
 		$generation_time = number_format ( (($generation_end - $generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
 		$footer_additional_text = ' | 
@@ -108,13 +105,15 @@ class FrontCtrl extends Ctrl
 	
 	public static function websiteDetailGET (\Base $f3, array $url, string $controler) : void
 	{
-		$generation_start = microtime(true);
+		$chronos = new Chronos ();
 		
 		// get servers
 		$cache = \Cache::instance();
 		$key = "servers_configs";
 		if ($cache->exists($key, $servers_configs) === false) { //TODO count in stats
+			$chronos->start("server_get");
 			$servers_configs = IspcWebsite::getServersConfigs ();
+			$chronos->stop();
 			$cache->set($key, $servers_configs, $f3->get("cache.ispconfig"));
 		}
 		$f3->set("servers_configs", $servers_configs);
@@ -124,11 +123,15 @@ class FrontCtrl extends Ctrl
 		if(empty($vhost_id) || !is_integer($vhost_id)) {
 			throw new ErrorException("invalid parameter");
 		}
+		$chronos->start("sites_web_domain_get");
+		$chronos->stop();
 		$vhost = IspcWebsite::get($vhost_id);
 		$f3->set("vhost", $vhost);
 		
 		// get php infos
+		$chronos->start("getServersPhps");
 		$servers_phps = IspcWebsite::getServersPhps ();
+		$chronos->stop();
 		if(!empty($vhost ["server_php_id"])) {
 			$php_name = $servers_phps [$vhost ["server_id"]] [$vhost ["server_php_id"]] ["name"];
 		}
@@ -138,13 +141,14 @@ class FrontCtrl extends Ctrl
 		$f3->set("php_name", $php_name);
 		
 		// get shell users
+		$chronos->start("sites_shell_user_get");
 		$shell_users = IspcWebsite::getShellUser($vhost ["domain_id"]);
+		$chronos->stop();
 		$f3->set("shell_users", $shell_users);
 		
-		$generation_end = microtime(true);
-		$generation_time = number_format ( (($generation_end - $generation_start) * 1000 ), 0 , "," , " " ); // µs -> ms
 		$footer_additional_text = ' | 
-			generated in ' . $generation_time .' ms';
+			<span title="' . $chronos . '">generated in ' . $chronos->getDurationFormatted() .' ms</span>
+			';
 		$f3->set("footer_additional_text", $footer_additional_text);
 		
 		$PAGE = [
