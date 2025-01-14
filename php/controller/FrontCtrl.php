@@ -1,6 +1,7 @@
 <?php
 namespace controller;
 
+use DateTimeImmutable;
 use ErrorException;
 use model\DnsInfos;
 use service\Chronos;
@@ -152,7 +153,15 @@ class FrontCtrl extends Ctrl
 		$chronos->start("sites_web_domain_backup_list");
 		$backups = IspcWebsite::getBackups($vhost_id);
 		$chronos->stop();
+		$backups_by_date = [];
+		$backups = IspcWebsite::getBackups($vhost_id);
 		$f3->set("backups", $backups);
+		
+		foreach ($backups as $backup) {
+			$datetime = DateTimeImmutable::createFromFormat("U", $backup ["tstamp"]);
+			$backups_by_date [$datetime->format("Y-m-d")] [] = $backup;
+		}
+		$f3->set("backups_by_date", $backups_by_date);
 		
 		$footer_additional_text = ' | 
 			<span title="' . $chronos . '">generated in ' . $chronos->getDurationFormatted() .' ms</span>
@@ -161,7 +170,7 @@ class FrontCtrl extends Ctrl
 		
 		$PAGE = [
 			"name" => "websites/detail",
-			"title" => "Website : ",
+			"title" => "Website : {$vhost ["domain"]}",
 		];
 		$f3->set("PAGE", $PAGE);
 		

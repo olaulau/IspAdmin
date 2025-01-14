@@ -6,9 +6,9 @@
 	<main role="main" class="container-fluid">
 		<h2>Website : <?= $vhost ["domain"] ?></h2>
 		
-		<span <?= $vhost ["active"] === "y" ? "class='bg-success' title='active'>" : "class='bg-danger' title='inactive'>" ?>id : <?= $vhost ["domain_id"] ?> </span> <br/>
+		<span <?= $vhost ["active"] === "y" ? "class='h3 bg-success' title='active'" : "class='h3 bg-danger' title='inactive'" ?>>id : <?= $vhost ["domain_id"] ?> </span> <br/>
 		path ( <?= $vhost ["system_user"] ?> / <?= $vhost ["system_group"] ?> ) : <?= $vhost ["document_root"] ?> <br/>
-		quota : <?= $vhost ["hd_quota"] === "-1" ? "unlimited" : ($vhost ["hd_quota"] . " Mo") ?> <br/>
+		quota : <?= $vhost ["hd_quota"] === "-1" ? "unlimited" : ($vhost ["hd_quota"] . " MiB") ?> <br/>
 		php : <?= !empty($vhost ["server_php_id"]) ? $vhost ["php"] : "none" ?> <?= $php_name ?> <br/>
 		ssl : <?= $ssl ?> <br/>
 		www sub-domain : <?= $vhost ["is_subdomainwww"] ? "yes" : "no" ?> <br/>
@@ -27,25 +27,29 @@
 		?>
 		<br/>
 		
-		backups : <?= $vhost ["backup_interval"]!="none" ? $vhost ["backup_copies"] : "" ?> <?= $vhost ["backup_interval"] ?> <br/>
+		<h3>backups : <?= $vhost ["backup_interval"] !== "none" ? $vhost ["backup_copies"] : "" ?> <?= $vhost ["backup_interval"] ?></h3>
 		<?php
-		if(count($backups) > 0) {
+		if(count($backups_by_date) > 0) {
 			?>
 			<table class="table table-sm table-bordered">
 				<thead>
 					<tr>
-						<th>type</th>
 						<th>date</th>
+						<th>backups</th>
 					</tr>
 				</thead>
 				<tbody>
 					<?php
-					foreach ($backups as $backup) {
-						$date = DateTimeImmutable::createFromFormat("U", $backup ["tstamp"]);
+					foreach ($backups_by_date as $date_str => $days_backups) {
+						$backups_strs = [];
+						foreach ($days_backups as $backup) {
+							$dt = DateTimeImmutable::createFromFormat("U", $backup ["tstamp"]);
+							$backups_strs [] = "{$backup ["backup_type"]} ({$dt->format('H:i')})";
+						}
 						?>
 						<tr>
-							<td><?= $backup ["backup_type"] ?></td>
-							<td><?= $date->format("c") ?></td>
+							<td><?= $date_str ?></td>
+							<td><?= implode(", ", $backups_strs) ?></td>
 						</tr>
 						<?php
 					}
@@ -53,7 +57,7 @@
 				</tbody>
 				<tfoot>
 					<tr>
-						<th>#</th>
+						<th><?= count($backups_by_date) ?></th>
 						<th><?= count($backups) ?></th>
 					</tr>
 				</tfoot>
