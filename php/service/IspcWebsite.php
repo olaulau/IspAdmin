@@ -147,4 +147,49 @@ abstract class IspcWebsite extends IspConfig
 		return $res;
 	}
 	
+	
+	/**
+	 * @param int $website_id the website id
+	 * @return array the databases, indexed by database_id (and grouped by website_id  if no parameter provided)
+	 */
+	public static function getDatabases (int $website_id=null) : array
+	{
+		$params = [];
+		if($website_id === null) {
+			$params ["primary_id"] = [];
+		}
+		else {
+			$params ["primary_id"] = ["parent_domain_id" => $website_id];
+		}
+		$res = static::IspRestCall('sites_database_get', $params);
+		
+		$res = index2dArray($res, "database_id");
+		if($website_id === null) {
+			$res = group2dArray($res, "parent_domain_id");
+		}
+		return $res;
+	}
+	
+	
+	/**
+	 * @param int $website_id the website id
+	 * @return array the databases, indexed by database_id (and grouped by website_id  if no parameter provided)
+	 */
+	public static function getDatabaseUsers (int $db_user_id=0) : array
+	{
+		$params = [];
+		if(empty($db_user_id)) {
+			$params ["primary_id"] = [];
+		}
+		else {
+			$params ["primary_id"] = $db_user_id;
+		}
+		$res = static::IspRestCall("sites_database_user_get", $params);
+		
+		if(empty($db_user_id)) {
+			$res = index2dArray($res, "database_user_id");
+		}
+		return $res;
+	}
+	
 }

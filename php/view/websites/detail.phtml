@@ -27,6 +27,50 @@
 		?>
 		<br/>
 		
+		<h3>databases :</h3>
+		<?php
+		if(count($databases) > 0) {
+			?>
+			<table class="table table-sm table-bordered">
+				<thead>
+					<tr>
+						<th>name</th>
+						<th>quota</th>
+						<th>user</th>
+						<th>backup</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					foreach ($databases as $database) {
+						?>
+						<tr>
+							<td class="<?= $database["active"] === "y" ? "bg-success" : "bg-danger" ?>" title="<?= $database["active"] === "y" ? "active" : "inactive" ?>"><?= $database ["database_name"] ?></td>
+							<td class="<?= $database["quota_exceeded"] === "n" ? "bg-success" : "bg-danger" ?>" title="<?= $database["quota_exceeded"] === "n" ? "ok" : "excedded" ?>"><?= $database ["database_quota"] === "-1" ? "unlimited" : ($database ["database_quota"] . " MiB") ?></td>
+							<td><?= $database ["user"] ["database_user"] ?></td>
+							<td><?= $database ["backup_copies"] ?> <?= $database ["backup_interval"] ?></td>
+						</tr>
+						<?php
+					}
+					?>
+				</tbody>
+				<tfoot>
+					<tr>
+						<th><?= count($databases) ?></th>
+						<th>&nbsp;</th>
+						<th>&nbsp;</th>
+						<th>&nbsp;</th>
+					</tr>
+				</tfoot>
+			</table>
+			<?php
+		}
+		else {
+			echo "none <br/>";
+		}
+		?>
+		<br/>
+		
 		<h3>backups : <?= $vhost ["backup_interval"] !== "none" ? $vhost ["backup_copies"] : "" ?> <?= $vhost ["backup_interval"] ?></h3>
 		<?php
 		if(count($backups_by_date) > 0) {

@@ -157,11 +157,20 @@ class FrontCtrl extends Ctrl
 		$backups = IspcWebsite::getBackups($vhost_id);
 		$f3->set("backups", $backups);
 		
+		// group backups by date
 		foreach ($backups as $backup) {
 			$datetime = DateTimeImmutable::createFromFormat("U", $backup ["tstamp"]);
 			$backups_by_date [$datetime->format("Y-m-d")] [] = $backup;
 		}
 		$f3->set("backups_by_date", $backups_by_date);
+		
+		// databases & db users
+		$databases = IspcWebsite::getDatabases($vhost_id);
+		foreach ($databases as &$database) {
+			$database_user = IspcWebsite::getDatabaseUsers($database ["database_user_id"]);
+			$database ["user"] = $database_user;
+		}
+		$f3->set("databases", $databases);
 		
 		$footer_additional_text = ' | 
 			<span title="' . $chronos . '">generated in ' . $chronos->getDurationFormatted() .' ms</span>
