@@ -6,37 +6,29 @@
 	<main role="main" class="container-fluid">
 		<h2>Website : <?= $vhost ["domain"] ?></h2>
 		
-		id : <?= $vhost ["domain_id"] ?> <span <?= $vhost ["active"] === "y" ? "class='bg-success'>active" : "class='bg-danger'>inactive" ?></span> <br/>
-		path : <?= $vhost ["document_root"] ?> ( <?= $vhost ["system_user"] ?> / <?= $vhost ["system_group"] ?> ) <br/>
+		<span <?= $vhost ["active"] === "y" ? "class='bg-success' title='active'>" : "class='bg-danger' title='inactive'>" ?>id : <?= $vhost ["domain_id"] ?> </span> <br/>
+		path ( <?= $vhost ["system_user"] ?> / <?= $vhost ["system_group"] ?> ) : <?= $vhost ["document_root"] ?> <br/>
 		quota : <?= $vhost ["hd_quota"] === "-1" ? "unlimited" : ($vhost ["hd_quota"] . " Mo") ?> <br/>
-		<br/>
-		
 		php : <?= !empty($vhost ["server_php_id"]) ? $vhost ["php"] : "none" ?> <?= $php_name ?> <br/>
 		ssl : <?= $ssl ?> <br/>
 		www sub-domain : <?= $vhost ["is_subdomainwww"] ? "yes" : "no" ?> <br/>
-		<br/>
-		
 		stats : <?= $vhost ["stats_type"] ?> <br/>
-		backups : <?= $vhost ["backup_interval"]!="none" ? $vhost ["backup_copies"] : "" ?> <?= $vhost ["backup_interval"] ?> <br/>
-		<br/>
-		
-		shell users : 
+		shell users 
 		<?php
 		if(count($shell_users) > 0) {
 			?>
-			( <?= $shell_users [0] ["puser"] ?? "" ?> / <?= $shell_users [0] ["pgroup"] ?? "" ?> ) <br/>
+			( <?= $shell_users [0] ["puser"] ?? "" ?> / <?= $shell_users [0] ["pgroup"] ?? "" ?> ) : 
 			<?= implode(", ", array_column($shell_users, "username")) ?> <br/>
 			<?php
 		}
 		else {
-			echo "none";
+			echo ": none";
 		}
 		?>
 		<br/>
 		
-		backups : 
+		backups : <?= $vhost ["backup_interval"]!="none" ? $vhost ["backup_copies"] : "" ?> <?= $vhost ["backup_interval"] ?> <br/>
 		<?php
-		
 		if(count($backups) > 0) {
 			?>
 			<table class="table table-sm table-bordered">

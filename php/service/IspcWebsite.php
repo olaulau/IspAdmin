@@ -7,6 +7,10 @@ use ErrorException;
 abstract class IspcWebsite extends IspConfig
 {
 
+	/**
+	 * @param int $id the website id
+	 * @return array the website
+	 */
 	public static function get (int $id) : array
 	{
 		$res = static::IspRestCall('sites_web_domain_get',
