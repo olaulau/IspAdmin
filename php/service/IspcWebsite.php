@@ -32,7 +32,6 @@ abstract class IspcWebsite extends IspConfig
 		return $res;
 	}
 	
-	
 	/**
 	  * @param string $type vhost / alias / subdomain
 	  * @return array indexed by domain_id
@@ -46,10 +45,39 @@ abstract class IspcWebsite extends IspConfig
 		}
 		$res = static::IspRestCall('sites_web_domain_get',
 		[
-			'primary_id' => $params,
+			
+			"primary_id"	=> $params,
 		]);
 		
 		// index and sort by "domain_id"
+		$res = index2dArray ($res, "domain_id");
+		ksort($res);
+		return $res;
+	}
+	
+	public static function getAliases (int $website_id) : array
+	{
+		$res = static::IspRestCall('sites_web_domain_get',
+		[
+			"primary_id"	=> [
+				"parent_domain_id"		=> $website_id,
+				"type"					=> "alias",
+			],
+		]);
+		$res = index2dArray ($res, "domain_id");
+		ksort($res);
+		return $res;
+	}
+	
+	public static function getSubdomains (int $website_id) : array
+	{
+		$res = static::IspRestCall('sites_web_domain_get',
+		[
+			"primary_id"	=> [
+				"parent_domain_id"		=> $website_id,
+				"type"					=> "subdomain",
+			],
+		]);
 		$res = index2dArray ($res, "domain_id");
 		ksort($res);
 		return $res;

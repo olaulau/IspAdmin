@@ -27,6 +27,66 @@
 		?>
 		<br/>
 		
+		<h3>aliases :</h3>
+		<?php
+		if(count($aliases) > 0) {
+			?>
+			<table class="table table-sm table-bordered">
+				<tbody>
+					<?php
+					foreach ($aliases as $alias) {
+						?>
+						<tr>
+							<td><?= $alias ["domain"] ?></td>
+						</tr>
+						<?php
+					}
+					?>
+				</tbody>
+				<tfoot>
+					<tr>
+						<th><?= count($aliases) ?></th>
+					</tr>
+				</tfoot>
+			</table>
+			<?php
+		}
+		else {
+			echo "none <br/>";
+		}
+		?>
+		<br/>
+		
+		<h3>subdomains :</h3>
+		<?php
+		if(count($subdomains) > 0) {
+			?>
+			<table class="table table-sm table-bordered">
+				<tbody>
+					<?php
+					foreach ($subdomains as $subdomain) {
+						?>
+						<tr>
+							<td><?= $subdomain ["domain"] ?></td>
+						</tr>
+						<?php
+					}
+					?>
+				</tbody>
+				<tfoot>
+					<tr>
+						<th><?= count($subdomains) ?></th>
+					</tr>
+				</tfoot>
+			</table>
+			<?php
+		}
+		else {
+			echo "none <br/>";
+		}
+		?>
+		<br/>
+		
 		<h3>databases :</h3>
 		<?php
 		if(count($databases) > 0) {
@@ -113,10 +173,6 @@
 		}
 		?>
 		<br/>
-		
-		TODO : <br/>
-		- MysqL databases with users <br/>
-		- list related aliases & subdomains <br/>
 	</main>
 
 <?php require_once __DIR__ . "/../layout/footer.inc.phtml"; ?>

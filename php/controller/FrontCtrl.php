@@ -131,6 +131,12 @@ class FrontCtrl extends Ctrl
 		}
 		$f3->set("ssl", $ssl);
 		
+		// get aliases & subdomains
+		$aliases = IspcWebsite::getAliases($vhost_id);
+		$f3->set("aliases", $aliases);
+		$subdomains = IspcWebsite::getSubdomains($vhost_id);
+		$f3->set("subdomains", $subdomains);
+		
 		// get php infos
 		$chronos->start("server_get_php_versions");
 		$server_phps = IspcWebsite::getServerPhps($server_id);
