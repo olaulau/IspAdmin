@@ -34,9 +34,49 @@
 		?>
 		<br/>
 		
+		backups : 
+		<?php
+		
+		if(count($backups) > 0) {
+			?>
+			<table class="table table-sm table-bordered">
+				<thead>
+					<tr>
+						<th>type</th>
+						<th>date</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					foreach ($backups as $backup) {
+						$date = DateTimeImmutable::createFromFormat("U", $backup ["tstamp"]);
+						?>
+						<tr>
+							<td><?= $backup ["backup_type"] ?></td>
+							<td><?= $date->format("c") ?></td>
+						</tr>
+						<?php
+					}
+					?>
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>#</th>
+						<th><?= count($backups) ?></th>
+					</tr>
+				</tfoot>
+			</table>
+			<?php
+		}
+		else {
+			echo "none <br/>";
+		}
+		?>
+		<br/>
+		
 		TODO : <br/>
 		- MysqL databases with users <br/>
-		- list of actual backups <br/>
+		- list related aliases & subdomains <br/>
 	</main>
 
 <?php require_once __DIR__ . "/../layout/footer.inc.phtml"; ?>

@@ -125,4 +125,22 @@ abstract class IspcWebsite extends IspConfig
 		return $res;
 	}
 	
+	
+	/**
+	 * @return array list of backups, grouped by vhost_id if no website_id provided
+	 */
+	public static function getBackups (int $website_id=0) : array
+	{
+		$params = [];
+		if(!empty($website_id)) {
+			$params ["site_id"] = $website_id;
+		}
+		$res = static::IspRestCall('sites_web_domain_backup_list', $params);
+		
+		if(empty($website_id)) {
+			$res = group2dArray($res, "parent_domain_id");
+		}
+		return $res;
+	}
+	
 }

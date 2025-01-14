@@ -148,6 +148,12 @@ class FrontCtrl extends Ctrl
 		$chronos->stop();
 		$f3->set("shell_users", $shell_users);
 		
+		// backups
+		$chronos->start("sites_web_domain_backup_list");
+		$backups = IspcWebsite::getBackups($vhost_id);
+		$chronos->stop();
+		$f3->set("backups", $backups);
+		
 		$footer_additional_text = ' | 
 			<span title="' . $chronos . '">generated in ' . $chronos->getDurationFormatted() .' ms</span>
 			';
