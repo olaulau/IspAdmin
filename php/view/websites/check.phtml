@@ -65,67 +65,78 @@
 					$vhost_subsites = count($aliases [$website_id] ?? []) + count($subdomains [$website_id] ?? []);
 					?>
 					<tr>
-					<?php
-					if (empty($currentSld) || $currentSld !== $sld) {
-						?>
-						<td rowspan="<?= $sld_rows ?>" style="vertical-align: middle;">
-							<a href="https://<?= $sld ?>/"><?= $sld ?></a>
-						</td>
 						<?php
-					}
-					?>
-					<td class="<?= $vhost ['active'] === 'n' ? 'table-danger' : '' ?>">
-						<a href="https://<?= $vhost ["domain"] ?>/" target="_blank"><?= $vhost ["domain"] ?></a>
-					</td>
+						if (empty($currentSld) || $currentSld !== $sld) {
+							?>
+							<td rowspan="<?= $sld_rows ?>" style="vertical-align: middle;">
+								<a href="https://<?= $sld ?>/"><?= $sld ?></a>
+							</td>
+							<?php
+						}
+
+						$class = "";
+						$title = "";
+						if($vhost ["active"] === "n") {
+							$class = "table-danger";
+							$title = "disabled";
+						}
+						if(array_search($vhost ["server_id"], array_keys($servers_configs)) === false) {
+							$class = "table-danger";
+							$title = "no server";
+						}
+						?>
+						<td class="<?= $class ?>" title="<?= $title ?>">
+							<a href="https://<?= $vhost ["domain"] ?>/" target="_blank"><?= $vhost ["domain"] ?></a>
+						</td>
+						
+						<?php
+						if (empty($currentSld) || $currentSld !== $sld) {
+							website_check_modules ($vhost, $active_modules, $sld_rows, $vhost_subsites);
+						}
+						else {
+							website_check_modules ($vhost, $active_modules, -1, $vhost_subsites);
+						}
+						?>
+					</tr>
 					
 					<?php
-					if (empty($currentSld) || $currentSld !== $sld) {
-						website_check_modules ($vhost, $active_modules, $sld_rows, $vhost_subsites);
-					}
-					else {
-						website_check_modules ($vhost, $active_modules, -1, $vhost_subsites);
+					$website_aliases = $aliases [$website_id] ?? null;
+					if(!empty($website_aliases)) {
+						foreach ($website_aliases as $alias) {
+							?>
+							<tr>
+								<td class="<?= $alias ['active'] === 'n' ? 'table-danger' : '' ?> ">
+									<a class="ms-4" href="https://<?= $alias ["domain"] ?>/" target="_blank"><?= $alias ["domain"] ?></a>
+								</td>
+								<?php
+								website_check_modules ($alias, $active_modules, -1, -1);
+								?>
+							</tr>
+							<?php
+						}
 					}
 					?>
-				</tr>
-				
-				<?php
-				$website_aliases = $aliases [$website_id] ?? null;
-				if(!empty($website_aliases)) {
-					foreach ($website_aliases as $alias) {
-						?>
-						<tr>
-							<td class="<?= $alias ['active'] === 'n' ? 'table-danger' : '' ?> ">
-								<a class="ms-4" href="https://<?= $alias ["domain"] ?>/" target="_blank"><?= $alias ["domain"] ?></a>
-							</td>
-							<?php
-							website_check_modules ($alias, $active_modules, -1, -1);
+					
+					<?php
+					$website_subdomains = $subdomains [$website_id] ?? null;
+					if(!empty($website_subdomains)) {
+						foreach ($website_subdomains as $subdomain) {
 							?>
-						</tr>
-						<?php
-					}
-				}
-				?>
-				
-				<?php
-				$website_subdomains = $subdomains [$website_id] ?? null;
-				if(!empty($website_subdomains)) {
-					foreach ($website_subdomains as $subdomain) {
-						?>
-						<tr>
-							<td class="<?= $subdomain ['active'] === 'n' ? 'table-danger' : '' ?> ">
-								<a class="ms-4" href="https://<?= $subdomain ["domain"] ?>/" target="_blank"><?= $subdomain ["domain"] ?></a>
-							</td>
+							<tr>
+								<td class="<?= $subdomain ['active'] === 'n' ? 'table-danger' : '' ?> ">
+									<a class="ms-4" href="https://<?= $subdomain ["domain"] ?>/" target="_blank"><?= $subdomain ["domain"] ?></a>
+								</td>
+								<?php
+								website_check_modules ($subdomain, $active_modules, -1, -1);
+								?>
+							</tr>
 							<?php
-							website_check_modules ($subdomain, $active_modules, -1, -1);
-							?>
-						</tr>
-						<?php
+						}
 					}
-				}
-				?>
-				
-				<?php
-				$currentSld = $sld;
+					?>
+					
+					<?php
+					$currentSld = $sld;
 				}
 			}
 			?>

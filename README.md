@@ -32,7 +32,7 @@ IspConfig additionnal admin features
 ```
 git clone https://github.com/olaulau/IspAdmin
 cd IspAdmin
-composer install
+composer i
 
 cd conf
 cp tech.dist.ini tech.ini

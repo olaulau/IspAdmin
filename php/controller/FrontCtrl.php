@@ -333,6 +333,7 @@ class FrontCtrl extends Ctrl
 		$stats ["subdomains_count"] = count($subdomains);
 		$subdomains = group2dArray($subdomains, "parent_domain_id");
 		
+		$f3->set("servers_configs", $servers_configs);
 		$f3->set('stats', $stats);
 		$f3->set('websites_grouped', $websites_grouped);
 		$f3->set('aliases', $aliases);

@@ -1,8 +1,8 @@
 <?php
 
 /**
- * $sld_rows = -1 for all rows except the first of a 2LD
- * $vhost_subsites = -1 for aliases & subdomaines (not SSL & PHP cell as we used rowspan)
+ * @param int $sld_rows = -1 for all rows except the first of a 2LD
+ * @param int $vhost_subsites = -1 for aliases & subdomaines (not SSL & PHP cell as we used rowspan)
  */
 function website_check_modules (array $website, array $active_modules, int $sld_rows, int $vhost_subsites) : void
 {
@@ -87,7 +87,7 @@ function website_check_modules (array $website, array $active_modules, int $sld_
 	}
 	else {
 		?>
-		<td colspan="5">&nbsp;</td>
+		<td colspan="<?= 5 ?>">&nbsp;</td>
 		<?php
 	}
 }
