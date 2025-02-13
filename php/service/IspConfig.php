@@ -9,7 +9,6 @@ abstract class IspConfig
 {
 	
 	private static string $session_id;
-	// private static mixed $last_query_response;
 	
 	
 	private static function rest ($method, $data) : mixed
@@ -20,26 +19,27 @@ abstract class IspConfig
 			return false;
 		$json = json_encode($data);
 		
+		$isp_rest_conf = self::IspRestConf();
+		$url = $isp_rest_conf ["url"];
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_POST, 1);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $json);
-		curl_setopt($curl, CURLOPT_URL, $f3->get('tech.ispconfig.rest.url') . '?' . $method);
+		curl_setopt($curl, CURLOPT_URL, $url . "?" . $method);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		
 		$result = curl_exec($curl);
-		if ($result === FALSE)
-			die( "error : " . curl_errno($curl) . ' : ' . curl_error($curl) . '<br/>' );
+		if ($result === false) {
+			throw new ErrorException("error : " . curl_errno($curl) . " : " . curl_error($curl));
+		}
 		curl_close($curl);
 		
 		try {
 			$res = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
 		}
 		catch(JsonException $ex) {
-			var_dump($result); die;
-			die("json decode error " . $ex->getCode() . " : " . $ex->getMessage() . PHP_EOL . $ex->getTraceAsString());
+			throw new ErrorException("json decode error " . $ex->getCode() . " : " . $ex->getMessage(), 0, E_ERROR, null, null, $ex);
 		}
 		
-		// self::$last_query_response = $res;
 		return $res;
 	}
 	
@@ -74,15 +74,14 @@ abstract class IspConfig
 	
 	public static function IspLogin () : string
 	{
-		$f3 = \Base::instance();
-		
+		$isp_rest_conf = self::IspRestConf();
 		$data = static::restCall('login', [
-			'username' => $f3->get('tech.ispconfig.rest.user'),
-			'password' => $f3->get('tech.ispconfig.rest.password'),
+			'username' => $isp_rest_conf ["user"],
+			'password' => $isp_rest_conf ["password"],
 			'client_login' => false,
 		]);
 		if($data === false) {
-			Throw New ErrorException("IspConfig login failed");
+			throw New ErrorException("IspConfig login failed");
 		}
 		return $data;
 	}
@@ -91,8 +90,9 @@ abstract class IspConfig
 	public static function IspLogout () : void
 	{
 		$result = static::IspRestCall('logout', []);
-		if(!$result)
-		    die("Could not get logout result\n");
+		if(!$result) {
+			throw new ErrorException("Could not get logout result");
+		}
 	}
 	
 	
@@ -112,6 +112,35 @@ abstract class IspConfig
 			'sys_userid' => $sys_userid,
 		]);
 		return $res;
+	}
+
+
+	private static function IspRestConf (int $id=null) : array
+	{
+		$f3 = \Base::instance();
+
+		$confs = $f3->get("tech.ispconfig.rest");
+		if (!is_array($confs) || empty($confs)) {
+			throw new ErrorException("empty ispconfig.rest conf");
+		}
+		
+		if($id === null) {
+			//TODO get choosen conf id from UI / Session
+			$id = array_key_first($confs);
+		}
+		if(!is_int($id)) {
+			throw new ErrorException("invalid ispconfig.rest conf id");
+		}
+		$conf = $confs[$id];
+
+		if (!is_array($conf) || empty($conf)) {
+			throw new ErrorException("empty ispconfig.rest conf #$id");
+		}
+		if (empty($conf ["user"]) || empty($conf ["password"])  || empty($conf ["url"])) {
+			throw new ErrorException("incomplete ispconfig.rest conf #$id");
+		}
+
+		return $conf;
 	}
 	
 }
