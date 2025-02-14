@@ -58,8 +58,24 @@
 							</ul>
 						</li>
 					</ul>
+
+					<div class="">
+						<form action="<?= $BASE . $f3->alias("ispRestConfChoice") ?>" method="post">
+							<select class="form-select" id="isp_rest_conf_id" name="isp_rest_conf_id">
+								<?php
+								$isp_rest_conf_id = $f3->get("SESSION.isp_rest_conf_id");
+								$confs = $f3->get("tech.ispconfig.rest");
+								foreach ($confs as $id => $conf) {
+									?>
+									<option value="<?= $id ?>" <?= $isp_rest_conf_id == $id ? "selected" : "" ?>><?= $conf ["url"] ?></option>
+									<?php
+								}
+								?>
+							</select>
+						</form>
+					</div>
 				</div>
-				
+
 				<ul class="navbar-nav px-3" data-bs-theme="dark">
 					<li class="nav-item dropdown">
 						<a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">

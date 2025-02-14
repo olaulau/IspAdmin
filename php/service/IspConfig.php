@@ -1,6 +1,7 @@
 <?php
 namespace service;
 
+use Base;
 use ErrorException;
 use JsonException;
 
@@ -13,13 +14,14 @@ abstract class IspConfig
 	
 	private static function rest ($method, $data) : mixed
 	{
-		$f3 = \Base::instance();
-		
+		$f3 = Base::instance();
+
 		if(!is_array($data))
 			return false;
 		$json = json_encode($data);
 		
-		$isp_rest_conf = self::IspRestConf();
+		$isp_rest_conf_id = $f3->get("SESSION.isp_rest_conf_id");
+		$isp_rest_conf = self::IspRestConf($isp_rest_conf_id);
 		$url = $isp_rest_conf ["url"];
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_POST, 1);
@@ -74,7 +76,10 @@ abstract class IspConfig
 	
 	public static function IspLogin () : string
 	{
-		$isp_rest_conf = self::IspRestConf();
+		$f3 = Base::instance();
+
+		$isp_rest_conf_id = $f3->get("SESSION.isp_rest_conf_id");
+		$isp_rest_conf = self::IspRestConf($isp_rest_conf_id);
 		$data = static::restCall('login', [
 			'username' => $isp_rest_conf ["user"],
 			'password' => $isp_rest_conf ["password"],
@@ -115,7 +120,7 @@ abstract class IspConfig
 	}
 
 
-	private static function IspRestConf (int $id=null) : array
+	private static function IspRestConf (int|null $id=null) : array
 	{
 		$f3 = \Base::instance();
 

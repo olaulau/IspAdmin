@@ -1,6 +1,7 @@
 <?php
 namespace controller;
 
+use Base;
 use DateTimeImmutable;
 use ErrorException;
 use model\DnsInfos;
@@ -14,7 +15,7 @@ use service\IspcWebsite;
 class FrontCtrl extends Ctrl
 {
 	
-	public static function beforeroute(\Base $f3, array $url, string $controler) : void
+	public static function beforeroute(Base $f3, array $url, string $controler) : void
 	{
 		parent::beforeroute($f3, $url, $controler);
 		
@@ -24,13 +25,13 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function afterroute(\Base $f3, array $url, string $controler) : void
+	public static function afterroute(Base $f3, array $url, string $controler) : void
 	{
 		
 	}
 	
 	
-	public static function homeGET (\Base $f3, array $url, string $controler) : void
+	public static function homeGET (Base $f3, array $url, string $controler) : void
 	{
 		$PAGE = [
 			"name" => "index",
@@ -41,8 +42,21 @@ class FrontCtrl extends Ctrl
 		$view = new \View();
 		echo $view->render('index.phtml');
 	}
+
+
+	public static function ispRestConfChoicePOST (Base $f3, array $url, string $controler) : void
+	{
+		// put into session
+		$isp_rest_conf_id = $f3->get("POST.isp_rest_conf_id");
+		$f3->set("SESSION.isp_rest_conf_id", $isp_rest_conf_id);
+
+		// redirect to referrer
+		$f3->reroute($_SERVER['HTTP_REFERER']);
+		die;
+	}
 	
-	public static function testGET (\Base $f3, array $url, string $controler) : void
+
+	public static function testGET (Base $f3, array $url, string $controler) : void
 	{
 		$PAGE = [
 			"name" => "test",
@@ -55,7 +69,7 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function websitesListGET (\Base $f3, array $url, string $controler) : void
+	public static function websitesListGET (Base $f3, array $url, string $controler) : void
 	{
 		$generation_start = microtime(true);
 		
@@ -104,7 +118,7 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function websiteDetailGET (\Base $f3, array $url, string $controler) : void
+	public static function websiteDetailGET (Base $f3, array $url, string $controler) : void
 	{
 		$chronos = new Chronos ();
 		
@@ -194,7 +208,7 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function websitesCheckGET (\Base $f3, array $url, string $controler) : void
+	public static function websitesCheckGET (Base $f3, array $url, string $controler) : void
 	{
 		$generation_start = microtime(true);
 		
@@ -358,7 +372,7 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function emailsBulkGET (\Base $f3, array $url, string $controler) : void
+	public static function emailsBulkGET (Base $f3, array $url, string $controler) : void
 	{
 		$PAGE = [
 			"name" => "emails/bulk",
@@ -371,7 +385,7 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function emailsBulkPOST (\Base $f3, array $url, string $controler) : void
+	public static function emailsBulkPOST (Base $f3, array $url, string $controler) : void
 	{
 		$web = \Web::instance();
 		
@@ -451,7 +465,7 @@ class FrontCtrl extends Ctrl
 	}
 	
 
-	public static function domainsBulkGET (\Base $f3, array $url, string $controler) : void
+	public static function domainsBulkGET (Base $f3, array $url, string $controler) : void
 	{
 		$generation_start = microtime(true);
 		
@@ -525,7 +539,7 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function domainsBulkPOST (\Base $f3, array $url, string $controler) : void
+	public static function domainsBulkPOST (Base $f3, array $url, string $controler) : void
 	{
 		$post = $f3->get("POST");
 		$action = $post ["action"];
@@ -549,7 +563,7 @@ class FrontCtrl extends Ctrl
 	}
 	
 	
-	public static function faviconGET (\Base $f3, array $url, string $controler) : void
+	public static function faviconGET (Base $f3, array $url, string $controler) : void
 	{
 		$web = \Web::instance();
 		$filename = __DIR__ . "/../../assets/app_icon.svg";

@@ -1,6 +1,8 @@
 <?php
 namespace controller;
 
+use Session;
+
 
 abstract class Ctrl
 {
@@ -9,6 +11,9 @@ abstract class Ctrl
 	{
 		// exposes $f3 var in views
 		$f3->set("f3", $f3);
+
+		// initialize sessions
+		new Session();
 	}
 	
 	
