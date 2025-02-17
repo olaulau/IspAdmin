@@ -11,7 +11,7 @@ abstract class IspcWebsite extends IspConfig
 	 * @param int $id the website id
 	 * @return array the website
 	 */
-	public static function get (int $id) : array
+	public static function get (int $id) : array|null
 	{
 		$res = static::IspRestCall('sites_web_domain_get',
 		[
@@ -29,7 +29,6 @@ abstract class IspcWebsite extends IspConfig
 		else {
 			return null;
 		}
-		return $res;
 	}
 	
 	/**
@@ -45,7 +44,6 @@ abstract class IspcWebsite extends IspConfig
 		}
 		$res = static::IspRestCall('sites_web_domain_get',
 		[
-			
 			"primary_id"	=> $params,
 		]);
 		

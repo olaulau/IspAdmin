@@ -5,6 +5,10 @@ use Base;
 use DateTimeImmutable;
 use ErrorException;
 use model\DnsInfos;
+use model\HttpInfos;
+use model\PhpInfos;
+use model\SslInfos;
+use model\WhoisInfos;
 use service\Chronos;
 use service\IspcDomain;
 use service\IspcMail;
@@ -261,28 +265,28 @@ class FrontCtrl extends Ctrl
 					$server = $servers_configs [$server_id];
 					if ($f3->get('active_modules.whois') === true) { // do not recreate things if parents domain has already been done
 						if(empty($tasks ["whois"] [$two_ld])) {
-							$t = new \model\WhoisInfos ($two_ld, $server);
+							$t = new WhoisInfos ($two_ld, $server);
 							$tasks ["whois"] [$two_ld] = $t;
 							$cmds ["whois_$two_ld"] = $t->getCmd();
 						}
 					}
 					if ($f3->get('active_modules.dns') === true) {
-						$t = new \model\DnsInfos ($domain, $server);
+						$t = new DnsInfos ($domain, $server);
 						$tasks ["dns"] [$domain] = $t;
 						$cmds ["dns_$domain"] = $t->getCmd();
 					}
 					if ($f3->get('active_modules.ssl') === true) {
-						$t = new \model\SslInfos ($domain, $server);
+						$t = new SslInfos ($domain, $server);
 						$tasks ["ssl"] [$domain] = $t;
 						$cmds ["ssl_$domain"] = $t->getCmd();
 					}
 					if ($f3->get('active_modules.http') === true) {
-						$t = new \model\HttpInfos ($domain, $server);
+						$t = new HttpInfos ($domain, $server);
 						$tasks ["http"] [$domain] = $t;
 						$cmds ["http_$domain"] = $t->getCmd();
 					}
 					if ($f3->get('active_modules.php') === true) {
-						$t = new \model\PhpInfos ($domain, $server, $website, $servers_phps [$server_id]);
+						$t = new PhpInfos ($domain, $server, $website, $servers_phps [$server_id]);
 						$tasks ["php"] [$domain] = $t;
 					}
 				}

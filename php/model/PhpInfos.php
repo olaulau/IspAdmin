@@ -55,7 +55,12 @@ class PhpInfos extends Task
 			}
 			
 			elseif ($php === "php-fpm") {
-				if ($this->website ["server_php_id"] == 0) { // default php version ?
+				if ($this->website ["server_php_id"] === null) {
+					$this->labelString = "no";
+					$this->labelType = "danger";
+					$this->labelTitle = "no PHP version";
+				}
+				elseif ($this->website ["server_php_id"] === "0") { // default php version
 					$regex = "/^[^\d]*((\d+\.\d+)(\.\d+)?)[^\d]*$/";
 					$php_default_name = $this->server ["web"] [ "php_default_name"];
 					if (preg_match($regex, $php_default_name, $matches)) {
@@ -98,8 +103,9 @@ class PhpInfos extends Task
 			}
 			
 			else { // unforeseen
-				$this->labelString = "error";
+				$this->labelString = "unknown";
 				$this->labelType = "danger";
+				$this->labelTitle = "unknown php type";
 			}
 		}
 		
