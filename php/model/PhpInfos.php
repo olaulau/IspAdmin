@@ -55,7 +55,7 @@ class PhpInfos extends Task
 			}
 			
 			elseif ($php === "php-fpm") {
-				if ($this->website ["server_php_id"] === null) {
+				if (!isset($this->website ["server_php_id"])) {
 					$this->labelString = "no";
 					$this->labelType = "danger";
 					$this->labelTitle = "no PHP version";
